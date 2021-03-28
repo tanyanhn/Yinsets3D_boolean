@@ -7,8 +7,9 @@ namespace YSB
 {
     // Plane in 3D space
     template <class T>
-    struct Plane
+    class Plane
     {
+    private:
         //  Norm vector and a fixpoint unique determine a plane.
         Point<T, spaceDim> fixpoint;
         Vec<T, spaceDim> normVec;

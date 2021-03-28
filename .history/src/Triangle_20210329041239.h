@@ -69,21 +69,12 @@ namespace YSB
                 delete pla;
         };
 
-        //Accessors
-        tPoint &vert(int i) { return vertex[i]; }
-        const tPoint &vert(int i) const { return vertex[i]; }
-
-        tSegment &ed(int i) { return edge[i]; }
-        const tSegment &ed(int i) const { return edge[i]; }
-
         // Update pointer pla.
         Plane<T> *new_pla()
         {
             if (pla != nullptr)
                 delete pla;
-            pla = new Plane<T>(vertex[0], cross(vertex[1] - vertex[0], vertex[2] - vertex[0]));
-            pla->direction = normalize(pla->direction) * perimeter();
-            return pla;
+            return pla = new Plane<T>(vertex[0], cross(vertex[1] - vertex[0], vertex[2] - vertex[0]));
         }
 
         Real perimeter() const
@@ -91,44 +82,14 @@ namespace YSB
             return norm(vertex[0] - vertex[1]) + norm(vertex[1] - vertex[2]) + norm(vertex[2] - vertex[0]);
         }
 
-        bool isParallel(const tTriangle &tri2, Real tol = TOL) const
+        bool parallel(const tTriangle &tri2) const
         {
             if (pla == nullptr)
                 new_pla();
+            pla->direction = normalize(pla->direction) * perimeter();
             if (tri2->pla == nullptr)
                 tri2->new_pla();
-
-            auto v1 = pla->direction, v2 = tri2->pla->direction;
-            Real dist = norm(cross(v1, v2)) / norm(v1);
-            return dist < tol;
-        }
-
-        int majorDim() const
-        {
-            if (pla == nullptr)
-                new_pla();
-
-            int md = 0;
-            tVec v = abs(pla->direction);
-            Real Lar = v[0];
-            for (auto d = 1; d < Dim; ++d)
-            {
-                if (Lar < v[d])
-                {
-                    md = d;
-                    Lar = v[d];
-                }
-            }
-            return md;
-        }
-
-        Triangle<T, Dim - 1> project(int d)
-        {
-            Point<T, Dim - 1> v[3];
-            v[0] = vertex[0]->project(d);
-            v[1] = vertex[1]->project(d);
-            v[2] = vertex[2]->project(d);
-            return Triangle<T, Dim - 1>(v);
+            tri2->pla->direction = normalize(tri2->pla->direction) * tri2->perimeter();
         }
     };
 

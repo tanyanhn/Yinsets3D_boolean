@@ -69,13 +69,6 @@ namespace YSB
                 delete pla;
         };
 
-        //Accessors
-        tPoint &vert(int i) { return vertex[i]; }
-        const tPoint &vert(int i) const { return vertex[i]; }
-
-        tSegment &ed(int i) { return edge[i]; }
-        const tSegment &ed(int i) const { return edge[i]; }
-
         // Update pointer pla.
         Plane<T> *new_pla()
         {
