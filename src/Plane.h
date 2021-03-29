@@ -23,32 +23,86 @@ namespace YSB
         explicit Plane(const Plane<T2> &pl)
             : fixpoint(pl.fixpoint), normVec(pl.normVec) {}
 
+        template <class T2>
+        Plane<T> &operator=(const Plane<T2> &pl)
+        {
+            fixpoint = pl.fixpoint;
+            normVec = pl.normVec;
+            return *this;
+        }
+
         ~Plane() = default;
 
         //  Get properly project dimension
-        int properProject() const
+        int majorDim() const
         {
-            int rs = 0;
-            Real value = std::abs(normVec[0]);
+            int md = 0;
+            Vec<T, 3> v = abs(normVec);
+            Real Lar = v[0];
             for (auto d = 1; d < 3; ++d)
             {
-                Real nVd = std::abs(normVec[d]);
-                if (value < nVd)
+                if (Lar < v[d])
                 {
-                    rs = d;
-                    value = nVd;
+                    md = d;
+                    Lar = v[d];
                 }
             }
-            return rs;
+            return md;
         }
 
         // Plane intersect get Line in 3D space.
         // Must have estimate parallel.
         Line<T, 3> intersect(const Plane &pl2, Real tol = TOL) const;
+
+        // Plane intersect Line witch isn't parallel.
+        Point<T, 3> intersect(const Line<T, 3> &l, Real tol = TOL) const;
     };
 
     template <class T>
-    Line<T, 3> Plane<T>::intersect(const Plane &pl2, Real tol) const
+    inline Point<T, 3> Plane<T>::intersect(const Line<T, 3> &l, Real tol) const
+    {
+        // Solving equations a_1 x + b_1 y + c_1 z = d_1              (1)
+        // And the Line direction x / a = y / b = z / c.
+        Real a = l.direction[0], b = l.direction[1], c = l.direction[2];
+        Real a_1 = normVec[0], b_1 = normVec[1], c_1 = normVec[2], d_1;
+
+        Real rs[3], x, y, z;
+
+        if (std::abs(a) > tol)
+        { // a != 0
+            // Replace y = b / a * x, z = c / a * x.
+            // Get k x = d_1.
+            Real k = a_1 + b_1 * b / a + c_1 * c / a;
+            x = d_1 / k;
+            y = b / a * x;
+            z = c / a * x;
+        }
+        else if (std::abs(b) > tol)
+        { // b != 0
+            // Replace x = a / b* y, z = c / b * y.
+            // Get k y = d_1.
+            Real k = a_1 * a / b + b_1 + c_1 * c / b;
+            y = d_1 / k;
+            x = a / b * y;
+            z = c / b * y;
+        }
+        else if (std::abs(c) > tol)
+        { // c != 0
+            // Replace x = a / c * z, y = b / c * z.
+            // Get k z = d_1.
+            Real k = a_1 * a / c + b_1 * b / c + c_1;
+            z = d_1 / k;
+            y = b / c * z;
+            x = a / c * z;
+        }
+        rs[0] = x;
+        rs[1] = y;
+        rs[2] = z;
+        return Point<T, 3>(rs);
+    }
+
+    template <class T>
+    inline Line<T, 3> Plane<T>::intersect(const Plane &pl2, Real tol) const
     {
         // Cross product get line direction.
         Vec<T, 3> direction = normalize(cross(this->normVec, pl2.normVec));

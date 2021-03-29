@@ -24,11 +24,40 @@ namespace YSB
         explicit Line(const Line<T1, Dim> &rhs)
             : fixpoint(rhs.fixpoint), direction(rhs.direction) {}
 
+        template <class T1>
+        Line<T, Dim> &operator=(const Line<T1, Dim> &rhs)
+        {
+            fixpoint = rhs.fixpoint;
+            direction = rhs.direction;
+            return (*this);
+        }
+
     public:
         // Projection
         Line<T, Dim - 1> project(int d) const
         {
             return Line<T, Dim - 1>(fixpoint.project(d), direction.project(d));
+        }
+
+        int majorDim() const
+        {
+            int md = 0;
+            Vec<T, Dim> v = abs(direction);
+            Real Lar = v[0];
+            for (auto d = 1; d < Dim; ++d)
+            {
+                if (Lar < v[d])
+                {
+                    md = d;
+                    Lar = v[d];
+                }
+            }
+            return md;
+        }
+
+        void moveFixpoint(Real x, int d)
+        {
+            fixpoint = fixpoint + direction * (x - fixpoint[d]) / direction[d];
         }
     };
 

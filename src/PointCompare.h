@@ -13,7 +13,7 @@ namespace YSB
         Real tol;
 
     public:
-        PointCompare(Real t = TOL);
+        explicit PointCompare(Real t = TOL);
         ~PointCompare() = default;
 
         // Used for Point compare.

@@ -29,20 +29,20 @@ namespace YSB
       Dim = _Dim
     };
 
-    Vec(const T &t = T())
+    explicit Vec(const T &t = T())
     {
       for (int i = 0; i < Dim; coord[i++] = t)
         ;
     }
 
-    Vec(std::initializer_list<T> l)
+    explicit Vec(std::initializer_list<T> l)
     {
       auto j = l.begin();
       for (int d = 0; d < Dim; ++d)
         coord[d] = *j++;
     }
 
-    Vec(const T *const l)
+    explicit Vec(const T *const l)
     {
       for (int d = 0; d < Dim; ++d)
       {
@@ -59,6 +59,14 @@ namespace YSB
     {
       for (int d = 0; d < Dim; d++)
         coord[d] = static_cast<T>(rhs[d]);
+    }
+
+    template <class T2>
+    Vec<T, Dim> &operator=(const Vec<T2, Dim> &rhs)
+    {
+      for (auto d = 0; d < Dim; d++)
+        coord[d] = rhs.coord[d];
+      return *this;
     }
 
     static Vec<T, Dim> unit(int D)
@@ -210,7 +218,7 @@ namespace YSB
     return res;
   }
 
-  inline Real norm(Real x, int nt)
+  inline Real norm(Real x, int)
   {
     return std::abs(x);
   }

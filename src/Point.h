@@ -15,13 +15,13 @@ namespace YSB
 
     public:
         // Constructor
-        Point(const T &t = T())
+        explicit Point(const T &t = T())
         {
             for (auto i = 0; i < Dim; ++i)
                 coord[i] = t;
         }
 
-        Point(std::initializer_list<T> l)
+        explicit Point(std::initializer_list<T> l)
         {
             assert(l.size() == Dim && "Point's initializer_list size not equal to Dim.");
             auto j = l.begin();
@@ -29,7 +29,7 @@ namespace YSB
                 ;
         }
 
-        Point(const T *const l)
+        explicit Point(const T *const l)
         {
             for (auto d = 0; d < Dim; ++d)
             {
@@ -42,6 +42,14 @@ namespace YSB
         {
             for (auto d = 0; d < Dim; d++)
                 coord[d] = rhs.coord[d];
+        }
+
+        template <class T2>
+        Point<T, Dim> &operator=(const Point<T2, Dim> &rhs)
+        {
+            for (auto d = 0; d < Dim; d++)
+                coord[d] = rhs.coord[d];
+            return *this;
         }
 
         // Accessors
