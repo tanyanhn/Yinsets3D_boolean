@@ -135,8 +135,9 @@ namespace YSB
 
     // intersect function in 2D, while parallel return 0, else return 1.
     template <class T>
-    inline typename Segment<T, 2>::intsType
-    intersectSegLine(const Segment<T, 2> &seg1, Line<T, 2> &l2, std::vector<Point<T, 2>> &result, Real tol = TOL)
+    inline
+        typename Segment<T, 2>::intsType
+        intersectSegLine(const Segment<T, 2> &seg1, Line<T, 2> &l2, std::vector<Point<T, 2>> &result, Real tol = TOL)
     {
         Point<T, 2> p1 = seg1[0], p2 = seg1[1];
 
@@ -178,8 +179,9 @@ namespace YSB
     }
 
     template <class T>
-    inline typename Segment<T, 2>::intsType
-    intersectSegSeg(const Segment<T, 2> &seg1, const Segment<T, 2> &seg2, std::vector<Point<T, 2>> &result, Real tol = TOL)
+    inline
+        typename Segment<T, 2>::intsType
+        intersectSegSeg(const Segment<T, 2> &seg1, const Segment<T, 2> &seg2, std::vector<Point<T, 2>> &result, Real tol = TOL)
     {
         Point<T, 2> p1 = seg1[0], p2 = seg1[1],
                     p3 = seg2[0], p4 = seg2[1];

@@ -299,10 +299,7 @@ namespace YSB
                     projTri1.barycentric(ip[1], fnCo, tol);
                     result.emplace_back(Segment<T, Dim>(this->barycentric(stCo), this->barycentric(fnCo)));
                 }
-                if (result.empty())
-                    return intsType::Never;
-                else
-                    return intsType::Overlap;
+                return intsType::Overlap;
             }
             else if (intsT == Never)
             {
