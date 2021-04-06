@@ -120,7 +120,7 @@ namespace YSB
 #undef RIGHT_BROADCAST
 
     // Projection for intersect in 3D space.
-    Vec<T, Dim - 1> project(int d)
+    Vec<T, Dim - 1> project(int d)const
     {
       assert(d < Dim && Dim > 1 && "Project dimension is bigger than Point's Dim");
       Real rs[Dim - 1];
@@ -218,7 +218,7 @@ namespace YSB
     return res;
   }
 
-  inline Real norm(Real x, int)
+  inline Real norm(Real x)
   {
     return std::abs(x);
   }

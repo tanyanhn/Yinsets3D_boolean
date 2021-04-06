@@ -128,7 +128,7 @@ namespace YSB
 
         friend std::ostream &operator<<(std::ostream &os, const Segment<T, Dim> &w)
         {
-            os << w.p1 << "_" << w.p2;
+            os << w.endPoint[0] << "_" << w.endPoint[1];
             return os;
         }
     };
@@ -142,11 +142,16 @@ namespace YSB
 
         // Deal Line's fixpoint too far
         int mDim = l2.majorDim();
+/*
         l2.moveFixpoint(seg1[0][mDim], mDim);
+        Point<T, 2> p3 = l2.fixpoint;
+	l2.moveFixpoint(seg1[1][mDim], mDim);
+	Point<T, 2> p4 = l2.fixpoint;
+*/	
+	l2.moveFixpoint(seg1[0][mDim], mDim);
         l2.direction = l2.direction * norm(p2 - p1);
 
         Point<T, 2> p3 = l2.fixpoint, p4 = l2.fixpoint + l2.direction;
-
         Vec<T, 2> A[2], b;
         A[0] = p2 - p1;
         A[1] = p3 - p4;
@@ -213,7 +218,7 @@ namespace YSB
     }
 
     template <class T, int Dim>
-    inline typename Segment<T, 2>::intsType
+    inline typename Segment<T, Dim>::intsType
     solveForOverlie(Point<T, Dim> &p1, Point<T, Dim> &p2,
                     Point<T, Dim> &p3, Point<T, Dim> &p4,
                     std::vector<Point<T, Dim>> &result,
@@ -228,16 +233,16 @@ namespace YSB
         Real r = max[majorDim] - min[majorDim];
         if (r < -tol)
         {
-            return Segment<T, 2>::intsType::None;
+            return Segment<T, Dim>::intsType::None;
         }
         else if (r > tol)
         {
             result.push_back(min);
             result.push_back(max);
-            return Segment<T, 2>::intsType::Overlap;
+            return Segment<T, Dim>::intsType::Overlap;
         }
         result.push_back(min + (max - min) * 0.5);
-        return Segment<T, 2>::intsType::One;
+        return Segment<T, Dim>::intsType::One;
     }
 
 } // namespace YSB
