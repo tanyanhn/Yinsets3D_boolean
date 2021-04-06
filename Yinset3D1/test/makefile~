@@ -1,9 +1,0 @@
-test : catchmain.o democatch.cpp
-	g++ -o $@ catchmain.o democatch.cpp
-
-catchmain.o : catchmain.cpp
-	g++ -c $<
-
-
-run : test
-	./test
