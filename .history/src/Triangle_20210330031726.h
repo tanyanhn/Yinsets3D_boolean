@@ -3,9 +3,6 @@
 
 #include "Segment.h"
 #include "Plane.h"
-#include <set>
-
-//Test git
 
 namespace YSB
 {
@@ -27,9 +24,7 @@ namespace YSB
         {
             Never = 0,
             Maybe = 1,
-            Overlap = 2,
-            IntsPoint = 3,
-            IntsSeg = 4
+            Overlap = 2
         };
 
     private:
@@ -70,14 +65,9 @@ namespace YSB
             edge[1] = rhs.edge[1];
             edge[2] = rhs.edge[2];
             inFace = rhs.inFace;
-	    if (Dim == 3)
- 	    {
-            	if (pla != nullptr)
-                	delete pla;
-	    	//if (rhs.pla == nullptr)
-		//	rhs.new_pla();
-            	pla = new Plane<T>(*(rhs.pla));
-	    }
+            if (pla != nullptr)
+                delete pla;
+            pla = new Plane<T>(*(rhs.pla));
             return *this;
         }
         Triangle(const Triangle<T, Dim> &rhs)
@@ -103,7 +93,7 @@ namespace YSB
             if (pla != nullptr)
                 delete pla;
             pla = new Plane<T>(vertex[0], cross(vertex[1] - vertex[0], vertex[2] - vertex[0]));
-            pla->normVec = normalize(pla->normVec) * perimeter();
+            pla->direction = normalize(pla->direction) * perimeter();
             return pla;
         }
 
@@ -119,7 +109,7 @@ namespace YSB
             if (tri2->pla == nullptr)
                 tri2->new_pla();
 
-            auto v1 = pla->normVec, v2 = tri2->pla->normVec;
+            auto v1 = pla->direction, v2 = tri2->pla->direction;
             Real dist = norm(cross(v1, v2)) / norm(v1);
             return dist < tol;
         }
@@ -129,15 +119,26 @@ namespace YSB
             if (pla == nullptr)
                 new_pla();
 
-            return pla->majorDim();
+            int md = 0;
+            Vec<T, Dim> v = abs(pla->direction);
+            Real Lar = v[0];
+            for (auto d = 1; d < Dim; ++d)
+            {
+                if (Lar < v[d])
+                {
+                    md = d;
+                    Lar = v[d];
+                }
+            }
+            return md;
         }
 
         Triangle<T, Dim - 1> project(int d) const
         {
             Point<T, Dim - 1> v[3];
-            v[0] = vertex[0].project(d);
-            v[1] = vertex[1].project(d);
-            v[2] = vertex[2].project(d);
+            v[0] = vertex[0]->project(d);
+            v[1] = vertex[1]->project(d);
+            v[2] = vertex[2]->project(d);
             return Triangle<T, Dim - 1>(v);
         }
 
@@ -148,15 +149,15 @@ namespace YSB
                 new_pla();
             Vec<T, Dim> A[3], E[3];
             A[0] = p - vertex[1], A[1] = p - vertex[2], A[2] = p - vertex[0];
-            if (norm(dot(A[0], pla->normVec)) > tol)
+            if (norm(dot(A[0], pla->direction)) > tol)
             {
                 return 0;
             }
 
             int m = 0;
-            if (std::abs(pla->normVec[0]) < tol)
+            if (std::abs(pla->direction[0]) < tol)
             {
-                m = (std::abs(pla->normVec[1]) > std::abs(pla->normVec[2])) ? (1) : (2);
+                m = (std::abs(pla->direction[1]) > std::abs(pla->direction[2])) ? (1) : (2);
             }
             E[0] = vertex[2] - vertex[1];
             E[1] = vertex[0] - vertex[2];
@@ -176,10 +177,10 @@ namespace YSB
         Point<T, Dim> barycentric(Real *co) const
         {
             Vec<T, Dim> A[3];
-            Point<T, Dim> zero(0.0);
+            Point<T, Dim> zero(0);
             A[0] = vertex[0] - zero;
             A[1] = vertex[1] - zero;
-            A[2] = vertex[2] - zero;
+            A[2] = vertex[2] = zero;
 
             return zero + A[0] * co[0] + A[1] * co[1] + A[2] * co[2];
         }
@@ -217,26 +218,26 @@ namespace YSB
 
             for (auto d = 0; d < Dim; ++d)
             {
-                min1 = std::min(vertex[0][d], std::min(vertex[1][d], vertex[2][d]));
-                max2 = std::max(tri2.vertex[0][d], std::max(tri2.vertex[1][d], tri2.vertex[2][d]));
+                min1 = std::min(vertex[0][d], min(vertex[1][d], vertex[2][d]));
+                max2 = std::min(tri2.vertex[0][d], max(tri2.vertex[1][d], tri2.vertex[2][d]));
                 if (min1 > max2)
                     return intsType::Never;
-                max1 = std::max(vertex[0][d], std::max(vertex[1][d], vertex[2][d]));
-                min2 = std::min(tri2.vertex[0][d], std::min(tri2.vertex[1][d], tri2.vertex[2][d]));
+                max1 = std::max(vertex[0][d], max(vertex[1][d], vertex[2][d]));
+                min2 = std::min(tri2.vertex[0][d], min(tri2.vertex[1][d], tri2.vertex[2][d]));
                 if (min2 > max1)
                     return intsType::Never;
             }
             if (pla == nullptr)
                 new_pla();
-            if (tri2.pla == nullptr)
-                tri2.new_pla();
+            if (tri2->pla == nullptr)
+                tri2->new_pla();
 
-            auto v1 = pla->normVec, v2 = tri2.pla->normVec;
+            auto v1 = pla->direction, v2 = tri2->pla->direction;
             Real dist = norm(cross(v1, v2)) / norm(v1);
             if (dist < tol)
             { // parallel
                 auto v = vertex[0] - tri2.vertex[0];
-                if (norm(dot(v, pla->normVec)) < tol)
+                if (norm(dot(v, pla->direction)) < tol)
                     return intsType::Overlap;
                 else
                     return intsType::Never;
@@ -252,17 +253,16 @@ namespace YSB
                 new_pla();
 
             auto dir = normalize(l.direction);
-            Real dist = norm(dot(dir, pla->normVec));
+            Real dist = norm(cross(dir, pla->direction));
             if (dist < tol)
             { // parallel
                 int mDim = majorDim();
-                l.moveFixpoint(vertex[0][l.majorDim()], l.majorDim());
-                if (norm(dot(l.fixpoint - vertex[0], pla->normVec)) > tol)
+                l.moveFixpoint(vertex[0][mDim], mDim);
+                if (norm(dot(l.fixpoint - vertex[0], pla->direction)) > tol)
                     return 0;
 
                 auto projL = l.project(mDim);
                 auto projTri = this->project(mDim);
-		//std::cout<<projL.fixpoint<<projL.direction;
                 std::vector<Point<Real, 2>> rs2D;
                 projTri.intersect(projL, rs2D, tol);
                 for (auto ip : rs2D)
@@ -275,7 +275,7 @@ namespace YSB
             }
 
             auto p = pla->intersect(l, tol);
-            if (this->locate(p, tol) != locType::Outer)
+            if (this->locate(p, tol) != intsType::Outer)
             {
                 result.push_back(p);
                 return 1;
@@ -287,16 +287,16 @@ namespace YSB
         {
             if (pla == nullptr)
                 new_pla();
-            if (tri2.pla == nullptr)
-                tri2.new_pla();
+            if (tri2->pla == nullptr)
+                tri2->new_pla();
 
             intsType intsT = ifIntersect(tri2, tol);
 
-            if (intsT == intsType::Overlap)
+            if (intsT == Overlap)
             {
                 int mDim = majorDim();
-                auto projTri1 = this->project(mDim),
-                     projTri2 = tri2.project(mDim);
+                auto projTri1 = project(mDim),
+                     projTri2 = project(mDim);
 
                 std::vector<Segment<Real, 2>> rs2D;
                 projTri1.intersect(projTri2, rs2D, tol);
@@ -304,75 +304,20 @@ namespace YSB
                 {
                     Real stCo[3], fnCo[3];
                     projTri1.barycentric(ip[0], stCo, tol);
-                    projTri1.barycentric(ip[1], fnCo, tol);
+                    projTri1.barycentric(ip[0], fnCo, tol);
                     result.emplace_back(Segment<T, Dim>(this->barycentric(stCo), this->barycentric(fnCo)));
                 }
-                if (result.empty())
-                    return intsType::Never;
-                else
-                    return intsType::Overlap;
             }
             else if (intsT == Never)
             {
-                return intsType::Never;
+                ;
             }
             else if (intsT == Maybe)
             {
-                Line<T, Dim> l = this->pla->intersect(*tri2.pla);
-                std::vector<Point<T, Dim>> pts;
-
-                int mDim = majorDim();
-                auto projL = l.project(mDim);
-                auto projTri = this->project(mDim);
-                std::vector<Point<Real, 2>> rs2D;
-                projTri.intersect(projL, rs2D, tol);
-                if (rs2D.size() == 0)
-                    return intsType::Never;
-                for (auto ip : rs2D)
-                {
-                    Real co[3];
-                    projTri.barycentric(ip, co, tol);
-                    pts.emplace_back(this->barycentric(co));
-                }
-                if (rs2D.size() == 1)
-                {
-                    pts.push_back(pts[0]);
-                }
-
-                mDim = tri2.majorDim();
-                projL = l.project(mDim);
-                projTri = tri2.project(mDim);
-                rs2D.clear();
-                projTri.intersect(projL, rs2D, tol);
-                if (rs2D.size() == 0)
-                    return intsType::Never;
-                for (auto ip : rs2D)
-                {
-                    Real co[3];
-                    projTri.barycentric(ip, co, tol);
-                    pts.emplace_back(tri2.barycentric(co));
-                }
-                if (rs2D.size() == 1)
-                {
-                    pts.push_back(pts[2]);
-                }
-
-                std::vector<Point<T, Dim>> rsEndp;
-                typename Segment<T, Dim>::intsType segintsT = solveForOverlie(pts[0], pts[1], pts[2], pts[3], rsEndp, tol, l.majorDim());
-
-                if (segintsT == Segment<T, Dim>::One)
-                {
-                    result.emplace_back(Segment<T, Dim>(rsEndp[0], rsEndp[0]));
-                    return intsType::IntsPoint;
-                }
-                else if (segintsT == Segment<T, Dim>::Overlap)
-                {
-                    result.emplace_back(Segment<T, Dim>(rsEndp[0], rsEndp[1]));
-                    return intsType::IntsSeg;
-                }
-                else
-                    return intsType::Never;
+                Line<T, Dim> l = this->pla->intersect(tri2.pla);
             }
+
+            return intsT;
         }
     };
 
@@ -383,19 +328,8 @@ namespace YSB
         {
             intersectSegLine(edge[i], l, result, tol);
         }
-        std::set<Point<Real, 2>, PointCompare> setp;
-        for (auto ip : result)
-        {
-            setp.insert(ip);
-        }
-        result.clear();
-        for (auto ip : setp)
-        {
-            result.push_back(ip);
-        }
-        return result.size();
+        return 1;
     }
-
 
     template <>
     inline int Triangle<Real, 2>::barycentric(const Point<Real, 2> &p, Real *co, Real) const
@@ -417,65 +351,6 @@ namespace YSB
         return 1;
     }
 
-    template <>
-    inline Triangle<Real, 2>::intsType Triangle<Real, 2>::intersect(const Triangle<Real, 2> &tri2, std::vector<Segment<Real, 2>> &result, Real tol) const
-    {
-        for (auto i = 0; i < 3; ++i)
-        {
-            Line<Real, 2> l = tri2.edge[i].getLine();
-
-            std::vector<Point<Real, 2>> rs2D;
-            this->intersect(l, rs2D, tol);
-            if (rs2D.size() == 0)
-                continue;
-            else if (rs2D.size() == 1)
-                rs2D.push_back(rs2D[0]);
-
-            rs2D.push_back(tri2.edge[i][0]);
-            rs2D.push_back(tri2.edge[i][1]);
-
-            std::vector<Point<Real, 2>> rsEndp;
-            typename Segment<Real, 2>::intsType segintsT = YSB::solveForOverlie(rs2D[0], rs2D[1], rs2D[2], rs2D[3], rsEndp, tol, l.majorDim());
-
-            if (segintsT == Segment<Real, 2>::One)
-            {
-                result.emplace_back(Segment<Real, 2>(rsEndp[0], rsEndp[0]));
-            }
-            else if (segintsT == Segment<Real, 2>::Overlap)
-            {
-                result.emplace_back(Segment<Real, 2>(rsEndp[0], rsEndp[1]));
-            }
-        }
-
-        for (auto i = 0; i < 3; ++i)
-        {
-            Line<Real, 2> l = this->edge[i].getLine();
-
-            std::vector<Point<Real, 2>> rs2D;
-            tri2.intersect(l, rs2D, tol);
-            if (rs2D.size() == 0)
-                continue;
-            else if (rs2D.size() == 1)
-                rs2D.push_back(rs2D[0]);
-
-            rs2D.push_back(this->edge[i][0]);
-            rs2D.push_back(this->edge[i][1]);
-
-            std::vector<Point<Real, 2>> rsEndp;
-            typename Segment<Real, 2>::intsType segintsT = YSB::solveForOverlie(rs2D[0], rs2D[1], rs2D[2], rs2D[3], rsEndp, tol, l.majorDim());
-
-            if (segintsT == Segment<Real, 2>::One)
-            {
-                result.emplace_back(Segment<Real, 2>(rsEndp[0], rsEndp[0]));
-            }
-            else if (segintsT == Segment<Real, 2>::Overlap)
-            {
-                result.emplace_back(Segment<Real, 2>(rsEndp[0], rsEndp[1]));
-            }
-        }
-
-        return Overlap;
-    }
 } // namespace YSB
 
 #endif // !TRIANGLE_H
