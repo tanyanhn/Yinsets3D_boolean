@@ -58,13 +58,15 @@ namespace YSB
         Point<T, 3> intersect(const Line<T, 3> &l, Real tol = TOL) const;
     };
 
-    template <class T>
+   template <class T>
     inline Point<T, 3> Plane<T>::intersect(const Line<T, 3> &l, Real tol) const
     {
         // Solving equations a_1 x + b_1 y + c_1 z = d_1              (1)
         // And the Line direction x / a = y / b = z / c.
         Real a = l.direction[0], b = l.direction[1], c = l.direction[2];
-        Real a_1 = normVec[0], b_1 = normVec[1], c_1 = normVec[2], d_1;
+        Real a_1 = normVec[0], b_1 = normVec[1], c_1 = normVec[2], d_1, d;
+        d_1 = a_1 * fixpoint[0] + b_1 * fixpoint[1] + c_1 * fixpoint[2];
+        d = d_1 - a_1 * l.fixpoint[0] - b_1 * l.fixpoint[1] - c_1 * l.fixpoint[2];
 
         Real rs[3], x, y, z;
 
@@ -72,28 +74,28 @@ namespace YSB
         { // a != 0
             // Replace y = b / a * x, z = c / a * x.
             // Get k x = d_1.
-            Real k = a_1 + b_1 * b / a + c_1 * c / a;
-            x = d_1 / k;
-            y = b / a * x;
-            z = c / a * x;
+            Real k = a_1 + b_1 * b / a + c_1 * c / a; 
+            x = d / k + l.fixpoint[0];
+            y = b / a * (x - l.fixpoint[0]) + l.fixpoint[1];
+            z = c / a * (x - l.fixpoint[0]) + l.fixpoint[2];
         }
         else if (std::abs(b) > tol)
         { // b != 0
             // Replace x = a / b* y, z = c / b * y.
             // Get k y = d_1.
             Real k = a_1 * a / b + b_1 + c_1 * c / b;
-            y = d_1 / k;
-            x = a / b * y;
-            z = c / b * y;
+            y = d / k + l.fixpoint[1];
+            x = a / b * (y - l.fixpoint[1]) + l.fixpoint[0];
+            z = c / b * (y - l.fixpoint[1]) + l.fixpoint[2];
         }
         else if (std::abs(c) > tol)
         { // c != 0
             // Replace x = a / c * z, y = b / c * z.
             // Get k z = d_1.
             Real k = a_1 * a / c + b_1 * b / c + c_1;
-            z = d_1 / k;
-            y = b / c * z;
-            x = a / c * z;
+            z = d / k + l.fixpoint[2];
+            y = b / c * (z - l.fixpoint[2]) + l.fixpoint[1];
+            x = a / c * (z - l.fixpoint[2]) + l.fixpoint[0];
         }
         rs[0] = x;
         rs[1] = y;
