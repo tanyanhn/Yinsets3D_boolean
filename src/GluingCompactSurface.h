@@ -21,7 +21,7 @@ namespace YSB
 
     public:
         GluingCompactSurface(const std::vector<Triangle<T, 3>> &vt, int t = -1)
-            : vecTriangle(t)
+            : vecTriangle(vt)
         {
             if (t != -1)
                 type = FacType(t);
