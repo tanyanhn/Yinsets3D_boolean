@@ -70,14 +70,7 @@ namespace YSB
             edge[1] = rhs.edge[1];
             edge[2] = rhs.edge[2];
             inFace = rhs.inFace;
-	    if (Dim == 3)
- 	    {
-            	if (pla != nullptr)
-                	delete pla;
-	    	//if (rhs.pla == nullptr)
-		//	rhs.new_pla();
-            	pla = new Plane<T>(*(rhs.pla));
-	    }
+            pla = nullptr;
             return *this;
         }
         Triangle(const Triangle<T, Dim> &rhs)
