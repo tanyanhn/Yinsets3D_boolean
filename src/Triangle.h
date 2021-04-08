@@ -3,6 +3,7 @@
 
 #include "Segment.h"
 #include "Plane.h"
+#include "PointCompare.h"
 #include <set>
 
 //Test git
@@ -11,6 +12,9 @@ namespace YSB
 {
     template <class T>
     struct FindNearTriangle;
+
+    template <class T>
+    struct RemoveOverlap;
 
     template <class T, int Dim>
     class Triangle
@@ -36,6 +40,7 @@ namespace YSB
         };
 
         friend struct FindNearTriangle<T>;
+        friend struct RemoveOverlap<T>;
 
     private:
         Point<T, Dim> vertex[3];
@@ -88,6 +93,29 @@ namespace YSB
                 delete pla;
         };
 
+        //Compare
+        bool equal(const Triangle<T, Dim> &rhs, Real tol = TOL) const
+        {
+            PointCompare cmp(tol);
+            if (cmp.compare(vertex[0], rhs.vertex[0]) == 0 ||
+                cmp.compare(vertex[0], rhs.vertex[1]) == 0 ||
+                cmp.compare(vertex[0], rhs.vertex[2]) == 0)
+            {
+                if (cmp.compare(vertex[1], rhs.vertex[0]) == 0 ||
+                    cmp.compare(vertex[1], rhs.vertex[1]) == 0 ||
+                    cmp.compare(vertex[1], rhs.vertex[2]) == 0)
+                {
+                    if (cmp.compare(vertex[2], rhs.vertex[0]) == 0 ||
+                        cmp.compare(vertex[2], rhs.vertex[1]) == 0 ||
+                        cmp.compare(vertex[2], rhs.vertex[2]) == 0)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         //Accessors
         Point<T, Dim> &vert(int i) { return vertex[i]; }
         const Point<T, Dim> &vert(int i) const { return vertex[i]; }
@@ -103,6 +131,14 @@ namespace YSB
             pla = new Plane<T>(vertex[0], cross(vertex[1] - vertex[0], vertex[2] - vertex[0]));
             pla->normVec = normalize(pla->normVec) * perimeter();
             return pla;
+        }
+
+        // Return norm vector
+        auto normVec() -> decltype(pla->normVec) const
+        {
+            if (pla == nullptr)
+                new_pla();
+            return pla->normVec;
         }
 
         // Find edge direction in Triangle.

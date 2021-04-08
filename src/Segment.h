@@ -11,6 +11,9 @@ namespace YSB
     template <class T>
     struct FindNearTriangle;
 
+    template <class T>
+    struct RemoveOverlap;
+
     template <class T, int Dim>
     class Segment
     {
@@ -30,6 +33,7 @@ namespace YSB
         };
 
         friend struct FindNearTriangle<T>;
+        friend struct RemoveOverlap<T>;
 
     protected:
         Point<T, Dim> endPoint[2];
