@@ -9,6 +9,9 @@
 
 namespace YSB
 {
+    template <class T>
+    struct FindNearTriangle;
+
     template <class T, int Dim>
     class Triangle
     {
@@ -31,6 +34,8 @@ namespace YSB
             IntsPoint = 3,
             IntsSeg = 4
         };
+
+        friend struct FindNearTriangle<T>;
 
     private:
         Point<T, Dim> vertex[3];
@@ -98,6 +103,20 @@ namespace YSB
             pla = new Plane<T>(vertex[0], cross(vertex[1] - vertex[0], vertex[2] - vertex[0]));
             pla->normVec = normalize(pla->normVec) * perimeter();
             return pla;
+        }
+
+        // Find edge direction in Triangle.
+        auto edgeVec(const Segment<T, Dim> &seg, Real tol = TOL) -> decltype(edge[0]) const
+        {
+            PointCompare cmp(tol);
+            int id = -1;
+            for (int i = 0; i < Dim; ++i)
+            {
+                if (cmp.compare(vertex[i], seg[0]) != 0 && cmp.compare(vertex[i], seg[1]) != 0)
+                    id = i;
+            }
+            id = (id + 1) % 3;
+            return edge[id];
         }
 
         Real perimeter() const
@@ -255,7 +274,7 @@ namespace YSB
 
                 auto projL = l.project(mDim);
                 auto projTri = this->project(mDim);
-		//std::cout<<projL.fixpoint<<projL.direction;
+                //std::cout<<projL.fixpoint<<projL.direction;
                 std::vector<Point<Real, 2>> rs2D;
                 projTri.intersect(projL, rs2D, tol);
                 for (auto ip : rs2D)
@@ -388,7 +407,6 @@ namespace YSB
         }
         return result.size();
     }
-
 
     template <>
     inline int Triangle<Real, 2>::barycentric(const Point<Real, 2> &p, Real *co, Real) const

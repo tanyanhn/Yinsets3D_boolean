@@ -8,6 +8,8 @@
 
 namespace YSB
 {
+    template <class T>
+    struct FindNearTriangle;
 
     template <class T, int Dim>
     class Segment
@@ -27,9 +29,12 @@ namespace YSB
             Overlap = 2
         };
 
+        friend struct FindNearTriangle<T>;
+
     protected:
         Point<T, Dim> endPoint[2];
-        std::vector<int> neighbor;
+        std::vector<std::pair<int, int>> neighbor;
+        int intersectionSeg = 0; // Mark Intersection Line.
 
     public:
         Segment() = default;
@@ -56,9 +61,13 @@ namespace YSB
 
         const Point<T, Dim> &operator[](int _d) const { return endPoint[_d]; }
 
-        std::vector<int> &neighborhood() { return neighbor; }
+        std::vector<std::pair<int, int>> &neighborhood() { return neighbor; }
 
-        const std::vector<int> &neighborhood() const { return neighbor; }
+        const std::vector<std::pair<int, int>> &neighborhood() const { return neighbor; }
+
+        int &IntersectionSeg() { return intersectionSeg; }
+
+        const int &IntersectionSeg() const { return intersectionSeg; }
 
         // Get majorDim that largest change Dim
         int majorDim() const
@@ -142,13 +151,13 @@ namespace YSB
 
         // Deal Line's fixpoint too far
         int mDim = l2.majorDim();
-/*
+        /*
         l2.moveFixpoint(seg1[0][mDim], mDim);
         Point<T, 2> p3 = l2.fixpoint;
 	l2.moveFixpoint(seg1[1][mDim], mDim);
 	Point<T, 2> p4 = l2.fixpoint;
-*/	
-	l2.moveFixpoint(seg1[0][mDim], mDim);
+*/
+        l2.moveFixpoint(seg1[0][mDim], mDim);
         l2.direction = l2.direction * norm(p2 - p1);
 
         Point<T, 2> p3 = l2.fixpoint, p4 = l2.fixpoint + l2.direction;
