@@ -3,6 +3,7 @@
 
 #include "Triangle.h"
 #include "Segment.h"
+#include <algorithm>
 
 namespace YSB
 {
@@ -15,7 +16,7 @@ namespace YSB
         std::vector<std::vector<int>> TriangulateA, TriangulateB;
 
         void operator()();
-        void RemoveTriangle(typename std::vector<Triangle<T, 3>>::iterator it);
+        void RemoveTriangle(std::vector<Triangle<T, 3>> &vecTri, const int id);
     };
 
     template <class T>
@@ -38,9 +39,9 @@ namespace YSB
                             if (dot(vecTriA[TriangulateA[iA][ismalltriA]].normVec(),
                                     vecTriB[TriangulateB[iOverlap][ismalltriB]].normVec()) < 0)
                             {
-                                RemoveTriangle(std::advance(vecTriA.begin(), TriangulateA[iA][ismalltriA]));
+                                RemoveTriangle(vecTriA, TriangulateA[iA][ismalltriA]);
                             }
-                            RemoveTriangle(std::advance(vecTriB.begin(), TriangulateB[iOverlap][ismalltriB]));
+                            RemoveTriangle(vecTriB, TriangulateB[iOverlap][ismalltriB]);
                         }
                     }
                 }
@@ -49,8 +50,50 @@ namespace YSB
     }
 
     template <class T>
-    inline void RemoveOverlap<T>::RemoveTriangle(typename std::vector<Triangle<T, 3>>::iterator it)
+    inline void RemoveOverlap<T>::RemoveTriangle(std::vector<Triangle<T, 3>> &vecTri, const int id)
     {
+        int inYinset;
+        if (vecTri.begin() == vecTriA.begin())
+            inYinset = 1;
+        else
+            inYinset = 2;
+
+        std::pair<int, int> idTri(inYinset, id);
+        for (int iEdge = 0; iEdge < 3; ++iEdge)
+        {
+            Segment<T, 3> &edge = vecTri[id].ed(iEdge);
+            std::vector<std::pair<int, int>> &neighbor = edge.neighborhood();
+            for (auto iNeighTri = neighbor.begin(); iNeighTri != neighbor.end(); ++iNeighTri)
+            {
+                if (*iNeighTri == idTri)
+                {
+                    continue;
+                }
+
+                if (iNeighTri->first == 1)
+                {
+                    Triangle<T, 3> &neighTri = vecTriA[iNeighTri->second];
+                    int ie = neighTri.edgeVec(edge);
+                    Segment<T, 3> &neighSeg = neighTri.ed(ie);
+
+                    std::vector<std::pair<int, int>>::iterator eit = std::remove(neighSeg.neighborhood().begin(), neighSeg.neighborhood().end(), idTri);
+                    neighSeg.neighborhood().erase(eit, neighSeg.neighborhood().end());
+                }
+                else if (iNeighTri->first == 2)
+                {
+                    Triangle<T, 3> &neighTri = vecTriB[iNeighTri->second];
+                    int ie = neighTri.edgeVec(edge);
+                    Segment<T, 3> &neighSeg = neighTri.ed(ie);
+
+                    std::vector<std::pair<int, int>>::iterator eit = std::remove(neighSeg.neighborhood().begin(), neighSeg.neighborhood().end(), idTri);
+                    neighSeg.neighborhood().erase(eit, neighSeg.neighborhood().end());
+                }
+                else
+                    assert(false && "neighbor.first != 1 || 2. in RemoveOverlap.")
+            }
+
+            edge.neighborhood().clear();
+        }
     }
 
 } // namespace YSB

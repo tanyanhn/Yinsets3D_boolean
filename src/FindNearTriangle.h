@@ -44,7 +44,7 @@ namespace YSB
                 neighborTri = triangleB[idNeighTri.second];
             }
 
-            Segment<T, 3> neighEdge = neighbor.edgeVec(edge);
+            Segment<T, 3> neighEdge = neighborTri.ed(neighborTri.edgeVec(edge));
 
             PointCompare cmp(tol);
             if (cmp.compare(edge[0], neighEdge[1]) == 0)

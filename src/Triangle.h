@@ -142,7 +142,7 @@ namespace YSB
         }
 
         // Find edge direction in Triangle.
-        auto edgeVec(const Segment<T, Dim> &seg, Real tol = TOL) -> decltype(edge[0]) const
+        int edgeVec(const Segment<T, Dim> &seg, Real tol = TOL) const
         {
             PointCompare cmp(tol);
             int id = -1;
@@ -152,7 +152,7 @@ namespace YSB
                     id = i;
             }
             id = (id + 1) % 3;
-            return edge[id];
+            return id;
         }
 
         Real perimeter() const
