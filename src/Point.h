@@ -95,7 +95,7 @@ namespace YSB
         }
 
         // Projection for intersect in 3D space.
-        Point<T, Dim - 1> project(int d)const
+        Point<T, Dim - 1> project(int d) const
         {
             assert(d < Dim && Dim > 1 && "Project dimension is bigger than Point's Dim");
             Real rs[Dim - 1];
