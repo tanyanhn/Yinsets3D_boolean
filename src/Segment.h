@@ -69,6 +69,8 @@ namespace YSB
 
         const std::vector<std::pair<int, int>> &neighborhood() const { return neighbor; }
 
+        void addneighbor(std::pair<int, int> n) {neighbor.push_back(n);}
+
         int &IntersectionSeg() { return intersectionSeg; }
 
         const int &IntersectionSeg() const { return intersectionSeg; }
