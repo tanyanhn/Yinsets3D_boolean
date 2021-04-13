@@ -3,7 +3,9 @@
 #include <cmath>
 #include <vector>
 #include <algorithm>
+#include "../src/Triangle.h"
 using namespace std;
+using namespace YSB;
 
 // main() section
 int main()
@@ -35,6 +37,7 @@ int main()
 
     // for_each(vec.begin(), vec.end(), [](pair<int, int> p) { cout << " ( " << p.first << " ," << p.second << " )" << endl; });
 
+    /**
     vector<vector<vector<pair<int, int>>>> vvVec;
 
     int size = 5;
@@ -71,6 +74,19 @@ int main()
         }
     }
     // }
+    **/
+
+    Triangle<Real, 3> tri;
+    cout << "tri's identity :" << tri.id() << endl;
+
+    tri.id() += 11;
+    cout << "tri's identity :" << tri.id() << endl;
+
+    const Triangle<Real, 3> ctri;
+    cout << "ctri's identity :" << ctri.id() << endl;
+
+    ctri.id(21 - ctri.id());
+    cout << "ctri's identity :" << ctri.id() << endl;
 
     return 0;
 }

@@ -9,7 +9,7 @@ namespace YSB
     template <class T>
     struct FindNearTriangle
     {
-        std::vector<Triangle<T, 3>> triangleA, triangleB;
+        //   std::vector<Triangle<T, 3>> triangleA, triangleB;
 
         std::pair<int, int> operator()(const Triangle<T, 3> &Tri, const Segment<T, 3> &edge,
                                        const std::vector<Triangle<T, 3>> &triangleA,

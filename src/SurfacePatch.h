@@ -11,10 +11,11 @@ namespace YSB
     {
     private:
         std::vector<Triangle<T, 3>> vecTriangle;
-        std::vector<std::pair<Segment<T, 3>, std::vector<int>>> boundary;
+        std::vector<std::pair<Segment<T, 3>, std::vector<std::pair<int, int>>>> boundary;
 
     public:
-        SurfacePatch(const std::vector<Triangle<T, 3>> &t, std::vector<std::pair<Segment<T, 3>, std::vector<int>>> &b)
+        SurfacePatch(const std::vector<Triangle<T, 3>> &t,
+                     std::vector<std::pair<Segment<T, 3>, std::vector<std::pair<int, int>>>> &b)
             : vecTriangle(t), boundary(b) {}
 
         void collapse(std::vector<Triangle<T, 3>> &rs) const

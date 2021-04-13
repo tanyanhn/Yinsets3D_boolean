@@ -47,6 +47,7 @@ namespace YSB
         Segment<T, Dim> edge[3];
         int inFace;
         mutable Plane<T> *pla;
+        mutable int identity = -1;
 
     public:
         // Constructor
@@ -80,6 +81,7 @@ namespace YSB
             edge[1] = rhs.edge[1];
             edge[2] = rhs.edge[2];
             inFace = rhs.inFace;
+            identity = rhs.identity;
             pla = nullptr;
             return *this;
         }
@@ -122,6 +124,9 @@ namespace YSB
 
         Segment<T, Dim> &ed(int i) { return edge[i]; }
         const Segment<T, Dim> &ed(int i) const { return edge[i]; }
+
+        int &id(int i = 0) { return identity += i; }
+        const int &id(int i = 0) const { return identity += i; }
 
         // Update pointer pla.
         Plane<T> *new_pla() const
