@@ -318,7 +318,7 @@ namespace YSB
                 //std::cout<<projL.fixpoint<<projL.direction;
                 std::vector<Point<Real, 2>> rs2D;
                 projTri.intersect(projL, rs2D, tol);
-                for (auto ip : rs2D)
+                for (auto &&ip : rs2D)
                 {
                     Real co[3];
                     projTri.barycentric(ip, co, tol);
@@ -353,7 +353,7 @@ namespace YSB
 
                 std::vector<Segment<Real, 2>> rs2D;
                 projTri1.intersect(projTri2, rs2D, tol);
-                for (auto ip : rs2D)
+                for (auto &&ip : rs2D)
                 {
                     Real stCo[3], fnCo[3];
                     projTri1.barycentric(ip[0], stCo, tol);
@@ -381,7 +381,7 @@ namespace YSB
                 projTri.intersect(projL, rs2D, tol);
                 if (rs2D.size() == 0)
                     return intsType::Never;
-                for (auto ip : rs2D)
+                for (auto &&ip : rs2D)
                 {
                     Real co[3];
                     projTri.barycentric(ip, co, tol);
@@ -399,7 +399,7 @@ namespace YSB
                 projTri.intersect(projL, rs2D, tol);
                 if (rs2D.size() == 0)
                     return intsType::Never;
-                for (auto ip : rs2D)
+                for (auto &&ip : rs2D)
                 {
                     Real co[3];
                     projTri.barycentric(ip, co, tol);
@@ -437,12 +437,12 @@ namespace YSB
             intersectSegLine(edge[i], l, result, tol);
         }
         std::set<Point<Real, 2>, PointCompare> setp;
-        for (auto ip : result)
+        for (auto &&ip : result)
         {
             setp.insert(ip);
         }
         result.clear();
-        for (auto ip : setp)
+        for (auto &&ip : setp)
         {
             result.push_back(ip);
         }

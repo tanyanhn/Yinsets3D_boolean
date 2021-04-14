@@ -59,9 +59,9 @@ namespace YSB
 
                 for (auto &&iSeg : result)
                 {
-                    iSeg->neighborhood().push_back(std::make_pair(1, iA));
-                    iSeg->neighborhood().push_back(std::make_pair(2, iB));
-                    iSeg->IntersectionSeg() = 1;
+                    iSeg.neighborhood().push_back(std::make_pair(1, iA));
+                    iSeg.neighborhood().push_back(std::make_pair(2, iB));
+                    iSeg.IntersectionSeg() = 1;
 
                     resultA[iA].first.push_back(iSeg);
                     resultB[iB].first.push_back(iSeg);
