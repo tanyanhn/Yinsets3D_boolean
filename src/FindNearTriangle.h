@@ -21,7 +21,7 @@ namespace YSB
                                                                const std::vector<Triangle<T, 3>> &triangleA,
                                                                const std::vector<Triangle<T, 3>> &triangleB, Real tol) const
     {
-        auto normtri = normalize(cross(Tri[1] - Tri[0], Tri[2] - Tri[1])),
+        auto normtri = normalize(cross(Tri.vert(1) - Tri.vert(0), Tri.vert(2) - Tri.vert(1))),
              edgeVec = edge[1] - edge[0];
 
         Real bestangle = 2 * M_PI;
@@ -49,8 +49,8 @@ namespace YSB
             PointCompare cmp(tol);
             if (cmp.compare(edge[0], neighEdge[1]) == 0)
             {
-                auto normneightri = normalize(cross(neighborTri[1] - neighborTri[0],
-                                                    neighborTri[2] - neighborTri[1]));
+                auto normneightri = normalize(cross(neighborTri.vert(1) - neighborTri.vert(0),
+                                                    neighborTri.vert(2) - neighborTri.vert(1)));
 
                 Real angle = atan2(norm(cross(normtri, normneightri)),
                                    dot(normtri, normneightri));

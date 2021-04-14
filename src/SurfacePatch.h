@@ -10,18 +10,18 @@ namespace YSB
     class SurfacePatch
     {
     private:
-        std::vector<Triangle<T, 3>> vecTriangle;
+        std::vector<std::pair<int, int>> vecTriangle;
         std::vector<std::pair<Segment<T, 3>, std::vector<std::pair<int, int>>>> boundary;
 
     public:
-        SurfacePatch(const std::vector<Triangle<T, 3>> &t,
+        SurfacePatch(const std::vector<std::pair<int, int>> &t,
                      std::vector<std::pair<Segment<T, 3>, std::vector<std::pair<int, int>>>> &b)
             : vecTriangle(t), boundary(b) {}
 
-        void collapse(std::vector<Triangle<T, 3>> &rs) const
-        {
-            rs.insert(rs.end(), vecTriangle.begin(), vecTriangle.end());
-        }
+        // void collapse(std::vector<std::pair<int,int>> &rs) const
+        // {
+        //     rs.insert(rs.end(), vecTriangle.begin(), vecTriangle.end());
+        // }
         ~SurfacePatch();
     };
 

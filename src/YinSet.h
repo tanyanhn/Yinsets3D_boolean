@@ -28,7 +28,7 @@ namespace YSB
 
         void collapse(std::vector<Triangle<T, 3>> &rs) const
         {
-            for (auto iFace : vecFace)
+            for (auto &&iFace : vecFace)
             {
                 iFace.collapse(rs);
             }
