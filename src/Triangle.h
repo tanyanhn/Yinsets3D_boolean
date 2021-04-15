@@ -45,7 +45,7 @@ namespace YSB
     private:
         Point<T, Dim> vertex[3];
         Segment<T, Dim> edge[3];
-        int inFace;
+        mutable int inFace;
         mutable Plane<T> *pla;
         mutable int identity = -1;
 
@@ -127,6 +127,9 @@ namespace YSB
 
         int &id(int i = 0) { return identity += i; }
         const int &id(int i = 0) const { return identity += i; }
+
+        int &inF(int i = 0) { return inFace += i; }
+        const int &inF(int i = 0) const { return inFace += i; }
 
         // Update pointer pla.
         Plane<T> *new_pla() const

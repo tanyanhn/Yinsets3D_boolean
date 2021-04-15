@@ -11,12 +11,12 @@ namespace YSB
     struct PrePast
     {
         std::vector<SurfacePatch<T>> vecSP;
-        std::vector<GluingCompactSurface<T>> vecGCS;
+        //std::vector<GluingCompactSurface<T>> vecGCS;
 
         void initialize()
         {
             vecSP.clear();
-            vecGCS.clear();
+            //vecGCS.clear();
         }
         void operator()(const std::vector<Triangle<T, 3>> &vecTri, const int inYinset, Real tol = TOL)
         {
@@ -37,31 +37,32 @@ namespace YSB
             All.erase(All.begin());
             while (!All.empty() && !F.empty())
             {
-                Triangle<T, 3> &tri = vecTri[F.back()];
+                const Triangle<T, 3> &tri = vecTri[F.back()];
                 vecF.emplace_back(inYinset, F.back());
                 F.pop_back();
+                tri.inF(vecSP.size() - tri.inF());
 
                 for (int iEdge = 0; iEdge < 3; ++iEdge)
                 {
-                    Segment<T, 3> &e = tri.ed(iEdge);
+                    const Segment<T, 3> &e = tri.ed(iEdge);
                     if (e.IntersectionSeg() != 1)
                     {
-                        Triangle<T, 3> nearTri;
+                        std::pair<int, int> nearTri;
                         if (inYinset == 1)
                             nearTri = FNToperator(tri, e, vecTri, std::vector<Triangle<T, 3>>(), tol);
                         else if (inYinset == 2)
                             nearTri = FNToperator(tri, e, std::vector<Triangle<T, 3>>(), vecTri, tol);
 
-                        if (markF[nearTri.id()] == 1)
+                        if (markF[nearTri.second] == 1)
                         {
-                            F.push_back(nearTri.id());
-                            All.erase(nearTri.id());
-                            markF[nearTri.id()] = 0;
+                            F.push_back(nearTri.second);
+                            All.erase(nearTri.second);
+                            markF[nearTri.second] = 0;
                         }
                     }
                     else
                     {
-                        boundary.emplace_back(e, std::vector<std::pair<int, int>>(1, make_pair(inYinset, tri.id())));
+                        boundary.emplace_back(e, std::vector<std::pair<int, int>>(1, make_pair(inYinset, tri.id())), tol);
                     }
                 }
 
