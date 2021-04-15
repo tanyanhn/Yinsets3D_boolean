@@ -2,7 +2,9 @@
 #define GLUINGCOMPACTSURFACE_H
 
 #include "Triangle.h"
+#include "SegmentCompare.h"
 #include <random>
+#include <map>
 
 namespace YSB
 {
@@ -49,9 +51,24 @@ namespace YSB
                 calType(tol);
         }
 
-        void collapse(std::vector<Triangle<T, 3>> &rs) const
+        void collapse(std::vector<Triangle<T, 3>> &rs,
+                      std::map<Segment<T, 3>, std::vector<int>, SegmentCompare> segs,
+                      int idYinset, Real tol = TOL) const
         {
-            rs.insert(rs.end(), vecTriangle.begin(), vecTriangle.end());
+            int size = rs.size();
+            for (auto &&tri : vecTriangle)
+            {
+                tri.id(size - tri.id());
+                for (auto ie = 0; ie < 3; ++ie)
+                {
+                    tri.ed(ie).IntersectionSeg() = 0;
+                    auto it = segs.insert({tri.ed(ie), std::vector<int>(idYinset, tri.id())});
+                    if (!it.second)
+                        (it.first)->second.emplace_back({idYinset, tri.id()});
+                    rs.push_back(tri);
+                    ++size;
+                }
+            }
         }
 
         FacType calType(Real tol = TOL) const
@@ -118,7 +135,7 @@ namespace YSB
                     return type = dot(outerVec, vecTriangle[highest.second].normVec()) < 0 ? FacType::Inner : FacType::Outer;
             }
 
-            assert(false && "calType() have trouble.")
+            assert(false && "calType() have trouble.");
         }
 
         FacType &Type() { return type; }

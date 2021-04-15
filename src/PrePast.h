@@ -29,8 +29,11 @@ namespace YSB
             std::vector<int> markF(size, 1);
             for (int i = 0; i < size; ++i)
             {
-                vecTri[i].id(i - vecTri.id());
-                All.insert(i);
+                if (!vecTri[i].IfRemoved())
+                {
+                    vecTri[i].id(i - vecTri.id());
+                    All.insert(i);
+                }
             }
 
             F.push_back((*All.begin()));
@@ -40,7 +43,7 @@ namespace YSB
                 const Triangle<T, 3> &tri = vecTri[F.back()];
                 vecF.emplace_back(inYinset, F.back());
                 F.pop_back();
-                tri.inF(vecSP.size() - tri.inF());
+                //   tri.inF(vecSP.size() - tri.inF());
 
                 for (int iEdge = 0; iEdge < 3; ++iEdge)
                 {

@@ -10,6 +10,14 @@
 
 namespace YSB
 {
+    template <class T, int Dim>
+    class Triangle;
+
+    template <class T>
+    inline void RemoveTriangle(std::vector<Triangle<T, 3>> &vecTriA,
+                               std::vector<Triangle<T, 3>> &vecTriB,
+                               std::vector<Triangle<T, 3>> &vecTri, const int id);
+
     template <class T>
     struct FindNearTriangle;
 
@@ -41,6 +49,9 @@ namespace YSB
 
         friend struct FindNearTriangle<T>;
         friend struct RemoveOverlap<T>;
+        friend void RemoveTriangle(std::vector<Triangle<T, 3>> &vecTriA,
+                                   std::vector<Triangle<T, 3>> &vecTriB,
+                                   std::vector<Triangle<T, 3>> &vecTri, const int id);
 
     private:
         Point<T, Dim> vertex[3];
@@ -48,6 +59,7 @@ namespace YSB
         mutable int inFace;
         mutable Plane<T> *pla;
         mutable int identity = -1;
+        bool removed = false;
 
     public:
         // Constructor
@@ -130,6 +142,8 @@ namespace YSB
 
         int &inF(int i = 0) { return inFace += i; }
         const int &inF(int i = 0) const { return inFace += i; }
+
+        bool IfRemoved() const { return removed; }
 
         // Update pointer pla.
         Plane<T> *new_pla() const

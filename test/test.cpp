@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cmath>
 #include <vector>
+#include <map>
 #include <algorithm>
 #include "../src/Triangle.h"
 using namespace std;
@@ -76,6 +77,7 @@ int main()
     // }
     **/
 
+    /**
     Triangle<Real, 3> tri;
     cout << "tri's identity :" << tri.id() << endl;
 
@@ -87,6 +89,10 @@ int main()
 
     ctri.id(21 - ctri.id());
     cout << "ctri's identity :" << ctri.id() << endl;
+    **/
+
+    map<int, vector<int>> m;
+    m.insert({4, vector<int>(1, 3)});
 
     return 0;
 }

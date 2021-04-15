@@ -11,18 +11,17 @@ namespace YSB
     struct RemoveOverlap
     {
         std::vector<std::pair<std::vector<Segment<T, 3>>, std::vector<int>>> resultA, resultB;
-        std::vector<Triangle<T, 3>> vecTriA, vecTriB,
-            inputA, inputB;
+        std::vector<Triangle<T, 3>> vecTriA, vecTriB;
         std::vector<std::vector<int>> TriangulateA, TriangulateB;
 
         void operator()();
-        void RemoveTriangle(std::vector<Triangle<T, 3>> &vecTri, const int id);
+        // void RemoveTriangle(std::vector<Triangle<T, 3>> &vecTri, const int id);
     };
 
     template <class T>
     inline void RemoveOverlap<T>::operator()()
     {
-        int numA = inputA.size();
+        int numA = resultA.size();
         for (int iA = 0; iA < numA; ++iA)
         {
             int numOverlap = resultA[iA].second.size();
@@ -39,9 +38,9 @@ namespace YSB
                             if (dot(vecTriA[TriangulateA[iA][ismalltriA]].normVec(),
                                     vecTriB[TriangulateB[iOverlap][ismalltriB]].normVec()) < 0)
                             {
-                                RemoveTriangle(vecTriA, TriangulateA[iA][ismalltriA]);
+                                RemoveTriangle(vecTriA, vecTriB, vecTriA, TriangulateA[iA][ismalltriA]);
                             }
-                            RemoveTriangle(vecTriB, TriangulateB[iOverlap][ismalltriB]);
+                            RemoveTriangle(vecTriA, vecTriB, vecTriB, TriangulateB[iOverlap][ismalltriB]);
                         }
                     }
                 }
@@ -50,8 +49,11 @@ namespace YSB
     }
 
     template <class T>
-    inline void RemoveOverlap<T>::RemoveTriangle(std::vector<Triangle<T, 3>> &vecTri, const int id)
+    inline void RemoveTriangle(std::vector<Triangle<T, 3>> &vecTriA,
+                               std::vector<Triangle<T, 3>> &vecTriB,
+                               std::vector<Triangle<T, 3>> &vecTri, const int id)
     {
+        vecTri[id].removed = true;
         int inYinset;
         if (vecTri.begin() == vecTriA.begin())
             inYinset = 1;
@@ -89,7 +91,7 @@ namespace YSB
                     neighSeg.neighborhood().erase(eit, neighSeg.neighborhood().end());
                 }
                 else
-                    assert(false && "neighbor.first != 1 || 2. in RemoveOverlap.")
+                    assert(false && "neighbor.first != 1 || 2. in RemoveOverlap.");
             }
 
             edge.neighborhood().clear();
