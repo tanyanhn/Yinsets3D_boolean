@@ -9,11 +9,17 @@ namespace YSB
 {
 
     template <class T>
+    class Locate;
+
+    template <class T>
     class SurfacePatch
     {
+        friend class Locate<T>;
+
     private:
         std::vector<std::pair<int, int>> vecTriangle;
         std::map<Segment<T, 3>, std::vector<std::pair<int, int>>> boundary;
+        bool removed = false;
 
     public:
         SurfacePatch(const std::vector<std::pair<int, int>> &t,
@@ -40,6 +46,8 @@ namespace YSB
         std::map<Segment<T, 3>, std::vector<std::pair<int, int>>> &bound() { return boundary; }
 
         const std::map<Segment<T, 3>, std::vector<std::pair<int, int>>> &bound() const { return boundary; }
+
+        bool IfRemoved() const { return removed; }
 
         // void collapse(std::vector<std::pair<int,int>> &rs) const
         // {

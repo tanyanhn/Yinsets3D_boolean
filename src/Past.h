@@ -12,9 +12,16 @@ namespace YSB
     {
         GluingCompactSurface<T> vecGCS;
 
-        void operator()(const std::vector<SurfacePatch<T>> &vecF,
-                        const std::vector<Triangle<T, 3>> &vecTriA,
-                        const std::vector<Triangle<T, 3>> &vecTriB, Real tol = TOL)
+        void combine(const std::vector<SurfacePatch<T>> &vecFA,
+                     const std::vector<SurfacePatch<T>> &vecFB,
+                     const std::vector<SurfacePatch<T>> &vecF)
+        {
+        }
+
+        void
+        operator()(const std::vector<SurfacePatch<T>> &vecF,
+                   const std::vector<Triangle<T, 3>> &vecTriA,
+                   const std::vector<Triangle<T, 3>> &vecTriB, Real tol = TOL)
         {
             std::set<int> All;
             std::vector<int> pastF, connectF;
@@ -23,7 +30,8 @@ namespace YSB
             std::vector<int> markF(size, 1);
             for (int i = 0; i < size; ++i)
             {
-                All.insert(i);
+                if (!vecF[i].IfRemoved())
+                    All.insert(i);
             }
 
             connectF.push_back((*All.begin()));

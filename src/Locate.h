@@ -1,6 +1,8 @@
 #ifndef LOCATE_H
 #define LOCATE_H
 #include "Triangle.h"
+#include "SurfacePatch.h"
+#include "RemoveOverlap.h"
 #include <vector>
 #include <cstdlib>
 
@@ -10,6 +12,10 @@ namespace YSB
     struct Locate
     {
         int operator()(const std::vector<Triangle<T, 3>> &yinset, const Point<T, 3> &p, Real tol = TOL);
+        int operator()(const std::vector<Triangle<T, 3>> &yinset, const SurfacePatch<T> &faces, Real tol = TOL);
+        void operator()(const std::vector<Triangle<T, 3>> &inputA, const std::vector<Triangle<T, 3>> &inputB,
+                        std::vector<Triangle<T, 3>> &vecTriA, std::vector<Triangle<T, 3>> &vecTriB,
+                        std::vector<SurfacePatch<T>> &vecSPA, std::vector<SurfacePatch<T>> &vecSPB, Real tol = TOL);
     };
 
     template <class T>
@@ -89,6 +95,61 @@ namespace YSB
                 Vec<T, 3> norm = pla->normVec;
                 return (dot(norm, tmpp - p) > 0 ? 1 : -1);
             }
+        }
+    }
+
+    template <class T>
+    inline int Locate<T>::operator()(const std::vector<Triangle<T, 3>> &yinset, const SurfacePatch<T> &face, Real tol)
+    {
+        const Triangle<T, 3> &tri = face.tris()[0];
+        Point<T, 3> zero(0);
+
+        Point<T, 3> barycenter = zero +
+                                 ((tri.vert(0) - zero) + (tri.vert(1) - zero) + (tri.vert(2) - zero)) / 3;
+
+        return this->operator()(yinset, barycenter, tol);
+    }
+
+    template <class T>
+    inline void Locate<T>::operator()(const std::vector<Triangle<T, 3>> &inputA,
+                                      const std::vector<Triangle<T, 3>> &inputB,
+                                      std::vector<Triangle<T, 3>> &vecTriA,
+                                      std::vector<Triangle<T, 3>> &vecTriB,
+                                      std::vector<SurfacePatch<T>> &vecSPA,
+                                      std::vector<SurfacePatch<T>> &vecSPB, Real tol)
+    {
+        for (auto &&iSP : vecSPA)
+        {
+            int k = this->operator()(inputB, iSP, tol);
+            if (k == -1)
+            {
+                iSP.removed = true;
+                for (auto &&it : iSP.tris())
+                {
+                    RemoveTriangle(vecTriA, vecTriB, vecTriA, it.second);
+                }
+            }
+            else if (k == 1)
+                ;
+            else if (k == 0)
+                assert(false && "Locate SurfacePatch have wrong.");
+        }
+
+        for (auto &&iSP : vecSPB)
+        {
+            int k = this->operator()(inputA, iSP, tol);
+            if (k == -1)
+            {
+                iSP.removed = true;
+                for (auto &&it : iSP.tris())
+                {
+                    RemoveTriangle(vecTriA, vecTriB, vecTriB, it.second);
+                }
+            }
+            else if (k == 1)
+                ;
+            else if (k == 0)
+                assert(false && "Locate SurfacePatch have wrong.");
         }
     }
 }
