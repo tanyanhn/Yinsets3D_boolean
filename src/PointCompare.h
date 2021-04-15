@@ -18,13 +18,13 @@ namespace YSB
 
         // Used for Point compare.
         template <class T1, class T2, int Dim>
-        bool operator()(const Point<T1, Dim> &lhs, const Point<T2, Dim> &rhs)
+        bool operator()(const Point<T1, Dim> &lhs, const Point<T2, Dim> &rhs) const
         {
             return compare(lhs, rhs) == 1;
         }
 
         template <class T1, class T2, int Dim>
-        int compare(const Point<T1, Dim> &lhs, const Point<T2, Dim> &rhs)
+        int compare(const Point<T1, Dim> &lhs, const Point<T2, Dim> &rhs) const
         {
             for (auto d = Dim - 1; d >= 0; --d)
             {
