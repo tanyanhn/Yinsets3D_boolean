@@ -68,24 +68,34 @@ namespace YSB
 
             // RemoveOverlap
             RemoveOverlap<T> removeOverlapOp;
-            removeOverlapOp.TriangulateA = triangulateOp.TriangulateA;
-            removeOverlapOp.TriangulateB = triangulateOp.TriangulateB;
-            removeOverlapOp.vecTriA = triangulateOp.vecTriA;
-            removeOverlapOp.vecTriB = triangulateOp.vecTriB;
-            removeOverlapOp.resultA = triangulateOp.resultA;
-            removeOverlapOp.resultB = triangulateOp.resultB;
-            removeOverlapOp();
+            removeOverlapOp(triangulateOp.TriangulateA,
+                            triangulateOp.TriangulateB,
+                            triangulateOp.vecTriA,
+                            triangulateOp.vecTriB,
+                            triangulateOp.resultA,
+                            triangulateOp.resultB);
 
             // PrePast
             PrePast<T> prePastOpA, prePastOpB;
-            prePastOpA(removeOverlapOp.vecTriA, 1, tol);
-            prePastOpB(removeOverlapOp.vecTriB, 2, tol);
+            prePastOpA(triangulateOp.vecTriA, 1, tol);
+            prePastOpB(triangulateOp.vecTriB, 2, tol);
 
             // Locate SurfacePatch.
             Locate<T> locateOp;
             locateOp(inputA, inputB,
-                     removeOverlapOp.vecTriA, removeOverlapOp.vecTriB,
+                     triangulateOp.vecTriA, triangulateOp.vecTriB,
                      prePastOpA.vecSP, prePastOpB.vecSP, tol);
+
+            // Past SurfacePatch to GluingCompactSurface.
+            Past<T> pastOp;
+            std::vector<SurfacePatch<T>> vecF;
+            pastOp.combine(prePastOpA.vecSP, prePastOpB.vecSP,
+                           triangulateOp.vecTriA, triangulateOp.vecTriB,
+                           vecF);
+            pastOp(vecF, triangulateOp.vecTriA, triangulateOp.vecTriB, tol);
+
+            // Yinset Constructor
+            return YinSet<T>(pastOp.vecGCS);
         }
 
         void BuildHasse() const;
