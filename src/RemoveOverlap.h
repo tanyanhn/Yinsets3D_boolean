@@ -10,16 +10,26 @@ namespace YSB
     template <class T>
     struct RemoveOverlap
     {
-        std::vector<std::pair<std::vector<Segment<T, 3>>, std::vector<int>>> resultA, resultB;
-        std::vector<Triangle<T, 3>> vecTriA, vecTriB;
-        std::vector<std::vector<int>> TriangulateA, TriangulateB;
+        //  std::vector<std::pair<std::vector<Segment<T, 3>>, std::vector<int>>> resultA, resultB;
+        //  std::vector<Triangle<T, 3>> vecTriA, vecTriB;
+        //  std::vector<std::vector<int>> TriangulateA, TriangulateB;
 
-        void operator()();
+        void operator()(std::vector<std::vector<int>> TriangulateA,
+                        std::vector<std::vector<int>> TriangulateB,
+                        std::vector<Triangle<T, 3>> vecTriA,
+                        std::vector<Triangle<T, 3>> vecTriB,
+                        std::vector<std::pair<std::vector<Segment<T, 3>>, std::vector<int>>> resultA,
+                        std::vector<std::pair<std::vector<Segment<T, 3>>, std::vector<int>>> resultB);
         // void RemoveTriangle(std::vector<Triangle<T, 3>> &vecTri, const int id);
     };
 
     template <class T>
-    inline void RemoveOverlap<T>::operator()()
+    inline void RemoveOverlap<T>::operator()(std::vector<std::vector<int>> TriangulateA,
+                                             std::vector<std::vector<int>> TriangulateB,
+                                             std::vector<Triangle<T, 3>> vecTriA,
+                                             std::vector<Triangle<T, 3>> vecTriB,
+                                             std::vector<std::pair<std::vector<Segment<T, 3>>, std::vector<int>>> resultA,
+                                             std::vector<std::pair<std::vector<Segment<T, 3>>, std::vector<int>>> resultB)
     {
         int numA = resultA.size();
         for (int iA = 0; iA < numA; ++iA)

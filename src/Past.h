@@ -14,8 +14,42 @@ namespace YSB
 
         void combine(const std::vector<SurfacePatch<T>> &vecFA,
                      const std::vector<SurfacePatch<T>> &vecFB,
-                     const std::vector<SurfacePatch<T>> &vecF)
+                     std::vector<Triangle<T, 3>> &vecTriA,
+                     std::vector<Triangle<T, 3>> &vecTriB,
+                     std::vector<SurfacePatch<T>> &vecF)
         {
+            int size = 0;
+            for (auto &&Face : vecFA)
+            {
+                if (!Face.IfRemoved())
+                {
+                    for (auto &&it : Face.tris())
+                    {
+                        if (it->first == 1)
+                            vecTriA[it->second].InF() = size;
+                        else if (it->first == 2)
+                            vecTriB[it->second].InF() = size;
+                    }
+                    vecF.push_back(Face);
+                    ++size;
+                }
+            }
+
+            for (auto &&Face : vecFB)
+            {
+                if (!Face.IfRemoved())
+                {
+                    for (auto &&it : Face.tris())
+                    {
+                        if (it->first == 1)
+                            vecTriA[it->second].InF() = size;
+                        else if (it->first == 2)
+                            vecTriB[it->second].InF() = size;
+                    }
+                    vecF.push_back(Face);
+                    ++size;
+                }
+            }
         }
 
         void
