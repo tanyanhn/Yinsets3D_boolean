@@ -70,7 +70,7 @@ namespace YSB
 
             connectF.push_back((*All.begin()));
             All.erase(All.begin());
-            while (!All.empty() && !connectF.empty())
+            while (!All.empty() || !connectF.empty())
             {
                 const SurfacePatch<T> &SFP = vecF[connectF.back()];
                 pastF.push_back(connectF.back());
