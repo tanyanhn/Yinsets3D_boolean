@@ -53,7 +53,7 @@ namespace YSB
 
         void collapse(std::vector<Triangle<T, 3>> &rs,
                       std::map<Segment<T, 3>, std::vector<int>, SegmentCompare> segs,
-                      int idYinset, Real tol = TOL) const
+                      int idYinset, int idFace, Real tol = TOL) const
         {
             int size = rs.size();
             for (auto &&tri : vecTriangle)
@@ -65,9 +65,10 @@ namespace YSB
                     auto it = segs.insert({tri.ed(ie), std::vector<int>(idYinset, tri.id())});
                     if (!it.second)
                         (it.first)->second.emplace_back({idYinset, tri.id()});
-                    rs.push_back(tri);
-                    ++size;
                 }
+                tri.inF() = {idYinset, idFace};
+                rs.push_back(tri);
+                ++size;
             }
         }
 

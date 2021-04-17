@@ -56,16 +56,16 @@ namespace YSB
     private:
         Point<T, Dim> vertex[3];
         Segment<T, Dim> edge[3];
-        mutable int inFace;
+        std::pair<int, int> inFace = {-1, -1};
         mutable Plane<T> *pla;
         mutable int identity = -1;
         bool removed = false;
 
     public:
         // Constructor
-        Triangle() : inFace(-1), pla(nullptr) {}
-        explicit Triangle(const Point<T, Dim> *vecP, int f = -1)
-            : inFace(f), pla(nullptr)
+        Triangle() : pla(nullptr) {}
+        explicit Triangle(const Point<T, Dim> *vecP)
+            : pla(nullptr)
         {
             vertex[0] = vecP[0];
             vertex[1] = vecP[1];
@@ -74,8 +74,8 @@ namespace YSB
             edge[1] = Segment<T, Dim>(vertex[1], vertex[2]);
             edge[2] = Segment<T, Dim>(vertex[2], vertex[0]);
         }
-        explicit Triangle(const Segment<T, Dim> *vecSeg, int f = -1)
-            : inFace(f), pla(nullptr)
+        explicit Triangle(const Segment<T, Dim> *vecSeg)
+            : pla(nullptr)
         {
             vertex[0] = vecSeg[0][0];
             vertex[1] = vecSeg[1][0];
@@ -140,8 +140,8 @@ namespace YSB
         int &id(int i = 0) { return identity += i; }
         const int &id(int i = 0) const { return identity += i; }
 
-        int &inF(int i = 0) { return inFace += i; }
-        const int &inF(int i = 0) const { return inFace += i; }
+        std::pair<int, int> &inF() { return inFace; }
+        const std::pair<int, int> &inF() const { return inFace; }
 
         bool IfRemoved() const { return removed; }
 
