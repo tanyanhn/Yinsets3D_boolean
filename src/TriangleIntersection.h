@@ -99,7 +99,7 @@ namespace YSB
                 {
                     iSeg.neighborhood().push_back(std::make_pair(inYinsetA, iA));
                     iSeg.neighborhood().push_back(std::make_pair(inYinsetB, iB));
-                    iSeg.IntersectionSeg() = 1;
+                    //   iSeg.IntersectionSeg() = 1;
 
                     resultA[iA].first.push_back(iSeg);
                     resultB[iB].first.push_back(iSeg);

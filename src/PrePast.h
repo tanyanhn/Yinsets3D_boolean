@@ -48,13 +48,14 @@ namespace YSB
                 for (int iEdge = 0; iEdge < 3; ++iEdge)
                 {
                     const Segment<T, 3> &e = tri.ed(iEdge);
-                    if (e.IntersectionSeg() != 1)
+                    if (e.intersectionSeg == 0)
                     {
                         std::pair<int, int> nearTri;
-                        if (inYinset == 1)
-                            nearTri = FNToperator(tri, e, vecTri, std::vector<Triangle<T, 3>>(), tol);
-                        else if (inYinset == 2)
-                            nearTri = FNToperator(tri, e, std::vector<Triangle<T, 3>>(), vecTri, tol);
+                        nearTri = (e.neighborhood()[0].second != tri.id()) ? e.neighborhood()[1] : e.neighborhood()[0];
+                        // if (inYinset == 1)
+                        //     nearTri = FNToperator(tri, e, vecTri, std::vector<Triangle<T, 3>>(), tol);
+                        // else if (inYinset == 2)
+                        //     nearTri = FNToperator(tri, e, std::vector<Triangle<T, 3>>(), vecTri, tol);
 
                         if (markF[nearTri.second] == 1)
                         {
