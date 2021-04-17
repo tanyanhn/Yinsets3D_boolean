@@ -23,23 +23,44 @@ namespace YSB
         resultA.reserve(numA);
         resultB.reserve(numB);
 
-        for (int iA = 0; iA < numA; ++iA)
-        {
-            resultA.emplace_back(std::vector<Segment<T, 3>>{inputA[iA].ed(0), inputA[iA].ed(1), inputA[iA].ed(2)}, std::vector<int>());
-        }
-        for (int iB = 0; iB < numB; ++iB)
-        {
-            resultB.emplace_back(std::vector<Segment<T, 3>>{inputB[iB].ed(0), inputB[iB].ed(1), inputB[iB].ed(2)}, std::vector<int>());
-        }
+        // for (int iA = 0; iA < numA; ++iA)
+        // {
+        //     resultA.emplace_back(std::vector<Segment<T, 3>>{inputA[iA].ed(0), inputA[iA].ed(1), inputA[iA].ed(2)}, std::vector<int>());
+        // }
+        // for (int iB = 0; iB < numB; ++iB)
+        // {
+        //     resultB.emplace_back(std::vector<Segment<T, 3>>{inputB[iB].ed(0), inputB[iB].ed(1), inputB[iB].ed(2)}, std::vector<int>());
+        // }
 
         std::vector<Segment<T, 3>> result;
         intsType type;
 
-        for (int iA = 0; iA < numA; ++iA)
+        for (int iA = 0; iA < numA + numB; ++iA)
         {
-            for (int iB = 0; iB < numB; ++iB)
+            for (int iB = iA + 1; iB < numA + numB; ++iB)
             {
-                type = inputA[iA].intersect(inputB[iB], result, tol);
+                result.clear();
+                int inYinsetA = iA < numA ? (1) : (2),
+                    inYinsetB = iB < numA ? (1) : (2);
+                if (inYinsetA == 1 && inYinsetB == 1)
+                {
+                    type = inputA[iA].intersect(inputA[iB], result, tol);
+                }
+                else if (inYinsetA == 1 && inYinsetB == 2)
+                {
+                    iB -= numA;
+                    type = inputA[iA].intersect(inputB[iB], result, tol);
+                }
+                else if (inYinsetA == 2 && inYinsetB == 2)
+                {
+                    iA -= numA;
+                    iB -= numA;
+                    type = inputB[iA].intersect(inputB[iB], result, tol);
+                }
+                else
+                {
+                    assert(false && "TriangleIntersection::iA,iB.");
+                }
 
                 if (type == intsType::Never)
                 {
@@ -53,21 +74,36 @@ namespace YSB
                 }
                 else if (type == intsType::Overlap)
                 {
-                    resultA[iA].second.push_back(iB);
-                    resultB[iB].second.push_back(iA);
+                    if (inYinsetA == 1 && inYinsetB == 1)
+                    {
+                        resultA[iA].second.push_back(iB);
+                        resultA[iB].second.push_back(iA);
+                    }
+                    else if (inYinsetA == 1 && inYinsetB == 2)
+                    {
+                        resultA[iA].second.push_back(iB);
+                        resultB[iB].second.push_back(iA);
+                    }
+                    else if (inYinsetA == 2 && inYinsetB == 2)
+                    {
+                        resultB[iA].second.push_back(iB);
+                        resultB[iB].second.push_back(iA);
+                    }
+                    else
+                    {
+                        assert(false && "TriangleIntersection::iA,iB.");
+                    }
                 }
 
                 for (auto &&iSeg : result)
                 {
-                    iSeg.neighborhood().push_back(std::make_pair(1, iA));
-                    iSeg.neighborhood().push_back(std::make_pair(2, iB));
+                    iSeg.neighborhood().push_back(std::make_pair(inYinsetA, iA));
+                    iSeg.neighborhood().push_back(std::make_pair(inYinsetB, iB));
                     iSeg.IntersectionSeg() = 1;
 
                     resultA[iA].first.push_back(iSeg);
                     resultB[iB].first.push_back(iSeg);
                 }
-
-                result.clear();
             }
         }
     }

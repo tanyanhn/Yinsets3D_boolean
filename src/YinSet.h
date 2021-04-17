@@ -37,22 +37,22 @@ namespace YSB
         {
             SegmentCompare segcmp(tol);
 
-            std::map<Segment<T, 3>, std::vector<std::pair<int, int>>> segs(segcmp);
+            // std::map<Segment<T, 3>, std::vector<std::pair<int, int>>> segs(segcmp);
             int idFace = 0;
             for (auto &&iFace : vecFace)
             {
-                iFace.collapse(rs, segs, idYinset, idFace, tol);
+                iFace.collapse(rs, idYinset, idFace, tol);
                 ++idFace;
             }
 
-            for (auto &&it : segs)
-            {
-                for (auto &&iTri : it.second)
-                {
-                    int ie = rs[iTri].edgeVec(it.first, tol);
-                    rs[iTri].ed(ie).neighborhood() = it.second;
-                }
-            }
+            // for (auto &&it : segs)
+            // {
+            //     for (auto &&iTri : it.second)
+            //     {
+            //         int ie = rs[iTri].edgeVec(it.first, tol);
+            //         rs[iTri].ed(ie).neighborhood() = it.second;
+            //     }
+            // }
         }
 
         YinSet<T> meet(const YinSet<T> &y2, Real tol = TOL)
