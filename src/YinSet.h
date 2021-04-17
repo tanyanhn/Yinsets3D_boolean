@@ -27,10 +27,10 @@ namespace YSB
         std::vector<Node> HasseMap;
 
     public:
-        YinSet(const std::vector<GluingCompactSurface<T>> &vf)
+        explicit YinSet(const std::vector<GluingCompactSurface<T>> &vf, Real tol = TOL)
             : vecFace(vf)
         {
-            BuildHasse();
+            BuildHasse(tol);
         }
 
         void collapse(std::vector<Triangle<T, 3>> &rs, int idYinset, Real tol = TOL) const
@@ -38,9 +38,11 @@ namespace YSB
             SegmentCompare segcmp(tol);
 
             std::map<Segment<T, 3>, std::vector<std::pair<int, int>>> segs(segcmp);
+            int idFace = 0;
             for (auto &&iFace : vecFace)
             {
-                iFace.collapse(rs, segs, idYinset, tol);
+                iFace.collapse(rs, segs, idYinset, idFace, tol);
+                ++idFace;
             }
 
             for (auto &&it : segs)
@@ -73,7 +75,7 @@ namespace YSB
                             triangulateOp.vecTriA,
                             triangulateOp.vecTriB,
                             triangulateOp.resultA,
-                            triangulateOp.resultB);
+                            triangulateOp.resultB, tol);
 
             // PrePast
             PrePast<T> prePastOpA, prePastOpB;
@@ -95,14 +97,13 @@ namespace YSB
             pastOp(vecF, triangulateOp.vecTriA, triangulateOp.vecTriB, tol);
 
             // Yinset Constructor
-            return YinSet<T>(pastOp.vecGCS);
+            return YinSet<T>(pastOp.vecGCS, tol);
         }
 
-        void BuildHasse() const;
+        void BuildHasse(Real tol = TOL) const;
 
         ~YinSet();
     };
-
 } // namespace YSB
 
 #endif // !YINSET_H

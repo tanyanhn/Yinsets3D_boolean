@@ -18,7 +18,7 @@ namespace YSB
             vecSP.clear();
             //vecGCS.clear();
         }
-        void operator()(const std::vector<Triangle<T, 3>> &vecTri, const int inYinset, Real tol = TOL)
+        void operator()(std::vector<Triangle<T, 3>> &vecTri, const int inYinset, Real tol = TOL)
         {
             std::vector<int> F;
             std::vector<std::pair<int, int>> vecF;
@@ -43,7 +43,7 @@ namespace YSB
                 const Triangle<T, 3> &tri = vecTri[F.back()];
                 vecF.emplace_back(inYinset, F.back());
                 F.pop_back();
-                //   tri.inF(vecSP.size() - tri.inF());
+                tri.inF() = {inYinset, vecSP.size()};
 
                 for (int iEdge = 0; iEdge < 3; ++iEdge)
                 {

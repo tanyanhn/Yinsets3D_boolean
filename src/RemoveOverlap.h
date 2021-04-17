@@ -19,7 +19,7 @@ namespace YSB
                         std::vector<Triangle<T, 3>> vecTriA,
                         std::vector<Triangle<T, 3>> vecTriB,
                         std::vector<std::pair<std::vector<Segment<T, 3>>, std::vector<int>>> resultA,
-                        std::vector<std::pair<std::vector<Segment<T, 3>>, std::vector<int>>> resultB);
+                        std::vector<std::pair<std::vector<Segment<T, 3>>, std::vector<int>>> resultB, Real tol);
         // void RemoveTriangle(std::vector<Triangle<T, 3>> &vecTri, const int id);
     };
 
@@ -29,7 +29,7 @@ namespace YSB
                                              std::vector<Triangle<T, 3>> vecTriA,
                                              std::vector<Triangle<T, 3>> vecTriB,
                                              std::vector<std::pair<std::vector<Segment<T, 3>>, std::vector<int>>> resultA,
-                                             std::vector<std::pair<std::vector<Segment<T, 3>>, std::vector<int>>> resultB)
+                                             std::vector<std::pair<std::vector<Segment<T, 3>>, std::vector<int>>> resultB, Real tol = TOL)
     {
         int numA = resultA.size();
         for (int iA = 0; iA < numA; ++iA)
@@ -43,7 +43,7 @@ namespace YSB
                 {
                     for (int ismalltriB = 0; ismalltriB < numsmalltriB; ++ismalltriB)
                     {
-                        if (vecTriA[TriangulateA[iA][ismalltriA]].equal(vecTriB[TriangulateB[iOverlap][ismalltriB]]))
+                        if (vecTriA[TriangulateA[iA][ismalltriA]].equal(vecTriB[TriangulateB[iOverlap][ismalltriB]], tol))
                         {
                             if (dot(vecTriA[TriangulateA[iA][ismalltriA]].normVec(),
                                     vecTriB[TriangulateB[iOverlap][ismalltriB]].normVec()) < 0)

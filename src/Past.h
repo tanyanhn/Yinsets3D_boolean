@@ -26,9 +26,9 @@ namespace YSB
                     for (auto &&it : Face.tris())
                     {
                         if (it->first == 1)
-                            vecTriA[it->second].InF() = size;
+                            vecTriA[it->second].InF() = {1, size};
                         else if (it->first == 2)
-                            vecTriB[it->second].InF() = size;
+                            vecTriB[it->second].InF() = {1, size};
                     }
                     vecF.push_back(Face);
                     ++size;
@@ -42,9 +42,9 @@ namespace YSB
                     for (auto &&it : Face.tris())
                     {
                         if (it->first == 1)
-                            vecTriA[it->second].InF() = size;
+                            vecTriA[it->second].InF() = {2, size};
                         else if (it->first == 2)
-                            vecTriB[it->second].InF() = size;
+                            vecTriB[it->second].InF() = {2, size};
                     }
                     vecF.push_back(Face);
                     ++size;
@@ -97,11 +97,11 @@ namespace YSB
                         else
                             assert(false && "Past::id_nearTri wrong.");
 
-                        if (markF[nearTri.inF()] == 1)
+                        if (markF[nearTri.inF().second] == 1)
                         {
-                            connectF.push_back(nearTri.inF());
-                            All.erase(nearTri.inF());
-                            markF[nearTri.inF()] = 0;
+                            connectF.push_back(nearTri.inF().second);
+                            All.erase(nearTri.inF().second);
+                            markF[nearTri.inF().second] = 0;
                         }
                     }
 
