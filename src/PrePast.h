@@ -38,7 +38,7 @@ namespace YSB
 
             F.push_back((*All.begin()));
             All.erase(All.begin());
-            while (!All.empty() && !F.empty())
+            while (!All.empty() || !F.empty())
             {
                 const Triangle<T, 3> &tri = vecTri[F.back()];
                 vecF.emplace_back(inYinset, F.back());

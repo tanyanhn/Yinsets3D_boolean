@@ -10,7 +10,7 @@ namespace YSB
     {
         using intsType = typename Triangle<T, 3>::intsType;
 
-        std::vector<std::pair<std::vector<Segment<T, 3>>, std::vector<int>>> resultA, resultB;
+        std::vector<std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> resultA, resultB;
 
         void operator()(const std::vector<Triangle<T, 3>> &inputA, const std::vector<Triangle<T, 3>> &inputB, Real tol = TOL);
     };
@@ -76,18 +76,18 @@ namespace YSB
                 {
                     if (inYinsetA == 1 && inYinsetB == 1)
                     {
-                        resultA[iA].second.push_back(iB);
-                        resultA[iB].second.push_back(iA);
+                        resultA[iA].second.push_back({1, iB});
+                        resultA[iB].second.push_back({1, iA});
                     }
                     else if (inYinsetA == 1 && inYinsetB == 2)
                     {
-                        resultA[iA].second.push_back(iB);
-                        resultB[iB].second.push_back(iA);
+                        resultA[iA].second.push_back({2, iB});
+                        resultB[iB].second.push_back({1, iA});
                     }
                     else if (inYinsetA == 2 && inYinsetB == 2)
                     {
-                        resultB[iA].second.push_back(iB);
-                        resultB[iB].second.push_back(iA);
+                        resultB[iA].second.push_back({2, iB});
+                        resultB[iB].second.push_back({2, iA});
                     }
                     else
                     {
