@@ -4,6 +4,7 @@
 #include "Triangle.h"
 #include "Segment.h"
 #include <algorithm>
+#include <map>
 
 namespace YSB
 {
@@ -14,23 +15,23 @@ namespace YSB
         //  std::vector<Triangle<T, 3>> vecTriA, vecTriB;
         //  std::vector<std::vector<int>> TriangulateA, TriangulateB;
 
-        void operator()(std::vector<std::vector<int>> &TriangulateA,
-                        std::vector<std::vector<int>> &TriangulateB,
+        void operator()(std::map<int, std::vector<int>> &TriangulateA,
+                        std::map<int, std::vector<int>> &TriangulateB,
                         std::vector<Triangle<T, 3>> &vecTriA,
                         std::vector<Triangle<T, 3>> &vecTriB,
-                        std::vector<std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultA,
-                        std::vector<std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultB,
+                        std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultA,
+                        std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultB,
                         Real tol = TOL);
         // void RemoveTriangle(std::vector<Triangle<T, 3>> &vecTri, const int id);
     };
 
     template <class T>
-    inline void RemoveOverlap<T>::operator()(std::vector<std::vector<int>> &TriangulateA,
-                                             std::vector<std::vector<int>> &TriangulateB,
+    inline void RemoveOverlap<T>::operator()(std::map<int, std::vector<int>> &TriangulateA,
+                                             std::map<int, std::vector<int>> &TriangulateB,
                                              std::vector<Triangle<T, 3>> &vecTriA,
                                              std::vector<Triangle<T, 3>> &vecTriB,
-                                             std::vector<std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultA,
-                                             std::vector<std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultB,
+                                             std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultA,
+                                             std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultB,
                                              Real tol)
     {
         int numA = resultA.size();

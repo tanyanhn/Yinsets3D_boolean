@@ -47,8 +47,19 @@ namespace YSB
             endPoint[0] = stPoint;
             endPoint[1] = fnPoint;
         }
-        Segment<T, Dim>(const Segment<T, Dim> &rhs) = default;
-        Segment<T, Dim> &operator=(const Segment<T, Dim> &rhs) = default;
+        Segment<T, Dim>(const Segment<T, Dim> &rhs)
+        {
+            endPoint[0] = rhs.endPoint[0], endPoint[1] = rhs.endPoint[1];
+            neighbor = rhs.neighbor;
+            intersectionSeg = rhs.intersectionSeg;
+        }
+        Segment<T, Dim> &operator=(const Segment<T, Dim> &rhs)
+        {
+            endPoint[0] = rhs.endPoint[0], endPoint[1] = rhs.endPoint[1];
+            neighbor = rhs.neighbor;
+            intersectionSeg = rhs.intersectionSeg;
+            return *this;
+        }
         ~Segment() = default;
 
         // Projection
@@ -69,7 +80,7 @@ namespace YSB
 
         const std::vector<std::pair<int, int>> &neighborhood() const { return neighbor; }
 
-        void addneighbor(std::pair<int, int> n) {neighbor.push_back(n);}
+        void addneighbor(std::pair<int, int> n) { neighbor.push_back(n); }
 
         int &IntersectionSeg() { return intersectionSeg; }
 
