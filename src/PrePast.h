@@ -13,6 +13,8 @@ namespace YSB
     struct PrePast
     {
         std::vector<SurfacePatch<T>> vecSP;
+        std::map<int, std::vector<std::pair<int, int>>> ClipFaces;
+        std::map<int, std::vector<std::pair<int, int>>> coClipFaces;
         //std::vector<GluingCompactSurface<T>> vecGCS;
 
         void initialize()
@@ -20,7 +22,7 @@ namespace YSB
             vecSP.clear();
             //vecGCS.clear();
         }
-        void operator()(std::vector<Triangle<T, 3>> &vecTri, const int inYinset, Real tol = TOL)
+        void operator()(std::vector<Triangle<T, 3>> &vecTri, const int idYinset, Real tol = TOL)
         {
             std::vector<int> F;
             std::vector<std::pair<int, int>> vecF;
@@ -47,9 +49,11 @@ namespace YSB
             while (!All.empty() || !F.empty())
             {
                 Triangle<T, 3> &tri = vecTri[F.back()];
-                vecF.emplace_back(inYinset, F.back());
+                vecF.emplace_back(idYinset, F.back());
                 F.pop_back();
-                tri.inF() = std::make_pair(inYinset, vecSP.size());
+                ClipFaces[tri.inF().second].push_back({idYinset, vecSP.size()});
+                coClipFaces[vecSP.size()].push_back(tri.inF());
+                tri.inF() = std::make_pair(idYinset, vecSP.size());
 
                 for (int iEdge = 0; iEdge < 3; ++iEdge)
                 {
@@ -58,9 +62,9 @@ namespace YSB
                     {
                         std::pair<int, int> nearTri;
                         nearTri = (e.neighborhood()[0].second != tri.id()) ? e.neighborhood()[1] : e.neighborhood()[0];
-                        // if (inYinset == 1)
+                        // if (idYinset == 1)
                         //     nearTri = FNToperator(tri, e, vecTri, std::vector<Triangle<T, 3>>(), tol);
-                        // else if (inYinset == 2)
+                        // else if (idYinset == 2)
                         //     nearTri = FNToperator(tri, e, std::vector<Triangle<T, 3>>(), vecTri, tol);
 
                         if (markF[nearTri.second] == 1)
@@ -73,10 +77,10 @@ namespace YSB
                     else
                     {
                         auto it = boundary.insert(std::make_pair(e,
-                                                                 std::vector<std::pair<int, int>>(1, std::make_pair(inYinset, tri.id()))));
+                                                                 std::vector<std::pair<int, int>>(1, std::make_pair(idYinset, tri.id()))));
                         if (it.second == false)
                         {
-                            (it.first)->second.push_back({inYinset, tri.id()});
+                            (it.first)->second.push_back({idYinset, tri.id()});
                         }
                     }
                 }
