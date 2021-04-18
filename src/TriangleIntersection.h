@@ -48,14 +48,14 @@ namespace YSB
                 }
                 else if (inYinsetA == 1 && inYinsetB == 2)
                 {
-                    iB -= numA;
-                    type = inputA[iA].intersect(inputB[iB], result, tol);
+                    //iB -= numA;
+                    type = inputA[iA].intersect(inputB[iB-numA], result, tol);
                 }
                 else if (inYinsetA == 2 && inYinsetB == 2)
                 {
-                    iA -= numA;
-                    iB -= numA;
-                    type = inputB[iA].intersect(inputB[iB], result, tol);
+                    // iA -= numA;
+                    // iB -= numA;
+                    type = inputB[iA-numA].intersect(inputB[iB-numA], result, tol);
                 }
                 else
                 {

@@ -3,34 +3,42 @@
 
 all : plane triangle findneartriangle triintersect
 
-platest.ex : catchmain.o planetest.cpp
+platest.exe : catchmain.o planetest.cpp
 	g++ -o $@ catchmain.o planetest.cpp
 
-tritest.ex : catchmain.o triangletest.cpp
+tritest.exe : catchmain.o triangletest.cpp
 	g++ -o $@ catchmain.o triangletest.cpp
 
-findneartriangle.ex : catchmain.o findneartritest.cpp
+findneartriangle.exe : catchmain.o findneartritest.cpp
 	g++ -o $@ catchmain.o findneartritest.cpp
 
-triintersecttest.ex : catchmain.o triintersecttest.cpp
+triintersecttest.exe : catchmain.o triintersecttest.cpp
 	g++ -o $@ catchmain.o triintersecttest.cpp
+
+prepastetest.exe : catchmain.o prepastetest.cpp
+	g++ -o $@ catchmain.o prepastetest.cpp
 
 catchmain.o : catchmain.cpp
 	g++ -c $<
 
 
-plane : platest.ex
-	./platest.ex
+plane : platest.exe
+	./platest.exe
 
-triangle : tritest.ex
-	./tritest.ex
+triangle : tritest.exe
+	./tritest.exe
 
-findneartriangle : findneartriangle.ex
-	./findneartriangle.ex
+findneartriangle : findneartriangle.exe
+	./findneartriangle.exe
 
-triintersect : triintersecttest.ex
-	./triintersecttest.ex
+triintersect : triintersecttest.exe
+	./triintersecttest.exe
+
+prepaste : prepastetest.exe
+	./prepastetest.exe
+
+
 clean:
-	 rm -f *.ex  core
+	 rm -f *.exe  core
 	 
 	 
