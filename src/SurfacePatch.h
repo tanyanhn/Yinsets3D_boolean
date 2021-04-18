@@ -18,7 +18,7 @@ namespace YSB
 
     private:
         std::vector<std::pair<int, int>> vecTriangle;
-        std::map<Segment<T, 3>, std::vector<std::pair<int, int>>> boundary;
+        std::map<Segment<T, 3>, std::vector<std::pair<int, int>>, SegmentCompare> boundary;
         bool removed = false;
 
     public:
@@ -38,8 +38,15 @@ namespace YSB
             }
         }
 
+        SurfacePatch(const std::vector<std::pair<int, int>> &t,
+                     std::map<Segment<T, 3>, std::vector<std::pair<int, int>>, SegmentCompare> &b)
+            : vecTriangle(t), boundary(b) {}
+
         //Accessors
-        std::vector<std::pair<int, int>> &tris() { return vecTriangle; }
+        std::vector<std::pair<int, int>> &tris()
+        {
+            return vecTriangle;
+        }
 
         const std::vector<std::pair<int, int>> &tris() const { return vecTriangle; }
 
@@ -53,7 +60,7 @@ namespace YSB
         // {
         //     rs.insert(rs.end(), vecTriangle.begin(), vecTriangle.end());
         // }
-        ~SurfacePatch();
+        ~SurfacePatch() = default;
     };
 
 } // namespace YSB

@@ -1,26 +1,27 @@
 
+CPPFLAGS = -O0 -g -D_GLIBCXX_DEBUG -std=c++17
+
 .PHONY: clean clear test run all doxygen
 
 all : plane triangle findneartriangle triintersect
 
 
-platest.ex : catchmain.o planetest.cpp
-	g++ -o $@ catchmain.o planetest.cpp -g
+platest.exe : catchmain.o planetest.cpp
+	g++ -o $@ catchmain.o planetest.cpp $(CPPFLAGS)
 
-tritest.ex : catchmain.o triangletest.cpp
-	g++ -o $@ catchmain.o triangletest.cpp -g
+tritest.exe : catchmain.o triangletest.cpp
+	g++ -o $@ catchmain.o triangletest.cpp $(CPPFLAGS)
 
-findneartriangle.ex : catchmain.o findneartritest.cpp
-	g++ -o $@ catchmain.o findneartritest.cpp -g
+findneartriangle.exe : catchmain.o findneartritest.cpp
+	g++ -o $@ catchmain.o findneartritest.cpp $(CPPFLAGS)
 
-triintersecttest.ex : catchmain.o triintersecttest.cpp
-	g++ -o $@ catchmain.o triintersecttest.cpp -g
+triintersecttest.exe : catchmain.o triintersecttest.cpp
+	g++ -o $@ catchmain.o triintersecttest.cpp $(CPPFLAGS)
 
 prepastetest.exe : catchmain.o prepastetest.cpp
-	g++ -o $@ catchmain.o prepastetest.cpp -g
+	g++ -o $@ catchmain.o prepastetest.cpp $(CPPFLAGS)
 
 catchmain.o : catchmain.cpp
-	g++ -c $< -g
 
 
 plane : platest.exe
