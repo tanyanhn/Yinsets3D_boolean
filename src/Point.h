@@ -17,8 +17,8 @@ namespace YSB
         // Constructor
         explicit Point(const T &t = T())
         {
-            for (auto i = 0; i < Dim; ++i)
-                coord[i] = t;
+            for (int i = 0; i < Dim; coord[i++] = t)
+                ;
         }
 
         explicit Point(std::initializer_list<T> l)

@@ -66,7 +66,8 @@ namespace YSB
 
             // Triangulation
             Triangulation<T> triangulateOp;
-            triangulateOp(inputA, inputB, tol);
+            triangulateOp(inputA, inputB,
+                          intersectOp.resultA, intersectOp.resultB, tol);
 
             // RemoveOverlap
             RemoveOverlap<T> removeOverlapOp;
