@@ -4,6 +4,8 @@
 #include "GluingCompactSurface.h"
 #include "SurfacePatch.h"
 #include "TriangleCompare.h"
+#include "SegmentCompare.h"
+#include <map>
 
 namespace YSB
 {
@@ -23,7 +25,11 @@ namespace YSB
             std::vector<int> F;
             std::vector<std::pair<int, int>> vecF;
             std::set<int> All;
-            std::vector<std::pair<Segment<T, 3>, std::vector<std::pair<int, int>>>> boundary;
+            SegmentCompare cmp(tol);
+            std::map<Segment<T, 3>,
+                     std::vector<std::pair<int, int>>,
+                     SegmentCompare>
+                boundary(cmp);
             //FindNearTriangle<T> FNToperator;
             int size = vecTri.size();
             std::vector<int> markF(size, 1);
@@ -66,7 +72,12 @@ namespace YSB
                     }
                     else
                     {
-                        boundary.emplace_back(e, std::vector<std::pair<int, int>>(1, std::make_pair(inYinset, tri.id())), tol);
+                        auto it = boundary.insert(std::make_pair(e,
+                                                                 std::vector<std::pair<int, int>>(1, std::make_pair(inYinset, tri.id()))));
+                        if (it.second == false)
+                        {
+                            (it.first)->second.push_back({inYinset, tri.id()});
+                        }
                     }
                 }
 
