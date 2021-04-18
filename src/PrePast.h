@@ -24,14 +24,14 @@ namespace YSB
             std::vector<std::pair<int, int>> vecF;
             std::set<int> All;
             std::vector<std::pair<Segment<T, 3>, std::vector<std::pair<int, int>>>> boundary;
-            FindNearTriangle<T> FNToperator;
+            //FindNearTriangle<T> FNToperator;
             int size = vecTri.size();
             std::vector<int> markF(size, 1);
             for (int i = 0; i < size; ++i)
             {
                 if (!vecTri[i].IfRemoved())
                 {
-                    vecTri[i].id(i - vecTri.id());
+                    vecTri[i].id(i - vecTri[i].id());
                     All.insert(i);
                 }
             }
@@ -40,15 +40,15 @@ namespace YSB
             All.erase(All.begin());
             while (!All.empty() || !F.empty())
             {
-                const Triangle<T, 3> &tri = vecTri[F.back()];
+                Triangle<T, 3> &tri = vecTri[F.back()];
                 vecF.emplace_back(inYinset, F.back());
                 F.pop_back();
-                tri.inF() = {inYinset, vecSP.size()};
+                tri.inF() = std::make_pair(inYinset, vecSP.size());
 
                 for (int iEdge = 0; iEdge < 3; ++iEdge)
                 {
                     const Segment<T, 3> &e = tri.ed(iEdge);
-                    if (e.intersectionSeg == 0)
+                    if (e.IntersectionSeg() == 0)
                     {
                         std::pair<int, int> nearTri;
                         nearTri = (e.neighborhood()[0].second != tri.id()) ? e.neighborhood()[1] : e.neighborhood()[0];
@@ -66,7 +66,7 @@ namespace YSB
                     }
                     else
                     {
-                        boundary.emplace_back(e, std::vector<std::pair<int, int>>(1, make_pair(inYinset, tri.id())), tol);
+                        boundary.emplace_back(e, std::vector<std::pair<int, int>>(1, std::make_pair(inYinset, tri.id())), tol);
                     }
                 }
 
