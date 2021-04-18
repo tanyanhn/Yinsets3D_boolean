@@ -2,6 +2,7 @@
 #define TRIANGLEINTERSECTION_H
 
 #include "Triangle.h"
+#include "map"
 
 namespace YSB
 {
@@ -10,7 +11,7 @@ namespace YSB
     {
         using intsType = typename Triangle<T, 3>::intsType;
 
-        std::vector<std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> resultA, resultB;
+        std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> resultA, resultB;
 
         void operator()(const std::vector<Triangle<T, 3>> &inputA, const std::vector<Triangle<T, 3>> &inputB, Real tol = TOL);
     };
@@ -20,8 +21,8 @@ namespace YSB
     {
         int numA = inputA.size(),
             numB = inputB.size();
-        resultA.reserve(numA);
-        resultB.reserve(numB);
+        // resultA.reserve(numA);
+        // resultB.reserve(numB);
 
         // for (int iA = 0; iA < numA; ++iA)
         // {
@@ -35,26 +36,30 @@ namespace YSB
         std::vector<Segment<T, 3>> result;
         intsType type;
 
-        for (int iA = 0; iA < numA + numB; ++iA)
+        for (int idA = 0; idA < numA + numB; ++idA)
         {
-            for (int iB = iA + 1; iB < numA + numB; ++iB)
+            for (int idB = idA + 1; idB < numA + numB; ++idB)
             {
+                int iA, iB;
                 result.clear();
-                int inYinsetA = iA < numA ? (1) : (2),
-                    inYinsetB = iB < numA ? (1) : (2);
+                int inYinsetA = idA < numA ? (1) : (2),
+                    inYinsetB = idB < numA ? (1) : (2);
                 if (inYinsetA == 1 && inYinsetB == 1)
                 {
+                    iA = idA;
+                    iB = idB;
                     type = inputA[iA].intersect(inputA[iB], result, tol);
                 }
                 else if (inYinsetA == 1 && inYinsetB == 2)
                 {
-                    iB -= numA;
+                    iA = idA;
+                    iB = idB - numA;
                     type = inputA[iA].intersect(inputB[iB], result, tol);
                 }
                 else if (inYinsetA == 2 && inYinsetB == 2)
                 {
-                    iA -= numA;
-                    iB -= numA;
+                    iA = idA - numA;
+                    iB = idB - numA;
                     type = inputB[iA].intersect(inputB[iB], result, tol);
                 }
                 else
@@ -101,8 +106,25 @@ namespace YSB
                     iSeg.neighborhood().push_back(std::make_pair(inYinsetB, iB));
                     //   iSeg.IntersectionSeg() = 1;
 
-                    resultA[iA].first.push_back(iSeg);
-                    resultB[iB].first.push_back(iSeg);
+                    if (inYinsetA == 1 && inYinsetB == 1)
+                    {
+                        resultA[iA].first.push_back(iSeg);
+                        resultA[iB].first.push_back(iSeg);
+                    }
+                    else if (inYinsetA == 1 && inYinsetB == 2)
+                    {
+                        resultA[iA].first.push_back(iSeg);
+                        resultB[iB].first.push_back(iSeg);
+                    }
+                    else if (inYinsetA == 2 && inYinsetB == 2)
+                    {
+                        resultB[iA].first.push_back(iSeg);
+                        resultB[iB].first.push_back(iSeg);
+                    }
+                    else
+                    {
+                        assert(false && "TriangleIntersection::iA,iB.");
+                    }
                 }
             }
         }
