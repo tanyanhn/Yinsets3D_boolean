@@ -49,9 +49,9 @@ namespace YSB
 
         friend struct FindNearTriangle<T>;
         friend struct RemoveOverlap<T>;
-        friend void RemoveTriangle(std::vector<Triangle<T, 3>> &vecTriA,
-                                   std::vector<Triangle<T, 3>> &vecTriB,
-                                   std::vector<Triangle<T, 3>> &vecTri, const int id);
+        friend void RemoveTriangle<T>(std::vector<Triangle<T, 3>> &vecTriA,
+                                      std::vector<Triangle<T, 3>> &vecTriB,
+                                      std::vector<Triangle<T, 3>> &vecTri, const int id);
 
     private:
         Point<T, Dim> vertex[3];
