@@ -68,14 +68,14 @@ namespace YSB
                         }
                         else
                         {
-                            if (vecTriA[TriangulateA[iA][ismalltriA]].equal(vecTriB[TriangulateB[iOverlap][ismalltriB]], tol))
+                            if (vecTriA[TriangulateA[iA][ismalltriA]].equal(vecTriB[TriangulateB[iB][ismalltriB]], tol))
                             {
                                 if (dot(vecTriA[TriangulateA[iA][ismalltriA]].normVec(),
-                                        vecTriB[TriangulateB[iOverlap][ismalltriB]].normVec()) < 0)
+                                        vecTriB[TriangulateB[iB][ismalltriB]].normVec()) < 0)
                                 {
                                     RemoveTriangle(vecTriA, vecTriB, vecTriA, TriangulateA[iA][ismalltriA]);
                                 }
-                                RemoveTriangle(vecTriA, vecTriB, vecTriB, TriangulateB[iOverlap][ismalltriB]);
+                                RemoveTriangle(vecTriA, vecTriB, vecTriB, TriangulateB[iB][ismalltriB]);
                             }
                         }
                     }

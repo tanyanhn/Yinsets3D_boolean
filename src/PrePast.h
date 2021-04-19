@@ -48,6 +48,7 @@ namespace YSB
             {
                 Triangle<T, 3> &tri = vecTri[F.back()];
                 vecF.emplace_back(inYinset, F.back());
+                markF[tri.id()] = 0;
                 F.pop_back();
                 tri.inF() = std::make_pair(inYinset, vecSP.size());
 
@@ -57,7 +58,7 @@ namespace YSB
                     if (e.IntersectionSeg() == 0)
                     {
                         std::pair<int, int> nearTri;
-                        nearTri = (e.neighborhood()[0].second != tri.id()) ? e.neighborhood()[1] : e.neighborhood()[0];
+                        nearTri = (e.neighborhood()[0].second != tri.id()) ? e.neighborhood()[0] : e.neighborhood()[1];
                         // if (inYinset == 1)
                         //     nearTri = FNToperator(tri, e, vecTri, std::vector<Triangle<T, 3>>(), tol);
                         // else if (inYinset == 2)

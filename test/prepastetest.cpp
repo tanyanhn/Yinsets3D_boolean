@@ -7,7 +7,7 @@ using namespace std;
 
 TEST_CASE("Prepaste", "[pp1]")
 {
-    Real r1[3] = {0.0, -1.0, 0.0}, r2[3] = {-1.0, 0.0, 0.0}, r3[3] = {1.0, 0.0, 0.0}, r4[3] = {0.0, 1.0, 0.0};
+    Real r1[3] = {0.0, -1.0, 0.0}, r2[3] = {1.0, 0.0, 0.0}, r3[3] = {-1.0, 0.0, 0.0}, r4[3] = {0.0, 1.0, 0.0};
     Real r5[3] = {0.0, 0.0, 3.0};
     Point<Real, 3> tp1(r1), tp2(r2), tp3(r3), tp4(r4), tp5(r5);
     Point<Real, 3> tripoints1[] = {tp1, tp2, tp5}, tripoints2[] = {tp2, tp4, tp5},
@@ -17,7 +17,7 @@ TEST_CASE("Prepaste", "[pp1]")
     vector<Triangle<Real, 3>> triA{tri1, tri2, tri3, tri4, tri5, tri6};
     for (int i = 0; i < triA.size(); i++)
     {
-        for (int k = 0; i < 3; k++)
+        for (int k = 0; k < 3; k++)
         {
             triA[i].ed(k).neighborhood().push_back(make_pair(0, i));
             for (int j = 0; j < triA.size(); j++)
@@ -39,9 +39,13 @@ TEST_CASE("Prepaste", "[pp1]")
     triA[1].ed(2).IntersectionSeg() = 1;
     triA[2].ed(2).IntersectionSeg() = 1;
     triA[3].ed(1).IntersectionSeg() = 1;
-    triA[0].ed(2).IntersectionSeg() = 1;
-    triA[0].ed(0).IntersectionSeg() = 1;
+    triA[4].ed(2).IntersectionSeg() = 1;
+    triA[5].ed(0).IntersectionSeg() = 1;
     PrePast<Real> pp;
     pp(triA, 0);
     REQUIRE(pp.vecSP.size() == 2);
+    REQUIRE(pp.vecSP[0].tris().size() == 3);
+    REQUIRE(pp.vecSP[0].bound().size() == 3);
+    REQUIRE(pp.vecSP[1].tris().size() == 3); 
+    REQUIRE(pp.vecSP[1].bound().size() == 3);
 }
