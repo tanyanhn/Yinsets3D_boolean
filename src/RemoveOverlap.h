@@ -21,96 +21,102 @@ namespace YSB
                         std::vector<Triangle<T, 3>> &vecTriB,
                         std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultA,
                         std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultB,
-                        Real tol = TOL);
+                        Real tol = TOL)
+        {
+            this->TriangulateRemove(TriangulateA, TriangulateB, vecTriA, vecTriB, resultA, resultB, tol);
+        }
+
+        void TriangulateRemove(std::map<int, std::vector<int>> &TriangulateA,
+                               std::map<int, std::vector<int>> &TriangulateB,
+                               std::vector<Triangle<T, 3>> &vecTriA,
+                               std::vector<Triangle<T, 3>> &vecTriB,
+                               std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultA,
+                               std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultB,
+                               Real tol);
         // void RemoveTriangle(std::vector<Triangle<T, 3>> &vecTri, const int id);
     };
 
     template <class T>
-    inline void RemoveOverlap<T>::operator()(std::map<int, std::vector<int>> &TriangulateA,
-                                             std::map<int, std::vector<int>> &TriangulateB,
-                                             std::vector<Triangle<T, 3>> &vecTriA,
-                                             std::vector<Triangle<T, 3>> &vecTriB,
-                                             std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultA,
-                                             std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultB,
-                                             Real tol)
+    inline void RemoveOverlap<T>::TriangulateRemove(std::map<int, std::vector<int>> &TriangulateA,
+                                                    std::map<int, std::vector<int>> &TriangulateB,
+                                                    std::vector<Triangle<T, 3>> &vecTriA,
+                                                    std::vector<Triangle<T, 3>> &vecTriB,
+                                                    std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultA,
+                                                    std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultB,
+                                                    Real tol)
     {
-        int numA = resultA.size();
-        for (int iA = 0; iA < numA; ++iA)
+        for (auto &&it : resultA)
         {
-            int numOverlap = resultA[iA].second.size();
+            int iA = it.first;
+            int numOverlap = it.second.size();
             for (int iOverlap = 0; iOverlap < numOverlap; ++iOverlap)
             {
-                int numsmalltriA = TriangulateA[iA].size(), numsmalltriB;
-                int iB = resultA[iA].second[iOverlap].second;
-                if (resultA[iA].second[iOverlap].first == 1)
+                auto &TriangulateAiA = TriangulateA[iA];
+                int numsmalltriA = TriangulateAiA.size(), numsmalltriB;
+                int iB = it.second[iOverlap].second;
+                std::vector<int> tmp[2];
+                if (it.second[iOverlap].first == 1)
                 {
-                    numsmalltriB = TriangulateA[iB].size();
+                    tmp[it.second[iOverlap].first] = TriangulateA[iB];
                 }
                 else
                 {
-                    numsmalltriB = TriangulateB[iB].size();
+                    tmp[it.second[iOverlap].first] = TriangulateB[iB];
                 }
+                auto &TriangulateBiB = tmp[it.second[iOverlap].first];
+                numsmalltriB = TriangulateBiB.size();
+
                 for (int ismalltriA = 0; ismalltriA < numsmalltriA; ++ismalltriA)
                 {
                     for (int ismalltriB = 0; ismalltriB < numsmalltriB; ++ismalltriB)
                     {
-                        if (resultA[iA].second[iOverlap].first == 1)
+                        if (vecTriA[TriangulateAiA[ismalltriA]].equal(vecTriA[TriangulateBiB[ismalltriB]], tol))
                         {
-                            if (vecTriA[TriangulateA[iA][ismalltriA]].equal(vecTriA[TriangulateA[iB][ismalltriB]], tol))
+                            if (dot(vecTriA[TriangulateAiA[ismalltriA]].normVec(),
+                                    vecTriA[TriangulateBiB[ismalltriB]].normVec()) < 0)
                             {
-                                if (dot(vecTriA[TriangulateA[iA][ismalltriA]].normVec(),
-                                        vecTriA[TriangulateA[iB][ismalltriB]].normVec()) < 0)
-                                {
-                                    RemoveTriangle(vecTriA, vecTriB, vecTriA, TriangulateA[iA][ismalltriA]);
-                                }
-                                RemoveTriangle(vecTriA, vecTriB, vecTriA, TriangulateA[iB][ismalltriB]);
+                                RemoveTriangle(vecTriA, vecTriB, vecTriA, TriangulateAiA[ismalltriA]);
                             }
-                        }
-                        else
-                        {
-                            if (vecTriA[TriangulateA[iA][ismalltriA]].equal(vecTriB[TriangulateB[iB][ismalltriB]], tol))
-                            {
-                                if (dot(vecTriA[TriangulateA[iA][ismalltriA]].normVec(),
-                                        vecTriB[TriangulateB[iB][ismalltriB]].normVec()) < 0)
-                                {
-                                    RemoveTriangle(vecTriA, vecTriB, vecTriA, TriangulateA[iA][ismalltriA]);
-                                }
-                                RemoveTriangle(vecTriA, vecTriB, vecTriB, TriangulateB[iB][ismalltriB]);
-                            }
+                            RemoveTriangle(vecTriA, vecTriB, vecTriA, TriangulateBiB[ismalltriB]);
                         }
                     }
                 }
             }
         }
 
-        numA = resultB.size();
-        for (int iA = 0; iA < numA; ++iA)
+        for (auto &&it : resultB)
         {
-            int numOverlap = resultB[iA].second.size();
+            int iA = it.first;
+            int numOverlap = it.second.size();
             for (int iOverlap = 0; iOverlap < numOverlap; ++iOverlap)
             {
-                int numsmalltriA = TriangulateB[iA].size(), numsmalltriB;
-                int iB = resultB[iA].second[iOverlap].second;
-                if (resultB[iA].second[iOverlap].first == 1)
+                auto &TriangulateAiA = TriangulateB[iA];
+                int numsmalltriA = TriangulateAiA.size(), numsmalltriB;
+                int iB = it.second[iOverlap].second;
+                std::vector<int> tmp[2];
+                if (it.second[iOverlap].first == 1)
                 {
                     continue;
                 }
                 else
                 {
-                    numsmalltriB = TriangulateB[iB].size();
+                    tmp[it.second[iOverlap].first] = TriangulateB[iB];
                 }
+                auto &TriangulateBiB = tmp[it.second[iOverlap].first];
+                numsmalltriB = TriangulateBiB.size();
+
                 for (int ismalltriA = 0; ismalltriA < numsmalltriA; ++ismalltriA)
                 {
                     for (int ismalltriB = 0; ismalltriB < numsmalltriB; ++ismalltriB)
                     {
-                        if (vecTriB[TriangulateB[iA][ismalltriA]].equal(vecTriB[TriangulateB[iB][ismalltriB]], tol))
+                        if (vecTriA[TriangulateAiA[ismalltriA]].equal(vecTriA[TriangulateBiB[ismalltriB]], tol))
                         {
-                            if (dot(vecTriB[TriangulateB[iA][ismalltriA]].normVec(),
-                                    vecTriB[TriangulateB[iB][ismalltriB]].normVec()) < 0)
+                            if (dot(vecTriA[TriangulateAiA[ismalltriA]].normVec(),
+                                    vecTriA[TriangulateBiB[ismalltriB]].normVec()) < 0)
                             {
-                                RemoveTriangle(vecTriA, vecTriB, vecTriB, TriangulateB[iA][ismalltriA]);
+                                RemoveTriangle(vecTriA, vecTriB, vecTriA, TriangulateAiA[ismalltriA]);
                             }
-                            RemoveTriangle(vecTriA, vecTriB, vecTriB, TriangulateB[iB][ismalltriB]);
+                            RemoveTriangle(vecTriA, vecTriB, vecTriA, TriangulateBiB[ismalltriB]);
                         }
                     }
                 }

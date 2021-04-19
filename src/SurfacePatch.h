@@ -50,9 +50,9 @@ namespace YSB
 
         const std::vector<std::pair<int, int>> &tris() const { return vecTriangle; }
 
-        std::map<Segment<T, 3>, std::vector<std::pair<int, int>>> &bound() { return boundary; }
+        std::map<Segment<T, 3>, std::vector<std::pair<int, int>>, SegmentCompare> &bound() { return boundary; }
 
-        const std::map<Segment<T, 3>, std::vector<std::pair<int, int>>> &bound() const { return boundary; }
+        const std::map<Segment<T, 3>, std::vector<std::pair<int, int>>, SegmentCompare> &bound() const { return boundary; }
 
         bool IfRemoved() const { return removed; }
 

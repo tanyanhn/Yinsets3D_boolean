@@ -50,6 +50,7 @@ namespace YSB
             {
                 Triangle<T, 3> &tri = vecTri[F.back()];
                 vecF.emplace_back(idYinset, F.back());
+                markF[tri.id()] = 0;
                 F.pop_back();
                 ClipFaces[tri.inF().second].push_back({idYinset, vecSP.size()});
                 coClipFaces[vecSP.size()].push_back(tri.inF());
@@ -61,8 +62,7 @@ namespace YSB
                     if (e.IntersectionSeg() == 0)
                     {
                         std::pair<int, int> nearTri;
-                        nearTri = (e.neighborhood()[0].second != tri.id()) ? e.neighborhood()[1] : e.neighborhood()[0];
-                        // if (idYinset == 1)
+                        nearTri = (e.neighborhood()[0].second != tri.id()) ? e.neighborhood()[0] : e.neighborhood()[1];
                         //     nearTri = FNToperator(tri, e, vecTri, std::vector<Triangle<T, 3>>(), tol);
                         // else if (idYinset == 2)
                         //     nearTri = FNToperator(tri, e, std::vector<Triangle<T, 3>>(), vecTri, tol);
