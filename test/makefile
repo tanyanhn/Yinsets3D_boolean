@@ -41,6 +41,6 @@ prepaste : prepastetest.exe
 
 
 clean:
-	 rm -f *.exe  core
+	 rm -f *.exe  core *.ex
 	 
 	 

@@ -11,7 +11,9 @@ namespace YSB
     {
         using intsType = typename Triangle<T, 3>::intsType;
 
-        std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> resultA, resultB;
+        std::map<int, std::pair<std::vector<Segment<T, 3>>,
+                                std::vector<std::pair<int, int>>>>
+            resultA, resultB;
 
         void operator()(const std::vector<Triangle<T, 3>> &inputA, const std::vector<Triangle<T, 3>> &inputB, Real tol = TOL);
     };
