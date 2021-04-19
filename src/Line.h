@@ -39,14 +39,14 @@ namespace YSB
             return Line<T, Dim - 1>(fixpoint.project(d), direction.project(d));
         }
 
-        int majorDim() const
+        int majorDim(int k = 1) const
         {
             int md = 0;
             Vec<T, Dim> v = abs(direction);
             Real Lar = v[0];
             for (auto d = 1; d < Dim; ++d)
             {
-                if (Lar < v[d])
+                if (k * Lar < k * v[d])
                 {
                     md = d;
                     Lar = v[d];
