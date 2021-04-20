@@ -10,7 +10,7 @@ namespace YSB
     template <class T>
     struct Past
     {
-        GluingCompactSurface<T> vecGCS;
+        std::vector<GluingCompactSurface<T>> vecGCS;
 
         void combine(const std::vector<SurfacePatch<T>> &vecFA,
                      const std::vector<SurfacePatch<T>> &vecFB,
@@ -25,10 +25,10 @@ namespace YSB
                 {
                     for (auto &&it : Face.tris())
                     {
-                        if (it->first == 1)
-                            vecTriA[it->second].InF() = {1, size};
-                        else if (it->first == 2)
-                            vecTriB[it->second].InF() = {1, size};
+                        if (it.first == 1)
+                            vecTriA[it.second].inF() = {1, size};
+                        else if (it.first == 2)
+                            vecTriB[it.second].inF() = {1, size};
                     }
                     vecF.push_back(Face);
                     ++size;
@@ -41,10 +41,10 @@ namespace YSB
                 {
                     for (auto &&it : Face.tris())
                     {
-                        if (it->first == 1)
-                            vecTriA[it->second].InF() = {2, size};
-                        else if (it->first == 2)
-                            vecTriB[it->second].InF() = {2, size};
+                        if (it.first == 1)
+                            vecTriA[it.second].inF() = {2, size};
+                        else if (it.first == 2)
+                            vecTriB[it.second].inF() = {2, size};
                     }
                     vecF.push_back(Face);
                     ++size;
@@ -74,14 +74,15 @@ namespace YSB
             {
                 const SurfacePatch<T> &SFP = vecF[connectF.back()];
                 pastF.push_back(connectF.back());
+                markF[connectF.back()] = 0;
                 connectF.pop_back();
 
                 for (auto &&it : SFP.bound())
                 {
-                    const Segment<T, 3> &e = it->first;
-                    for (auto &&iTri : it->second)
+                    const Segment<T, 3> &e = it.first;
+                    for (auto &&iTri : it.second)
                     {
-                        const Triangle<T, 3> Tri, nearTri;
+                        Triangle<T, 3> Tri, nearTri;
                         if (iTri.first == 1)
                             Tri = vecTriA[iTri.second];
                         else if (iTri.first == 2)
