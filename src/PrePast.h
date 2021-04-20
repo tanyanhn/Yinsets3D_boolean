@@ -5,6 +5,7 @@
 #include "SurfacePatch.h"
 #include "TriangleCompare.h"
 #include "SegmentCompare.h"
+//#include "FindNearTriangle.h"
 #include <map>
 
 namespace YSB
@@ -12,18 +13,26 @@ namespace YSB
     template <class T>
     struct PrePast
     {
-        std::vector<SurfacePatch<T>> vecSP;
-        std::map<int, std::vector<std::pair<int, int>>> ClipFaces;
-        std::map<int, std::vector<std::pair<int, int>>> coClipFaces;
+        std::vector<SurfacePatch<T>> vecSPA, vecSPB;
+        std::map<std::pair<int, int>, std::vector<std::pair<int, int>>> ClipFaces;
+        std::map<std::pair<int, int>, std::vector<std::pair<int, int>>> coClipFaces;
         //std::vector<GluingCompactSurface<T>> vecGCS;
 
-        void initialize()
+        void operator()(
+            std::vector<Triangle<T, 3>> &vecTriA,
+            std::vector<Triangle<T, 3>> &vecTriB,
+            Real tol = TOL)
         {
-            vecSP.clear();
-            //vecGCS.clear();
+            this->operator()(vecTriA, 1, tol);
+            this->operator()(vecTriB, 2, tol);
         }
-        void operator()(std::vector<Triangle<T, 3>> &vecTri, const int idYinset, Real tol = TOL)
+
+        void operator()(
+            std::vector<Triangle<T, 3>> &vecTri,
+            const int idYinset, Real tol = TOL)
         {
+            std::vector<SurfacePatch<T>> *vecSPAB[2] = {&vecSPA, &vecSPB};
+            std::vector<SurfacePatch<T>> &vecSP = *(vecSPAB[(idYinset - 1)]);
             std::vector<int> F;
             std::vector<std::pair<int, int>> vecF;
             std::set<int> All;
@@ -32,6 +41,7 @@ namespace YSB
                      std::vector<std::pair<int, int>>,
                      SegmentCompare>
                 boundary(cmp);
+            FindNearTriangle<T> FNTOp;
             //FindNearTriangle<T> FNToperator;
             int size = vecTri.size();
             std::vector<int> markF(size, 1);
@@ -52,8 +62,8 @@ namespace YSB
                 vecF.emplace_back(idYinset, F.back());
                 markF[tri.id()] = 0;
                 F.pop_back();
-                ClipFaces[tri.inF().second].push_back({idYinset, vecSP.size()});
-                coClipFaces[vecSP.size()].push_back(tri.inF());
+                ClipFaces[tri.inF()].push_back({idYinset, vecSP.size()});
+                coClipFaces[{idYinset, vecSP.size()}].push_back(tri.inF());
                 tri.inF() = std::make_pair(idYinset, vecSP.size());
 
                 for (int iEdge = 0; iEdge < 3; ++iEdge)
@@ -100,7 +110,5 @@ namespace YSB
             }
         }
     };
-
 } // namespace YSB
-
 #endif // !PREPAST_H

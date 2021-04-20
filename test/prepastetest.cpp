@@ -42,10 +42,10 @@ TEST_CASE("Prepaste", "[pp1]")
     triA[4].ed(2).IntersectionSeg() = 1;
     triA[5].ed(0).IntersectionSeg() = 1;
     PrePast<Real> pp;
-    pp(triA, 0);
-    REQUIRE(pp.vecSP.size() == 2);
-    REQUIRE(pp.vecSP[0].tris().size() == 3);
-    REQUIRE(pp.vecSP[0].bound().size() == 3);
-    REQUIRE(pp.vecSP[1].tris().size() == 3); 
-    REQUIRE(pp.vecSP[1].bound().size() == 3);
+    pp(triA, 1);
+    REQUIRE(pp.vecSPA.size() == 2);
+    REQUIRE(pp.vecSPA[0].tris().size() == 3);
+    REQUIRE(pp.vecSPA[0].bound().size() == 3);
+    REQUIRE(pp.vecSPA[1].tris().size() == 3);
+    REQUIRE(pp.vecSPA[1].bound().size() == 3);
 }

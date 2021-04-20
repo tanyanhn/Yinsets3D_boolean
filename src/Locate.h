@@ -99,7 +99,9 @@ namespace YSB
     }
 
     template <class T>
-    inline int Locate<T>::operator()(const std::vector<Triangle<T, 3>> &yinset, const SurfacePatch<T> &face, Real tol)
+    inline int Locate<T>::operator()(
+        const std::vector<Triangle<T, 3>> &yinset,
+        const SurfacePatch<T> &face, Real tol)
     {
         const Triangle<T, 3> &tri = face.tris()[0];
         Point<T, 3> zero(0);
@@ -107,16 +109,19 @@ namespace YSB
         Point<T, 3> barycenter = zero +
                                  ((tri.vert(0) - zero) + (tri.vert(1) - zero) + (tri.vert(2) - zero)) / 3;
 
-        return this->operator()(yinset, barycenter, tol);
+        int rs = this->operator()(yinset, barycenter, tol);
+        assert(rs != 0 && "Locate shouldn't on Surface.");
+        return rs;
     }
 
     template <class T>
-    inline void Locate<T>::operator()(const std::vector<Triangle<T, 3>> &inputA,
-                                      const std::vector<Triangle<T, 3>> &inputB,
-                                      std::vector<Triangle<T, 3>> &vecTriA,
-                                      std::vector<Triangle<T, 3>> &vecTriB,
-                                      std::vector<SurfacePatch<T>> &vecSPA,
-                                      std::vector<SurfacePatch<T>> &vecSPB, Real tol)
+    inline void Locate<T>::operator()(
+        const std::vector<Triangle<T, 3>> &inputA,
+        const std::vector<Triangle<T, 3>> &inputB,
+        std::vector<Triangle<T, 3>> &vecTriA,
+        std::vector<Triangle<T, 3>> &vecTriB,
+        std::vector<SurfacePatch<T>> &vecSPA,
+        std::vector<SurfacePatch<T>> &vecSPB, Real tol)
     {
         for (auto &&iSP : vecSPA)
         {
