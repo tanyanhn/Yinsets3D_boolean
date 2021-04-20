@@ -91,8 +91,36 @@ int main()
     cout << "ctri's identity :" << ctri.id() << endl;
     **/
 
-    map<int, vector<int>> m;
-    m.insert({4, vector<int>(1, 3)});
+    // map<int, vector<int>> m;
+    // m.insert({4, vector<int>(1, 3)});
+
+    int size = 10, innersize = size * 100;
+    vector<map<int, int>> vecmap(size);
+    for (int i = 0; i < size; ++i)
+    {
+        for (int j = 0; j < innersize; ++j)
+        {
+            vecmap[i].insert({j, j});
+        }
+    }
+
+    for (int i = 0; i < size; ++i)
+    {
+        for (auto &&it : vecmap[i])
+        {
+            // it.second = -2;
+        }
+    }
+
+    for (int i = 0; i < size; i += 3)
+    {
+        auto it = vecmap[i].begin();
+        for (int j = 0; j < innersize; j += 100)
+        {
+            cout << "vecmap :" << i << ", " << j << " = " << it->second << endl;
+            advance(it, 100);
+        }
+    }
 
     return 0;
 }

@@ -35,8 +35,8 @@ namespace YSB
         {
             PointCompare pCmp(tol);
             SegmentCompare segCmp(tol);
-            std::set<Point<T, 3>, PointCompare> allP(pCmp);
-            std::set<Segment<T, 3>, SegmentCompare> allSeg(segCmp);
+            std::map<std::pair<int, int>, std::set<Point<T, 3>, PointCompare>> mapallP;
+            std::map<std::pair<int, int>, std::set<Segment<T, 3>, SegmentCompare>> mapallSeg;
             std::map<Point<T, 3>,
                      std::set<typename std::set<Segment<T, 3>, SegmentCompare>::iterator>,
                      PointCompare>
@@ -45,72 +45,157 @@ namespace YSB
 
             for (auto &&itRs : resultA)
             {
-                allP.clear();
-                allSeg.clear();
-                near.clear();
                 int idYinset = 1;
                 int mDim = inputA[itRs.first].majorDim();
                 auto normVec = inputA[itRs.first].normVec();
                 std::pair<int, int> idInput(idYinset, itRs.first);
                 done.insert(idInput);
 
+                mapallP[idInput] = std::set<Point<T, 3>, PointCompare>(pCmp);
+                mapallSeg[idInput] = std::set<Segment<T, 3>, SegmentCompare>(segCmp);
+                std::set<Point<T, 3>, PointCompare> &allP = mapallP[idInput];
+                std::set<Segment<T, 3>, SegmentCompare> &allSeg = mapallP[idInput];
+                near.clear();
+
                 this->clipSegment(itRs, allP, allSeg, near, pCmp, segCmp, tol);
                 this->addSegment(idInput, allP, allSeg, near, mDim, segCmp, tol);
                 this->generatorTriangle(inputA[itRs.first], idInput, allSeg, near, normVec,
                                         vecTriA, TriangulateA, pCmp, tol);
-
-                for (auto &&idOverlapInput : itRs.second.second)
-                {
-                    if (done.find(idOverlapInput) == done.end())
-                    {
-                        if (idOverlapInput.first == 1)
-                        {
-                            auto it = resultA.find(idOverlapInput.second);
-                            assert(it != resultA.end() && "Triangulation::dealOverlap.");
-                            this->dealOverlap(inputA[idOverlapInput], allSeg, it);
-                        }
-                        else if (idOverlapInput.first == 2)
-                        {
-                            auto it = resultB.find(idOverlapInput.second);
-                            assert(it != resultB.end() && "Triangulation::dealOverlap.");
-                            this->dealOverlap(inputB[idOverlapInput], allSeg, it);
-                        }
-                    }
-                }
+                this->addSegmentToOverlap(itRs.second.second, done, allSeg,
+                                          inputA, inputB, resultA, resultB);
             }
 
             for (auto &&itRs : resultB)
             {
-                allP.clear();
-                allSeg.clear();
-                near.clear();
                 int idYinset = 2;
                 int mDim = inputB[itRs.first].majorDim();
                 auto normVec = inputB[itRs.first].normVec();
                 std::pair<int, int> idInput(idYinset, itRs.first);
                 done.insert(idInput);
 
+                mapallP[idInput] = std::set<Point<T, 3>, PointCompare>(pCmp);
+                mapallSeg[idInput] = std::set<Segment<T, 3>, SegmentCompare>(segCmp);
+                std::set<Point<T, 3>, PointCompare> &allP = mapallP[idInput];
+                std::set<Segment<T, 3>, SegmentCompare> &allSeg = mapallP[idInput];
+                near.clear();
+
                 this->clipSegment(itRs, allP, allSeg, near, pCmp, segCmp, tol);
-                this->addSegment(idInput, allP, allSeg, near, mDim, segCmp, tol);
+                this->addSegment(idInput, itRs.second.second, allP, allSeg, near, mDim, segCmp, tol);
                 this->generatorTriangle(inputB[itRs.first], idInput, allSeg, near, normVec,
                                         vecTriB, TriangulateB, pCmp, tol);
+                this->addSegmentToOverlap(itRs.second.second, done, allSeg,
+                                          inputA, inputB, resultA, resultB);
+            }
 
-                for (auto &&idOverlapInput : itRs.second.second)
+            this->updateEdgeNeighbor();
+        }
+
+        void updateEdgeNeighbor()
+        {
+            for (auto &&tri : vecTriA)
+            {
+                for (int ie = 0; ie < 3; ++ie)
                 {
-                    if (done.find(idOverlapInput) == done.end())
+                    auto &edge = tri.ed(ie);
+                    auto &oldNeighbor = edge.neighborhood();
+                    std::vector<std::pair<int, int>> newNeighbor;
+                    for (auto &&idInput : oldNeighbor)
                     {
-                        if (idOverlapInput.first == 1)
+                        if (idInput.first == 1)
                         {
-                            auto it = resultA.find(idOverlapInput.second);
-                            assert(it != resultA.end() && "Triangulation::dealOverlap.");
-                            this->dealOverlap(inputA[idOverlapInput], allSeg, it);
+                            for (auto &&idNeighborTri : TriangulateA)
+                            {
+                                auto &neighborTri = vecTriA[idNeighborTri];
+                                if (neighborTri.edgeVec(edge) != -1)
+                                {
+                                    newNeighbor.push_back({idInput.first, idNeighborTri});
+                                }
+                            }
                         }
-                        else if (idOverlapInput.first == 2)
+                        if (idInput.first == 2)
                         {
-                            auto it = resultB.find(idOverlapInput.second);
-                            assert(it != resultB.end() && "Triangulation::dealOverlap.");
-                            this->dealOverlap(inputB[idOverlapInput], allSeg, it);
+                            for (auto &&idNeighborTri : TriangulateB)
+                            {
+                                auto &neighborTri = vecTriB[idNeighborTri];
+                                if (neighborTri.edgeVec(edge) != -1)
+                                {
+                                    newNeighbor.push_back({idInput.first, idNeighborTri});
+                                }
+                            }
                         }
+                    }
+
+                    tri.ed(ie).neighborhood() = newNeighbor;
+                    if (newNeighbor.size() > 2)
+                        tri.ed(ie).IntersectionSeg() = 1;
+                }
+            }
+
+            for (auto &&tri : vecTriB)
+            {
+                for (int ie = 0; ie < 3; ++ie)
+                {
+                    auto &edge = tri.ed(ie);
+                    auto &oldNeighbor = edge.neighborhood();
+                    std::vector<std::pair<int, int>> newNeighbor;
+
+                    for (auto &&idInput : oldNeighbor)
+                    {
+                        if (idInput.first == 1)
+                        {
+                            for (auto &&idNeighborTri : TriangulateA)
+                            {
+                                auto &neighborTri = vecTriA[idNeighborTri];
+                                if (neighborTri.edgeVec(edge) != -1)
+                                {
+                                    newNeighbor.push_back({idInput.first, idNeighborTri});
+                                }
+                            }
+                        }
+                        if (idInput.first == 2)
+                        {
+                            for (auto &&idNeighborTri : TriangulateB)
+                            {
+                                auto &neighborTri = vecTriB[idNeighborTri];
+                                if (neighborTri.edgeVec(edge) != -1)
+                                {
+                                    newNeighbor.push_back({idInput.first, idNeighborTri});
+                                }
+                            }
+                        }
+                    }
+
+                    tri.ed(ie).neighborhood() = newNeighbor;
+                    if (newNeighbor.size() > 2)
+                        tri.ed(ie).IntersectionSeg() = 1;
+                }
+            }
+        }
+
+        void addSegmentToOverlap(
+            const std::vector<std::pair<int, int>> &allOverlap,
+            const std::set<std::pair<int, int>> &done,
+            const std::set<Segment<T, 3>, SegmentCompare> &allSeg,
+            const std::vector<Triangle<T, 3>> &inputA,
+            const std::vector<Triangle<T, 3>> &inputB,
+            std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultA,
+            std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultB)
+        {
+            for (auto &&idOverlapInput : allOverlap)
+            {
+                if (done.find(idOverlapInput) == done.end())
+                {
+                    if (idOverlapInput.first == 1)
+                    {
+                        auto it = resultA.find(idOverlapInput.second);
+                        assert(it != resultA.end() && "Triangulation::dealOverlap.");
+                        this->dealOverlap(inputA[idOverlapInput], allSeg, it);
+                    }
+                    else if (idOverlapInput.first == 2)
+                    {
+                        auto it = resultB.find(idOverlapInput.second);
+                        assert(it != resultB.end() && "Triangulation::dealOverlap.");
+                        this->dealOverlap(inputB[idOverlapInput], allSeg, it);
                     }
                 }
             }
@@ -121,7 +206,7 @@ namespace YSB
             const std::set<Segment<T, 3>, SegmentCompare> &allSeg,
             typename std::map<int,
                               std::pair<std::vector<Segment<T, 3>>,
-                                        std::vector<std::pair<int, int>>>>::iterator
+                                        std::vector<std::pair<int, int>>>>::iterator &
                 itRs,
             Real tol)
         {
@@ -134,15 +219,15 @@ namespace YSB
         }
 
         void generatorTriangle(
-            const Triangle<T, 3> Tri,
-            const std::pair<int, int> idInput,
+            const Triangle<T, 3> &Tri,
+            const std::pair<int, int> &idInput,
             const std::set<Segment<T, 3>, SegmentCompare> &allSeg,
             const std::map<Point<T, 3>,
                            std::set<typename std::set<Segment<T, 3>, SegmentCompare>::iterator>,
                            PointCompare> &near,
             const Vec<T, 3> normVec,
-            std::vector<Triangle<T, 3>> vecTri,
-            std::map<int, std::vector<int>> Triangulate,
+            std::vector<Triangle<T, 3>> &vecTri,
+            std::map<int, std::vector<int>> &Triangulate,
             const PointCompare &pCmp,
             Real tol = TOL)
         {
@@ -315,6 +400,7 @@ namespace YSB
 
         void addSegment(
             const std::pair<int, int> &idInput,
+            const std::vector<std::pair<int, int>> &allOverlap,
             const std::set<Point<T, 3>, PointCompare> &allP,
             std::set<Segment<T, 3>, SegmentCompare> &allSeg,
             std::map<Point<T, 3>,
@@ -323,12 +409,15 @@ namespace YSB
             const SegmentCompare &segCmp,
             const int mDim, Real tol = TOL)
         {
+            std::vector<std::pair<int, int>> newSegNeighbor(allOverlap);
+            newSegNeighbor.push_back(idInput);
+
             for (auto itp0 = allP.begin(); itp0 != --allP.end(); ++itp0)
             {
                 for (auto itp1 = std::next(itp0); itp1 != allP.end(); ++itp1)
                 {
 
-                    Segment<T, 3> newSeg(*itp0, *itp1, std::vector<std::pair<int, int>>(1, idInput));
+                    Segment<T, 3> newSeg(*itp0, *itp1, newSegNeighbor);
                     int exist = false;
                     for (auto &&itSeg : near[*itp0])
                     {

@@ -39,6 +39,9 @@ triintersect : triintersecttest.exe
 prepaste : prepastetest.exe
 	./prepastetest.exe
 
+test : test.cpp
+	g++ -o test.exe test.cpp && ./test.exe
+
 
 clean:
 	 rm -f *.exe  core *.ex
