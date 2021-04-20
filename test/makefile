@@ -3,7 +3,7 @@ CPPFLAGS = -O0 -g -D_GLIBCXX_DEBUG -std=c++17
 
 .PHONY: clean clear test run all doxygen
 
-all : plane triangle findneartriangle triintersect
+all : plane triangle findneartriangle triintersect prepaste
 
 
 platest.exe : catchmain.o planetest.cpp

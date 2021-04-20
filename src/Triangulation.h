@@ -87,10 +87,10 @@ namespace YSB
                                           inputA, inputB, resultA, resultB);
             }
 
-            this->updateEdgeNeighbor();
+            this->updateEdgeNeighbor(tol);
         }
 
-        void updateEdgeNeighbor()
+        void updateEdgeNeighbor(Real tol = TOL)
         {
             for (auto &&tri : vecTriA)
             {
@@ -106,7 +106,7 @@ namespace YSB
                             for (auto &&idNeighborTri : TriangulateA)
                             {
                                 auto &neighborTri = vecTriA[idNeighborTri];
-                                if (neighborTri.edgeVec(edge) != -1)
+                                if (neighborTri.edgeVec(edge, tol) != -1)
                                 {
                                     newNeighbor.push_back({idInput.first, idNeighborTri});
                                 }
@@ -117,7 +117,7 @@ namespace YSB
                             for (auto &&idNeighborTri : TriangulateB)
                             {
                                 auto &neighborTri = vecTriB[idNeighborTri];
-                                if (neighborTri.edgeVec(edge) != -1)
+                                if (neighborTri.edgeVec(edge, tol) != -1)
                                 {
                                     newNeighbor.push_back({idInput.first, idNeighborTri});
                                 }
@@ -146,7 +146,7 @@ namespace YSB
                             for (auto &&idNeighborTri : TriangulateA)
                             {
                                 auto &neighborTri = vecTriA[idNeighborTri];
-                                if (neighborTri.edgeVec(edge) != -1)
+                                if (neighborTri.edgeVec(edge, tol) != -1)
                                 {
                                     newNeighbor.push_back({idInput.first, idNeighborTri});
                                 }
@@ -157,7 +157,7 @@ namespace YSB
                             for (auto &&idNeighborTri : TriangulateB)
                             {
                                 auto &neighborTri = vecTriB[idNeighborTri];
-                                if (neighborTri.edgeVec(edge) != -1)
+                                if (neighborTri.edgeVec(edge, tol) != -1)
                                 {
                                     newNeighbor.push_back({idInput.first, idNeighborTri});
                                 }
@@ -294,8 +294,11 @@ namespace YSB
                      itSeg2 = markEdge.find(Segment<T, 3>(p2, p0));
 
                 Segment<T, 3> segs[3] = {itSeg0->first, itSeg1->first, itSeg2->first};
+                Triangle<T, 3> tri(segs);
+                tri.id() = vecTri.size();
+                tri.InF() = Tri.InF();
                 Triangulate[idInput.second].push_back(vecTri.size());
-                vecTri.emplace_back(segs);
+                vecTri.push_back(tri);
 
                 assert(itSeg1 != markEdge.end() && "generatorTriangle itSeg1 wrong.");
                 assert(itSeg1 != markEdge.end() && "generatorTriangle itSeg2 wrong.");
