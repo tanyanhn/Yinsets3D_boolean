@@ -1,5 +1,6 @@
 
-CPPFLAGS = -O0 -g -D_GLIBCXX_DEBUG -std=c++17
+# CPPFLAGS = -g -std=c++17
+CPPFLAGS = -std=c++17
 
 .PHONY: clean clear test run all doxygen
 
@@ -21,6 +22,9 @@ triintersecttest.exe : catchmain.o triintersecttest.cpp
 prepastetest.exe : catchmain.o prepastetest.cpp
 	g++ -o $@ catchmain.o prepastetest.cpp $(CPPFLAGS)
 
+removeoverlaptest.exe : catchmain.o removeoverlaptest.cpp
+	g++ -o $@ catchmain.o removeoverlaptest.cpp $(CPPFLAGS)
+
 catchmain.o : catchmain.cpp
 
 
@@ -39,6 +43,8 @@ triintersect : triintersecttest.exe
 prepaste : prepastetest.exe
 	./prepastetest.exe
 
+removeoverlap : removeoverlaptest.exe
+	./removeoverlaptest.exe
 
 clean:
 	 rm -f *.exe  core
