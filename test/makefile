@@ -25,6 +25,12 @@ prepastetest.exe : catchmain.o prepastetest.cpp
 removeoverlaptest.exe : catchmain.o removeoverlaptest.cpp
 	g++ -o $@ catchmain.o removeoverlaptest.cpp $(CPPFLAGS)
 
+pastetest.exe : catchmain.o pastetest.cpp
+	g++ -o $@ catchmain.o pastetest.cpp $(CPPFLAGS)
+
+GCStest.exe : catchmain.o GCStest.cpp
+	g++ -o $@ catchmain.o GCStest.cpp $(CPPFLAGS)
+
 catchmain.o : catchmain.cpp
 
 
@@ -45,6 +51,12 @@ prepaste : prepastetest.exe
 
 removeoverlap : removeoverlaptest.exe
 	./removeoverlaptest.exe
+
+paste : pastetest.exe
+	./pastetest.exe
+
+GCS : GCStest.exe
+	./GCStest.exe
 
 clean:
 	 rm -f *.exe  core
