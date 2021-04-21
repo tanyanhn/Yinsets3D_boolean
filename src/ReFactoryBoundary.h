@@ -1,5 +1,5 @@
-#ifndef REDUCEINTERSECTION_H
-#define REDUCEINTERSECTION_H
+#ifndef REFACTORYBOUNDARY_H
+#define REFACTORYBOUNDARY_H
 
 #include "SurfacePatch.h"
 #include "RemoveOverlap.h"
@@ -75,6 +75,8 @@ namespace YSB
                                 seg.neighborhood().erase(eit, seg.neighborhood().end());
                             }
 
+                            // For each SP, boundary remain at most one triangle.
+                            //And past other triangle by good pair. adjust neighbor.
                             int t0 = 0, t1 = 0;
                             while (triangles.size() > 1)
                             {
@@ -97,6 +99,7 @@ namespace YSB
                                     t0 = t1;
                             }
 
+                            // deal the last is not pasted triangle.neighbor and boundary or erase the boundary.
                             it.second.clear();
                             if (triangles.size() == 1)
                             {
@@ -106,6 +109,8 @@ namespace YSB
                                 (*(vecTriar[idVecSP.first - 1]))[triangles[0].id()].ed(ie) = seg;
                             }
 
+                            // Get the boundary also contained by which SP and GCS.
+                            // And adjust these boundary and triangle.ed.
                             auto idOtherTris = seg.neighborhood();
 
                             std::set<std::pair<int, int>> idOtherSPs, idOtherGCSs;
@@ -129,6 +134,8 @@ namespace YSB
                                 (*(vecSPar[itSP.first - 1]))[itSP.second].bound().insert({seg, se});
                             }
 
+                            // while only one GCS contain the seg. erase the intersection
+                            // And past the GCS' s ClipFaces  SPs cross seg by good pair.
                             if (idOtherGCSs.size() == 1)
                             {
                                 All.insert(*(idOtherGCSs.begin()));
@@ -142,6 +149,7 @@ namespace YSB
                                     triangles.push_back((*(vecTriar[idTri.first - 1]))[idTri.second]);
                                 }
 
+                                // Past by good pair.
                                 int t0 = 0, t1 = 0;
                                 while (triangles.size() > 1)
                                 {
@@ -158,6 +166,7 @@ namespace YSB
                                         (*(vecTriar[idVecSP.first - 1]))[triangles[t0].id()].ed(ie0).IntersectionSeg() = 0;
                                         (*(vecTriar[idVecSP.first - 1]))[triangles[t1].id()].ed(ie1).IntersectionSeg() = 0;
 
+                                        // Past SP in the GCS get new SP cross seg by good pair.
                                         auto idSP = std::make_pair(triangles[t0].InF(), triangles[t1].InF());
                                         auto itcomp = comb.find(idSP);
                                         if (itcomp == comb.end())
@@ -179,28 +188,31 @@ namespace YSB
                                             ClipFaces[*(idOtherGCSs.begin())].push_back(comb[idSP]);
                                         }
 
-                                        if ((*(vecSPar[idSP.first.first - 1]))[comb[idSP]].bound()[seg].size() == 2)
-                                        {
-                                            (*(vecSPar[idSP.first.first - 1]))[comb[idSP]].bound().erase(seg);
-                                        }
-                                        else
-                                        {
-                                            Segment<T, 3> newseg(seg);
-                                            auto &remainder = (*(vecSPar[idSP.first.first - 1]))[comb[idSP]].bound()[seg];
-                                            for (auto pai = remainder.begin(); pai != remainder.end(); ++pai)
-                                            {
-                                                if (*pai == Neighbor[0] || *pai == Neighbor[1])
-                                                {
-                                                    remainder.erase(pai);
-                                                }
-                                            }
-                                            newseg.neighborhood() = remainder;
-                                            for (auto pai = remainder.begin(); pai != remainder.end(); ++pai)
-                                            {
-                                                int ie = (*(vecTriar[pai->first - 1]))[pai->second].edgeVec(seg);
-                                                (*(vecTriar[pai->first - 1]))[pai->second].ed(ie) = newseg;
-                                            }
-                                        }
+                                        // if ((*(vecSPar[idSP.first.first - 1]))[comb[idSP]].bound()[seg].size() == 2)
+                                        // {
+                                        //     (*(vecSPar[idSP.first.first - 1]))[comb[idSP]].bound().erase(seg);
+                                        // }
+                                        // else
+                                        // {
+                                        //     Segment<T, 3> newseg(seg);
+
+                                        // erase seg from new SP.boundary.
+                                        (*(vecSPar[idSP.first.first - 1]))[comb[idSP]].bound().erase(seg);
+
+                                        //     for (auto pai = remainder.begin(); pai != remainder.end(); ++pai)
+                                        //     {
+                                        //         if (*pai == Neighbor[0] || *pai == Neighbor[1])
+                                        //         {
+                                        //             remainder.erase(pai);
+                                        //         }
+                                        //     }
+                                        //     newseg.neighborhood() = remainder;
+                                        //     for (auto pai = remainder.begin(); pai != remainder.end(); ++pai)
+                                        //     {
+                                        //         int ie = (*(vecTriar[pai->first - 1]))[pai->second].edgeVec(seg);
+                                        //         (*(vecTriar[pai->first - 1]))[pai->second].ed(ie) = newseg;
+                                        //     }
+                                        // }
 
                                         triangles.erase(std::advance(triangles.begin(), t0));
                                         triangles.erase(std::advance(triangles.begin(), t1));
@@ -363,4 +375,4 @@ namespace YSB
 
 } // namespace YSB
 
-#endif // !REDUCEINTERSECTION_H
+#endif // !REFACTORYBOUNDARY_H

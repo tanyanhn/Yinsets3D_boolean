@@ -94,9 +94,11 @@
     ],
     "cSpell.ignoreWords": [
         "gcss",
+        "h",
         "id",
         "itcomp",
         "other",
+        "refactoryboundary",
         "triar",
         "vec"
     ]
