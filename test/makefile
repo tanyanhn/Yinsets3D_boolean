@@ -62,6 +62,6 @@ test : test.cpp
 
 
 clean:
-	 rm -f *.exe  core *.ex
+	rm -f *.exe  core *.ex
 	 
 	 
