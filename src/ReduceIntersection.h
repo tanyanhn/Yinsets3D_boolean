@@ -59,7 +59,7 @@ namespace YSB
 
                 for (auto &&idVecSP : vecIdVecSP)
                 {
-                    auto &boundary = (*(vecSPar[idVecSP.first]))[idVecSP.second].bound();
+                    auto &boundary = (*(vecSPar[idVecSP.first - 1]))[idVecSP.second].bound();
                     for (auto &&it : boundary)
                     {
                         Segment<T, 3> &seg = it->first;
@@ -69,9 +69,9 @@ namespace YSB
                             std::vector<std::pair<int, int>> Neighbor;
                             for (auto idTri : it.second)
                             {
-                                triangles.push_back((*(vecTriar[idTri.first]))[idTri.second]);
+                                triangles.push_back((*(vecTriar[idTri.first - 1]))[idTri.second]);
                                 auto eit = find(seg.neighborhood().begin(), seg.neighborhood().end(),
-                                                (*(vecTriar[idTri.first]))[idTri.second]);
+                                                (*(vecTriar[idTri.first - 1]))[idTri.second]);
                                 seg.neighborhood().erase(eit, seg.neighborhood().end());
                             }
 
@@ -86,10 +86,10 @@ namespace YSB
                                     Neighbor.clear();
                                     Neighbor.push_back({idVecSP.first, triangles[t0].id()});
                                     Neighbor.push_back({idVecSP.first, triangles[t1].id()});
-                                    (*(vecTriar[idVecSP.first]))[triangles[t0].id()].ed(ie0).neighborhood() = Neighbor;
-                                    (*(vecTriar[idVecSP.first]))[triangles[t1].id()].ed(ie1).neighborhood() = Neighbor;
-                                    (*(vecTriar[idVecSP.first]))[triangles[t0].id()].ed(ie0).IntersectionSeg() = 0;
-                                    (*(vecTriar[idVecSP.first]))[triangles[t1].id()].ed(ie1).IntersectionSeg() = 0;
+                                    (*(vecTriar[idVecSP.first - 1]))[triangles[t0].id()].ed(ie0).neighborhood() = Neighbor;
+                                    (*(vecTriar[idVecSP.first - 1]))[triangles[t1].id()].ed(ie1).neighborhood() = Neighbor;
+                                    (*(vecTriar[idVecSP.first - 1]))[triangles[t0].id()].ed(ie0).IntersectionSeg() = 0;
+                                    (*(vecTriar[idVecSP.first - 1]))[triangles[t1].id()].ed(ie1).IntersectionSeg() = 0;
                                     triangles.erase(std::advance(triangles.begin(), t0));
                                     triangles.erase(std::advance(triangles.begin(), t1));
                                 }
@@ -103,7 +103,7 @@ namespace YSB
                                 it.second.push_back({idVecSP.first, triangles[0].id()});
                                 seg.neighborhood().push_back({idVecSP.first, triangles[0].id()});
                                 int ie = triangles[0].edgeVec(it.first);
-                                (*(vecTriar[idVecSP.first]))[triangles[0].id()].ed(ie) = seg;
+                                (*(vecTriar[idVecSP.first - 1]))[triangles[0].id()].ed(ie) = seg;
                             }
 
                             auto idOtherTris = seg.neighborhood();
@@ -139,7 +139,7 @@ namespace YSB
                                 std::vector<std::pair<int, int>> Neighbor;
                                 for (auto idTri : it.second)
                                 {
-                                    triangles.push_back((*(vecTriar[idTri.first]))[idTri.second]);
+                                    triangles.push_back((*(vecTriar[idTri.first - 1]))[idTri.second]);
                                 }
 
                                 int t0 = 0, t1 = 0;
@@ -153,10 +153,10 @@ namespace YSB
                                         Neighbor.clear();
                                         Neighbor.push_back({idVecSP.first, triangles[t0].id()});
                                         Neighbor.push_back({idVecSP.first, triangles[t1].id()});
-                                        (*(vecTriar[idVecSP.first]))[triangles[t0].id()].ed(ie0).neighborhood() = Neighbor;
-                                        (*(vecTriar[idVecSP.first]))[triangles[t1].id()].ed(ie1).neighborhood() = Neighbor;
-                                        (*(vecTriar[idVecSP.first]))[triangles[t0].id()].ed(ie0).IntersectionSeg() = 0;
-                                        (*(vecTriar[idVecSP.first]))[triangles[t1].id()].ed(ie1).IntersectionSeg() = 0;
+                                        (*(vecTriar[idVecSP.first - 1]))[triangles[t0].id()].ed(ie0).neighborhood() = Neighbor;
+                                        (*(vecTriar[idVecSP.first - 1]))[triangles[t1].id()].ed(ie1).neighborhood() = Neighbor;
+                                        (*(vecTriar[idVecSP.first - 1]))[triangles[t0].id()].ed(ie0).IntersectionSeg() = 0;
+                                        (*(vecTriar[idVecSP.first - 1]))[triangles[t1].id()].ed(ie1).IntersectionSeg() = 0;
 
                                         auto idSP = std::make_pair(triangles[t0].InF(), triangles[t1].InF());
                                         auto itcomp = comb.find(idSP);
@@ -164,10 +164,10 @@ namespace YSB
                                         {
                                             comb.insert({idSP, make_pair(idSP.first.first, vecSPar[idSP.first.first]->size())});
                                             vecSPar[idSP.first.first].emplace_back(
-                                                (*(vecSPar[idSP.first.first]))[idSP.first.second],
-                                                (*(vecSPar[idSP.second.first]))[idSP.second.second]);
-                                            (*(vecSPar[idSP.first.first]))[idSP.first.second].IfRemoved() = true;
-                                            (*(vecSPar[idSP.second.first]))[idSP.second.second].IfRemoved() = true;
+                                                (*(vecSPar[idSP.first.first - 1]))[idSP.first.second],
+                                                (*(vecSPar[idSP.second.first - 1]))[idSP.second.second]);
+                                            (*(vecSPar[idSP.first.first - 1]))[idSP.first.second].IfRemoved() = true;
+                                            (*(vecSPar[idSP.second.first - 1]))[idSP.second.second].IfRemoved() = true;
 
                                             coClipFaces[comb[idSP]].push_back(*(idOtherGCSs.begin()));
                                             auto eit = find(ClipFaces[*(idOtherGCSs.begin())].begin(),
@@ -179,14 +179,14 @@ namespace YSB
                                             ClipFaces[*(idOtherGCSs.begin())].push_back(comb[idSP]);
                                         }
 
-                                        if ((*(vecSPar[idSP.first.first]))[comb[idSP]].bound()[seg].size() == 2)
+                                        if ((*(vecSPar[idSP.first.first - 1]))[comb[idSP]].bound()[seg].size() == 2)
                                         {
-                                            (*(vecSPar[idSP.first.first]))[comb[idSP]].bound().erase(seg);
+                                            (*(vecSPar[idSP.first.first - 1]))[comb[idSP]].bound().erase(seg);
                                         }
                                         else
                                         {
                                             Segment<T, 3> newseg(seg);
-                                            auto &remainder = (*(vecSPar[idSP.first.first]))[comb[idSP]].bound()[seg];
+                                            auto &remainder = (*(vecSPar[idSP.first.first - 1]))[comb[idSP]].bound()[seg];
                                             for (auto pai = remainder.begin(); pai != remainder.end(); ++pai)
                                             {
                                                 if (*pai == Neighbor[0] || *pai == Neighbor[1])
@@ -197,8 +197,8 @@ namespace YSB
                                             newseg.neighborhood() = remainder;
                                             for (auto pai = remainder.begin(); pai != remainder.end(); ++pai)
                                             {
-                                                int ie = (*(vecTriar[pai->first]))[pai->second].edgeVec(seg);
-                                                (*(vecTriar[pai->first]))[pai->second].ed(ie) = newseg;
+                                                int ie = (*(vecTriar[pai->first - 1]))[pai->second].edgeVec(seg);
+                                                (*(vecTriar[pai->first - 1]))[pai->second].ed(ie) = newseg;
                                             }
                                         }
 

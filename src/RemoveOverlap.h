@@ -45,6 +45,7 @@ namespace YSB
                                                     std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultB,
                                                     Real tol)
     {
+        std::vector<Triangle<T, 3>> *vecTriarr[2] = {&vecTriA, &vecTriB};
         for (auto &&it : resultA)
         {
             int iA = it.first;
@@ -54,34 +55,31 @@ namespace YSB
                 auto &TriangulateAiA = TriangulateA[iA];
                 int numsmalltriA = TriangulateAiA.size(), numsmalltriB;
                 int iB = it.second.second[iOverlap].second;
-<<<<<<< HEAD
                 std::vector<int> tmp[2];
-=======
-                std::vector<int> tmp[3];
->>>>>>> QiuyunhaoZJU-patch-2
-                if (it.second.second[iOverlap].first == 1)
+                int ivecB = it.second.second[iOverlap].first;
+                if (ivecB == 1)
                 {
-                    tmp[it.second.second[iOverlap].first] = TriangulateA[iB];
+                    tmp[ivecB - 1] = TriangulateA[iB];
                 }
                 else
                 {
-                    tmp[it.second.second[iOverlap].first] = TriangulateB[iB];
+                    tmp[ivecB - 1] = TriangulateB[iB];
                 }
-                auto &TriangulateBiB = tmp[it.second.second[iOverlap].first];
+                auto &TriangulateBiB = tmp[ivecB - 1];
                 numsmalltriB = TriangulateBiB.size();
 
                 for (int ismalltriA = 0; ismalltriA < numsmalltriA; ++ismalltriA)
                 {
                     for (int ismalltriB = 0; ismalltriB < numsmalltriB; ++ismalltriB)
                     {
-                        if (vecTriA[TriangulateAiA[ismalltriA]].equal(vecTriA[TriangulateBiB[ismalltriB]], tol))
+                        if (vecTriA[TriangulateAiA[ismalltriA]].equal((*(vecTriarr[ivecB - 1]))[TriangulateBiB[ismalltriB]], tol))
                         {
                             if (dot(vecTriA[TriangulateAiA[ismalltriA]].normVec(),
-                                    vecTriA[TriangulateBiB[ismalltriB]].normVec()) < 0)
+                                    (*(vecTriarr[ivecB - 1]))[TriangulateBiB[ismalltriB]].normVec()) < 0)
                             {
-                                RemoveTriangle(vecTriA, vecTriB, vecTriA, TriangulateAiA[ismalltriA]);
+                                RemoveTriangle(vecTriA, vecTriB, vecTriA, TriangulateAiA[ismalltriA], tol);
                             }
-                            RemoveTriangle(vecTriA, vecTriB, vecTriA, TriangulateBiB[ismalltriB]);
+                            RemoveTriangle(vecTriA, vecTriB, (*(vecTriarr[ivecB - 1])), TriangulateBiB[ismalltriB], tol);
                         }
                     }
                 }
@@ -97,34 +95,31 @@ namespace YSB
                 auto &TriangulateAiA = TriangulateB[iA];
                 int numsmalltriA = TriangulateAiA.size(), numsmalltriB;
                 int iB = it.second.second[iOverlap].second;
-<<<<<<< HEAD
                 std::vector<int> tmp[2];
-=======
-                std::vector<int> tmp[3];
->>>>>>> QiuyunhaoZJU-patch-2
-                if (it.second.second[iOverlap].first == 1)
+                int ivecB = it.second.second[iOverlap].first;
+                if (ivecB == 1)
                 {
                     continue;
                 }
                 else
                 {
-                    tmp[it.second.second[iOverlap].first] = TriangulateB[iB];
+                    tmp[ivecB - 1] = TriangulateB[iB];
                 }
-                auto &TriangulateBiB = tmp[it.second.second[iOverlap].first];
+                auto &TriangulateBiB = tmp[ivecB - 1];
                 numsmalltriB = TriangulateBiB.size();
 
                 for (int ismalltriA = 0; ismalltriA < numsmalltriA; ++ismalltriA)
                 {
                     for (int ismalltriB = 0; ismalltriB < numsmalltriB; ++ismalltriB)
                     {
-                        if (vecTriA[TriangulateAiA[ismalltriA]].equal(vecTriA[TriangulateBiB[ismalltriB]], tol))
+                        if (vecTriB[TriangulateAiA[ismalltriA]].equal((*(vecTriarr[ivecB - 1]))[TriangulateBiB[ismalltriB]], tol))
                         {
-                            if (dot(vecTriA[TriangulateAiA[ismalltriA]].normVec(),
-                                    vecTriA[TriangulateBiB[ismalltriB]].normVec()) < 0)
+                            if (dot(vecTriB[TriangulateAiA[ismalltriA]].normVec(),
+                                    (*(vecTriarr[ivecB - 1]))[TriangulateBiB[ismalltriB]].normVec()) < 0)
                             {
-                                RemoveTriangle(vecTriA, vecTriB, vecTriA, TriangulateAiA[ismalltriA]);
+                                RemoveTriangle(vecTriA, vecTriB, vecTriB, TriangulateAiA[ismalltriA], tol);
                             }
-                            RemoveTriangle(vecTriA, vecTriB, vecTriA, TriangulateBiB[ismalltriB]);
+                            RemoveTriangle(vecTriA, vecTriB, (*(vecTriarr[ivecB - 1])), TriangulateBiB[ismalltriB], tol);
                         }
                     }
                 }
@@ -135,7 +130,7 @@ namespace YSB
     template <class T>
     inline void RemoveTriangle(std::vector<Triangle<T, 3>> &vecTriA,
                                std::vector<Triangle<T, 3>> &vecTriB,
-                               std::vector<Triangle<T, 3>> &vecTri, const int id)
+                               std::vector<Triangle<T, 3>> &vecTri, const int id, Real tol)
     {
         if (vecTri[id].removed == true)
             return;
@@ -161,7 +156,7 @@ namespace YSB
                 if (iNeighTri->first == 1)
                 {
                     Triangle<T, 3> &neighTri = vecTriA[iNeighTri->second];
-                    int ie = neighTri.edgeVec(edge);
+                    int ie = neighTri.edgeVec(edge, tol);
                     Segment<T, 3> &neighSeg = neighTri.ed(ie);
 
                     std::vector<std::pair<int, int>>::iterator eit =
@@ -171,7 +166,7 @@ namespace YSB
                 else if (iNeighTri->first == 2)
                 {
                     Triangle<T, 3> &neighTri = vecTriB[iNeighTri->second];
-                    int ie = neighTri.edgeVec(edge);
+                    int ie = neighTri.edgeVec(edge, tol);
                     Segment<T, 3> &neighSeg = neighTri.ed(ie);
 
                     std::vector<std::pair<int, int>>::iterator eit =
