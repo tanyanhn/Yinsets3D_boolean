@@ -54,7 +54,11 @@ namespace YSB
                 auto &TriangulateAiA = TriangulateA[iA];
                 int numsmalltriA = TriangulateAiA.size(), numsmalltriB;
                 int iB = it.second.second[iOverlap].second;
+<<<<<<< HEAD
                 std::vector<int> tmp[2];
+=======
+                std::vector<int> tmp[3];
+>>>>>>> QiuyunhaoZJU-patch-2
                 if (it.second.second[iOverlap].first == 1)
                 {
                     tmp[it.second.second[iOverlap].first] = TriangulateA[iB];
@@ -93,7 +97,11 @@ namespace YSB
                 auto &TriangulateAiA = TriangulateB[iA];
                 int numsmalltriA = TriangulateAiA.size(), numsmalltriB;
                 int iB = it.second.second[iOverlap].second;
+<<<<<<< HEAD
                 std::vector<int> tmp[2];
+=======
+                std::vector<int> tmp[3];
+>>>>>>> QiuyunhaoZJU-patch-2
                 if (it.second.second[iOverlap].first == 1)
                 {
                     continue;

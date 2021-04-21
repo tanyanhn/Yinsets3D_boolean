@@ -72,7 +72,7 @@ namespace YSB
             }
         }
 
-        FacType calType(Real tol = TOL) const
+        FacType calType(Real tol = TOL)
         {
             for (auto i_tri = 0; i_tri < vecTriangle.size(); ++i_tri)
             {
@@ -82,8 +82,8 @@ namespace YSB
 
                 Triangle<T, 3> tri3D = vecTriangle[i_tri];
                 int mDim = tri3D.majorDim();
-                Vec<T, 3> outerVec(0);
-                Point<T, 3> zero(0);
+                Vec<T, 3> outerVec(0.0);
+                Point<T, 3> zero(0.0);
                 outerVec[mDim] = GreatValue;
                 Real t[3] = {
                     realdistrib(gen),
@@ -118,11 +118,11 @@ namespace YSB
                     tri.intersect(l, tmpRs, tol);
                     for (auto &&tmpP : tmpRs)
                     {
-                        if (tmpP < lowest.first)
+                        if (tmpP[mDim] < lowest.first[mDim])
                         {
                             lowest = {tmpP, i};
                         }
-                        if (tmpP > highest.first)
+                        if (tmpP[mDim] > highest.first[mDim])
                         {
                             highest = {tmpP, i};
                         }
@@ -139,11 +139,14 @@ namespace YSB
             assert(false && "calType() have trouble.");
         }
 
+        std::vector<Triangle<T, 3>> &tris() { return vecTriangle; }
+        const std::vector<Triangle<T, 3>> &tris() const { return vecTriangle; }
+
         FacType &Type() { return type; }
 
         const FacType &Type() const { return type; }
 
-        ~GluingCompactSurface();
+        //~GluingCompactSurface();
     };
 
 } // namespace YSB

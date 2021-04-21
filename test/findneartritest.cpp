@@ -4,9 +4,9 @@
 
 using namespace YSB;
 using namespace std;
-
+ 
 TEST_CASE("Fine near triangle", "[fnt1]")
-{
+{ 
   Real r1[3] = {1.0, 0.0, 0.0}, r2[3] = {-1.0, 0.0, 0.0}, r3[3] = {0.0, -2.0, 1.0}, r4[3] = {0.0, 2.0, 2.0};
   Real r5[3] = {0.0, 2.0, 0.0}, r6[3] = {0.0, 2.0, -1.0}, r7[3] = {0.0, 2.0, -3.0};
   Point<Real, 3> tp1(r1), tp2(r2), tp3(r3), tp4(r4), tp5(r5), tp6(r6), tp7(r7);
