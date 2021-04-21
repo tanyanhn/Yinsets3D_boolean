@@ -5,6 +5,7 @@
 #include "Line.h"
 #include <vector>
 #include "PointCompare.h"
+#include <set>
 
 namespace YSB
 {
@@ -29,7 +30,8 @@ namespace YSB
         {
             None = 0,
             One = 1,
-            Overlap = 2
+            Overlap = 2,
+            EndPoint = 3
         };
 
         friend struct FindNearTriangle<T>;
@@ -42,12 +44,15 @@ namespace YSB
 
     public:
         Segment() = default;
-        Segment(const Point<T, Dim> &stPoint, const Point<T, Dim> &fnPoint)
+        Segment(const Point<T, Dim> &stPoint, const Point<T, Dim> &fnPoint,
+                std::vector<std::pair<int, int>> n = std::vector<std::pair<int, int>>())
+            : neighbor(n)
         {
             endPoint[0] = stPoint;
             endPoint[1] = fnPoint;
         }
         Segment<T, Dim>(const Segment<T, Dim> &rhs)
+            : neighbor(rhs.neighbor)
         {
             endPoint[0] = rhs.endPoint[0], endPoint[1] = rhs.endPoint[1];
             neighbor = rhs.neighbor;
@@ -61,15 +66,6 @@ namespace YSB
             return *this;
         }
         ~Segment() = default;
-
-        // Projection
-        Segment<T, Dim - 1> project(int d) const
-        {
-            assert(d < Dim && "Segment::project d > Dim");
-            auto stp = endPoint[0]->project(d),
-                 fnp = endPoint[1]->project(d);
-            return Segment<T, Dim - 1>(stp, fnp);
-        }
 
         // Accessors
         Point<T, Dim> &operator[](int _d) { return endPoint[_d]; }
@@ -86,21 +82,45 @@ namespace YSB
 
         const int &IntersectionSeg() const { return intersectionSeg; }
 
+        //Combining neighbor
+        void combineNeighbor(const Segment<T, Dim> &rhs)
+        {
+            std::set<std::pair<int, int>> newitem(neighbor.begin(), neighbor.end());
+            for (auto &&id : rhs.neighbor)
+            {
+                newitem.insert(id);
+            }
+            neighbor.clear();
+            for (auto &&id : newitem)
+            {
+                neighbor.push_back(id);
+            }
+        }
+
         // Get majorDim that largest change Dim
-        int majorDim() const
+        int majorDim(int k = 1) const
         {
             int md = 0;
             Vec<T, Dim> v = abs(endPoint[1] - endPoint[0]);
             Real Lar = v[0];
             for (auto d = 1; d < Dim; ++d)
             {
-                if (Lar < v[d])
+                if (k * Lar < k * v[d])
                 {
                     md = d;
                     Lar = v[d];
                 }
             }
             return md;
+        }
+
+        // Projection
+        Segment<T, Dim - 1> project(int d) const
+        {
+            assert(d < Dim && "Segment::project d > Dim");
+            auto stp = endPoint[0]->project(d),
+                 fnp = endPoint[1]->project(d);
+            return Segment<T, Dim - 1>(stp, fnp);
         }
 
         // Estimate Point position with segment.
@@ -117,7 +137,8 @@ namespace YSB
                  bot = norm(v1);
             if (area / bot < tol)
             {
-                if (p[mDim] >= std::min(endPoint[0][mDim], endPoint[1][mDim]) && p[mDim] <= std::max(endPoint[0][mDim], endPoint[1][mDim]))
+                if (p[mDim] >= std::min(endPoint[0][mDim], endPoint[1][mDim]) &&
+                    p[mDim] <= std::max(endPoint[0][mDim], endPoint[1][mDim]))
                 {
                     return Inter;
                 }
@@ -158,6 +179,18 @@ namespace YSB
             return os;
         }
     };
+
+    template <class T, int Dim>
+    inline typename Segment<T, 2>::intsType
+    intersectSegSeg(
+        const Segment<T, Dim> &seg1, const Line<T, Dim> &l2, Real tol = TOL)
+    {
+        int mDim = seg1.majorDim(-1);
+        auto proSeg1 = seg1.project(),
+             proL2 = l2.project();
+
+        return intersectSegLine(proSeg1, proL2, std::vector<Point<T, 2>>(), tol);
+    }
 
     // intersect function in 2D, while parallel return 0, else return 1.
     template <class T>
@@ -208,10 +241,46 @@ namespace YSB
         return Segment<T, 2>::intsType::None;
     }
 
+    template <class T, int Dim>
+    inline typename Segment<T, 2>::intsType
+    intersectSegSeg(
+        const Segment<T, Dim> &seg1, const Segment<T, Dim> &seg2, Real tol = TOL)
+    {
+        int mDim = seg1.majorDim(-1);
+        auto proSeg1 = seg1.project(),
+             proSeg2 = seg2.project();
+
+        return intersectSegSeg(proSeg1, proSeg2, std::vector<Point<T, 2>>(), tol);
+    }
     template <class T>
     inline typename Segment<T, 2>::intsType
-    intersectSegSeg(const Segment<T, 2> &seg1, const Segment<T, 2> &seg2, std::vector<Point<T, 2>> &result, Real tol = TOL)
+    intersectSegSeg(
+        const Segment<T, 2> &seg1, const Segment<T, 2> &seg2,
+        std::vector<Point<T, 2>> &result, Real tol = TOL)
     {
+        // intersect on endpoint.
+        PointCompare cmp(tol);
+        if (cmp.compare(seg1[0], seg2[0]) == 0)
+        {
+            result.push_back(seg1[0]);
+            return Segment<T, 2>::intsType::EndPoint;
+        }
+        if (cmp.compare(seg1[0], seg2[1]) == 0)
+        {
+            result.push_back(seg1[0]);
+            return Segment<T, 2>::intsType::EndPoint;
+        }
+        if (cmp.compare(seg1[1], seg2[0]) == 0)
+        {
+            result.push_back(seg1[1]);
+            return Segment<T, 2>::intsType::EndPoint;
+        }
+        if (cmp.compare(seg1[1], seg2[1]) == 0)
+        {
+            result.push_back(seg1[1]);
+            return Segment<T, 2>::intsType::EndPoint;
+        }
+
         Point<T, 2> p1 = seg1[0], p2 = seg1[1],
                     p3 = seg2[0], p4 = seg2[1];
 

@@ -4,7 +4,7 @@ CPPFLAGS = -std=c++17
 
 .PHONY: clean clear test run all doxygen
 
-all : plane triangle findneartriangle triintersect
+all : plane triangle findneartriangle triintersect prepaste
 
 
 platest.exe : catchmain.o planetest.cpp
@@ -57,8 +57,11 @@ paste : pastetest.exe
 
 GCS : GCStest.exe
 	./GCStest.exe
+test : test.cpp
+	g++ -o test.exe test.cpp && ./test.exe
+
 
 clean:
-	 rm -f *.exe  core
+	 rm -f *.exe  core *.ex
 	 
 	 

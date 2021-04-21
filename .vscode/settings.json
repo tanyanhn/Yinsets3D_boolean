@@ -91,5 +91,13 @@
     },
     "cSpell.words": [
         "hasse"
+    ],
+    "cSpell.ignoreWords": [
+        "gcss",
+        "id",
+        "itcomp",
+        "other",
+        "triar",
+        "vec"
     ]
 }
