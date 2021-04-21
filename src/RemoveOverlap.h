@@ -48,22 +48,22 @@ namespace YSB
         for (auto &&it : resultA)
         {
             int iA = it.first;
-            int numOverlap = it.second.size();
+            int numOverlap = it.second.second.size();
             for (int iOverlap = 0; iOverlap < numOverlap; ++iOverlap)
             {
                 auto &TriangulateAiA = TriangulateA[iA];
                 int numsmalltriA = TriangulateAiA.size(), numsmalltriB;
-                int iB = it.second[iOverlap].second;
-                std::vector<int> tmp[2];
-                if (it.second[iOverlap].first == 1)
+                int iB = it.second.second[iOverlap].second;
+                std::vector<int> tmp[3];
+                if (it.second.second[iOverlap].first == 1)
                 {
-                    tmp[it.second[iOverlap].first] = TriangulateA[iB];
+                    tmp[it.second.second[iOverlap].first] = TriangulateA[iB];
                 }
                 else
                 {
-                    tmp[it.second[iOverlap].first] = TriangulateB[iB];
+                    tmp[it.second.second[iOverlap].first] = TriangulateB[iB];
                 }
-                auto &TriangulateBiB = tmp[it.second[iOverlap].first];
+                auto &TriangulateBiB = tmp[it.second.second[iOverlap].first];
                 numsmalltriB = TriangulateBiB.size();
 
                 for (int ismalltriA = 0; ismalltriA < numsmalltriA; ++ismalltriA)
@@ -87,22 +87,22 @@ namespace YSB
         for (auto &&it : resultB)
         {
             int iA = it.first;
-            int numOverlap = it.second.size();
+            int numOverlap = it.second.second.size();
             for (int iOverlap = 0; iOverlap < numOverlap; ++iOverlap)
             {
                 auto &TriangulateAiA = TriangulateB[iA];
                 int numsmalltriA = TriangulateAiA.size(), numsmalltriB;
-                int iB = it.second[iOverlap].second;
-                std::vector<int> tmp[2];
-                if (it.second[iOverlap].first == 1)
+                int iB = it.second.second[iOverlap].second;
+                std::vector<int> tmp[3];
+                if (it.second.second[iOverlap].first == 1)
                 {
                     continue;
                 }
                 else
                 {
-                    tmp[it.second[iOverlap].first] = TriangulateB[iB];
+                    tmp[it.second.second[iOverlap].first] = TriangulateB[iB];
                 }
-                auto &TriangulateBiB = tmp[it.second[iOverlap].first];
+                auto &TriangulateBiB = tmp[it.second.second[iOverlap].first];
                 numsmalltriB = TriangulateBiB.size();
 
                 for (int ismalltriA = 0; ismalltriA < numsmalltriA; ++ismalltriA)
