@@ -5,7 +5,7 @@
 #include "TriangleIntersection.h"
 #include "Triangulation.h"
 #include "RemoveOverlap.h"
-#include "ReduceIntersection.h"
+#include "ReFactoryBoundary.h"
 #include "Locate.h"
 #include "PrePast.h"
 #include "Past.h"
