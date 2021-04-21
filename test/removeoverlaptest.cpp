@@ -24,7 +24,7 @@ TEST_CASE("Prepaste", "[pp1]")
     resultA[5].second.push_back({2, 1});
     resultB[0].second.push_back({1, 2});
     resultB[1].second.push_back({1, 5});
-
+  
     std::map<int, std::vector<int>> TriangulateA, TriangulateB;
 
 
