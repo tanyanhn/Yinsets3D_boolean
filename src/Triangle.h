@@ -16,7 +16,7 @@ namespace YSB
     template <class T>
     inline void RemoveTriangle(std::vector<Triangle<T, 3>> &vecTriA,
                                std::vector<Triangle<T, 3>> &vecTriB,
-                               std::vector<Triangle<T, 3>> &vecTri, const int id);
+                               std::vector<Triangle<T, 3>> &vecTri, const int id, Real tol);
 
     template <class T>
     struct FindNearTriangle;
@@ -51,7 +51,7 @@ namespace YSB
         friend struct RemoveOverlap<T>;
         friend void RemoveTriangle<T>(std::vector<Triangle<T, 3>> &vecTriA,
                                       std::vector<Triangle<T, 3>> &vecTriB,
-                                      std::vector<Triangle<T, 3>> &vecTri, const int id);
+                                      std::vector<Triangle<T, 3>> &vecTri, const int id, Real tol);
 
     private:
         Point<T, Dim> vertex[3];
