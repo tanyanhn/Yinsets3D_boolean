@@ -59,13 +59,13 @@ namespace YSB
             for (auto &&tri : vecTriangle)
             {
                 tri.id() = size;
-                // for (auto ie = 0; ie < 3; ++ie)
-                // {
-                //     tri.ed(ie).IntersectionSeg() = 0;
-                //     auto it = segs.insert({tri.ed(ie), std::vector<int>(idYinset, tri.id())});
-                //     if (!it.second)
-                //         (it.first)->second.emplace_back({idYinset, tri.id()});
-                // }
+                for (auto ie = 0; ie < 3; ++ie)
+                {
+                    tri.ed(ie).IntersectionSeg() = 0;
+                    // auto it = segs.insert({tri.ed(ie), std::vector<int>(idYinset, tri.id())});
+                    // if (!it.second)
+                    //     (it.first)->second.emplace_back({idYinset, tri.id()});
+                }
                 tri.inF() = {idYinset, idFace};
                 rs.push_back(tri);
                 ++size;

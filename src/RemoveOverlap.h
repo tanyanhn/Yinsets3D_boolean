@@ -94,6 +94,7 @@ namespace YSB
                 int numsmalltriA = TriangulateAiA.size(), numsmalltriB;
                 int iB = it.second.second[iOverlap].second;
                 std::vector<int> tmp[3];
+
                 if (it.second.second[iOverlap].first == 1)
                 {
                     continue;
@@ -156,7 +157,8 @@ namespace YSB
                     int ie = neighTri.edgeVec(edge);
                     Segment<T, 3> &neighSeg = neighTri.ed(ie);
 
-                    std::vector<std::pair<int, int>>::iterator eit = std::remove(neighSeg.neighborhood().begin(), neighSeg.neighborhood().end(), idTri);
+                    std::vector<std::pair<int, int>>::iterator eit =
+                        std::remove(neighSeg.neighborhood().begin(), neighSeg.neighborhood().end(), idTri);
                     neighSeg.neighborhood().erase(eit, neighSeg.neighborhood().end());
                 }
                 else if (iNeighTri->first == 2)
@@ -165,7 +167,8 @@ namespace YSB
                     int ie = neighTri.edgeVec(edge);
                     Segment<T, 3> &neighSeg = neighTri.ed(ie);
 
-                    std::vector<std::pair<int, int>>::iterator eit = std::remove(neighSeg.neighborhood().begin(), neighSeg.neighborhood().end(), idTri);
+                    std::vector<std::pair<int, int>>::iterator eit =
+                        std::remove(neighSeg.neighborhood().begin(), neighSeg.neighborhood().end(), idTri);
                     neighSeg.neighborhood().erase(eit, neighSeg.neighborhood().end());
                 }
                 else

@@ -5,6 +5,7 @@
 #include "TriangleIntersection.h"
 #include "Triangulation.h"
 #include "RemoveOverlap.h"
+#include "ReduceIntersection.h"
 #include "Locate.h"
 #include "PrePast.h"
 #include "Past.h"
@@ -55,7 +56,7 @@ namespace YSB
             // }
         }
 
-        YinSet<T> meet(const YinSet<T> &y2, Real tol = TOL)
+        YinSet<T> meet(const YinSet<T> &y2, const int usingRFB = 0, Real tol = TOL)
         {
             //Intersection Triangle.
             TriangleIntersection<T> intersectOp;
@@ -79,20 +80,36 @@ namespace YSB
                             triangulateOp.resultB, tol);
 
             // PrePast
-            PrePast<T> prePastOpA, prePastOpB;
-            prePastOpA(triangulateOp.vecTriA, 1, tol);
-            prePastOpB(triangulateOp.vecTriB, 2, tol);
+            PrePast<T> prePastOp;
+            prePastOp(triangulateOp.vecTriA, triangulateOp.vecTriB, tol);
+
+            // std::vector<Triangle<T, 3>> *pVecTriA = &triangulateOp.vecTriA;
+            // std::vector<Triangle<T, 3>> *pVecTriB = &triangulateOp.vecTriB;
+            // std::vector<SurfacePatch<T>> *pVecSPA = &prePastOp.vecSPA;
+            // std::vector<SurfacePatch<T>> *pVecSPB = &prePastOp.vecSPB;
+            // std::map<std::pair<int, int>,
+            //          std::vector<std::pair<int, int>>> *pClipFaces = &prePastOp.ClipFaces;
+            // std::map<std::pair<int, int>,
+            //          std::vector<std::pair<int, int>>> *pCoClipFaces = &prePastOp.coClipFaces;
+
+            if (usingRFB == 1)
+            {
+                ReFactoryBoundary<T> reFactoryBoundaryOp;
+                reFactoryBoundaryOp(triangulateOp.vecTriA, triangulateOp.vecTriB,
+                                    prePastOp.vecSPA, prePastOp.vecSPB,
+                                    prePastOp.ClipFaces, prePastOp.coClipFaces, tol);
+            }
 
             // Locate SurfacePatch.
             Locate<T> locateOp;
             locateOp(inputA, inputB,
                      triangulateOp.vecTriA, triangulateOp.vecTriB,
-                     prePastOpA.vecSP, prePastOpB.vecSP, tol);
+                     prePastOp.vecSPA, prePastOp.vecSPB, tol);
 
             // Past SurfacePatch to GluingCompactSurface.
             Past<T> pastOp;
             std::vector<SurfacePatch<T>> vecF;
-            pastOp.combine(prePastOpA.vecSP, prePastOpB.vecSP,
+            pastOp.combine(prePastOp.vecSPA, prePastOp.vecSPB,
                            triangulateOp.vecTriA, triangulateOp.vecTriB,
                            vecF);
             pastOp(vecF, triangulateOp.vecTriA, triangulateOp.vecTriB, tol);
