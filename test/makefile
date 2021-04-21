@@ -49,11 +49,9 @@ triintersect : triintersecttest.exe
 prepaste : prepastetest.exe
 	./prepastetest.exe
 
-<<<<<<< HEAD
 test : test.cpp
 	g++ -o test.exe test.cpp && ./test.exe
 
-=======
 removeoverlap : removeoverlaptest.exe
 	./removeoverlaptest.exe
 
@@ -62,9 +60,8 @@ paste : pastetest.exe
 
 GCS : GCStest.exe
 	./GCStest.exe
->>>>>>> QiuyunhaoZJU-patch-2
 
 clean:
-	 rm -f *.exe  core *.ex
+	rm -f *.exe  core *.ex
 	 
 	 
