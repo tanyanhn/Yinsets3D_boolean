@@ -10,6 +10,18 @@
 namespace YSB
 {
     template <class T>
+    struct itCmp : public std::less<T>
+    {
+        SegmentCompare cmp;
+        explicit itCmp(Real tol = TOL) : cmp(tol) {}
+        bool operator()(
+            T it1, T it2)
+        {
+            return cmp(*it1, *it2);
+        }
+    };
+
+    template <class T>
     struct Triangulation
     {
         std::map<int, std::vector<int>> TriangulateA, TriangulateB;
@@ -38,7 +50,8 @@ namespace YSB
             std::map<std::pair<int, int>, std::set<Point<T, 3>, PointCompare>> mapallP;
             std::map<std::pair<int, int>, std::set<Segment<T, 3>, SegmentCompare>> mapallSeg;
             std::map<Point<T, 3>,
-                     std::set<typename std::set<Segment<T, 3>, SegmentCompare>::iterator>,
+                     std::set<typename std::set<Segment<T, 3>, SegmentCompare>::iterator,
+                              itCmp<typename std::set<Segment<T, 3>, SegmentCompare>::iterator>>,
                      PointCompare>
                 near(pCmp);
             std::set<std::pair<int, int>> done;
@@ -54,15 +67,15 @@ namespace YSB
                 mapallP[idInput] = std::set<Point<T, 3>, PointCompare>(pCmp);
                 mapallSeg[idInput] = std::set<Segment<T, 3>, SegmentCompare>(segCmp);
                 std::set<Point<T, 3>, PointCompare> &allP = mapallP[idInput];
-                std::set<Segment<T, 3>, SegmentCompare> &allSeg = mapallP[idInput];
+                std::set<Segment<T, 3>, SegmentCompare> &allSeg = mapallSeg[idInput];
                 near.clear();
 
-                this->clipSegment(itRs, allP, allSeg, near, pCmp, segCmp, tol);
-                this->addSegment(idInput, allP, allSeg, near, mDim, segCmp, tol);
+                this->clipSegment(itRs.second, allP, allSeg, near, pCmp, segCmp, tol);
+                this->addSegment(idInput, itRs.second.second, allP, allSeg, near, segCmp, mDim, tol);
                 this->generatorTriangle(inputA[itRs.first], idInput, allSeg, near, normVec,
-                                        vecTriA, TriangulateA, pCmp, tol);
+                                        vecTriA, TriangulateA, pCmp, segCmp, tol);
                 this->addSegmentToOverlap(itRs.second.second, done, allSeg,
-                                          inputA, inputB, resultA, resultB);
+                                          inputA, inputB, resultA, resultB, tol);
             }
 
             for (auto &&itRs : resultB)
@@ -76,15 +89,15 @@ namespace YSB
                 mapallP[idInput] = std::set<Point<T, 3>, PointCompare>(pCmp);
                 mapallSeg[idInput] = std::set<Segment<T, 3>, SegmentCompare>(segCmp);
                 std::set<Point<T, 3>, PointCompare> &allP = mapallP[idInput];
-                std::set<Segment<T, 3>, SegmentCompare> &allSeg = mapallP[idInput];
+                std::set<Segment<T, 3>, SegmentCompare> &allSeg = mapallSeg[idInput];
                 near.clear();
 
-                this->clipSegment(itRs, allP, allSeg, near, pCmp, segCmp, tol);
-                this->addSegment(idInput, itRs.second.second, allP, allSeg, near, mDim, segCmp, tol);
+                this->clipSegment(itRs.second, allP, allSeg, near, pCmp, segCmp, tol);
+                this->addSegment(idInput, itRs.second.second, allP, allSeg, near, segCmp, mDim, tol);
                 this->generatorTriangle(inputB[itRs.first], idInput, allSeg, near, normVec,
-                                        vecTriB, TriangulateB, pCmp, tol);
+                                        vecTriB, TriangulateB, pCmp, segCmp, tol);
                 this->addSegmentToOverlap(itRs.second.second, done, allSeg,
-                                          inputA, inputB, resultA, resultB);
+                                          inputA, inputB, resultA, resultB, tol);
             }
 
             this->updateEdgeNeighbor(tol);
@@ -103,7 +116,7 @@ namespace YSB
                     {
                         if (idInput.first == 1)
                         {
-                            for (auto &&idNeighborTri : TriangulateA)
+                            for (auto &&idNeighborTri : TriangulateA[idInput.second])
                             {
                                 auto &neighborTri = vecTriA[idNeighborTri];
                                 if (neighborTri.edgeVec(edge, tol) != -1)
@@ -114,7 +127,7 @@ namespace YSB
                         }
                         if (idInput.first == 2)
                         {
-                            for (auto &&idNeighborTri : TriangulateB)
+                            for (auto &&idNeighborTri : TriangulateB[idInput.second])
                             {
                                 auto &neighborTri = vecTriB[idNeighborTri];
                                 if (neighborTri.edgeVec(edge, tol) != -1)
@@ -143,7 +156,7 @@ namespace YSB
                     {
                         if (idInput.first == 1)
                         {
-                            for (auto &&idNeighborTri : TriangulateA)
+                            for (auto &&idNeighborTri : TriangulateA[idInput.second])
                             {
                                 auto &neighborTri = vecTriA[idNeighborTri];
                                 if (neighborTri.edgeVec(edge, tol) != -1)
@@ -154,7 +167,7 @@ namespace YSB
                         }
                         if (idInput.first == 2)
                         {
-                            for (auto &&idNeighborTri : TriangulateB)
+                            for (auto &&idNeighborTri : TriangulateB[idInput.second])
                             {
                                 auto &neighborTri = vecTriB[idNeighborTri];
                                 if (neighborTri.edgeVec(edge, tol) != -1)
@@ -179,7 +192,8 @@ namespace YSB
             const std::vector<Triangle<T, 3>> &inputA,
             const std::vector<Triangle<T, 3>> &inputB,
             std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultA,
-            std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultB)
+            std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultB,
+            Real tol = TOL)
         {
             for (auto &&idOverlapInput : allOverlap)
             {
@@ -189,13 +203,13 @@ namespace YSB
                     {
                         auto it = resultA.find(idOverlapInput.second);
                         assert(it != resultA.end() && "Triangulation::dealOverlap.");
-                        this->dealOverlap(inputA[idOverlapInput], allSeg, it);
+                        this->dealOverlap(inputA.at(idOverlapInput.second), allSeg, it, tol);
                     }
                     else if (idOverlapInput.first == 2)
                     {
                         auto it = resultB.find(idOverlapInput.second);
                         assert(it != resultB.end() && "Triangulation::dealOverlap.");
-                        this->dealOverlap(inputB[idOverlapInput], allSeg, it);
+                        this->dealOverlap(inputB.at(idOverlapInput.second), allSeg, it, tol);
                     }
                 }
             }
@@ -208,13 +222,13 @@ namespace YSB
                               std::pair<std::vector<Segment<T, 3>>,
                                         std::vector<std::pair<int, int>>>>::iterator &
                 itRs,
-            Real tol)
+            Real tol = TOL)
         {
             for (auto &&seg : allSeg)
             {
                 if (tri.locate(seg[0]) != Triangle<T, 3>::locType::Outer &&
                     tri.locate(seg[1]) != Triangle<T, 3>::locType::Outer)
-                    (itRs->first).push_back(seg);
+                    ((itRs->second).first).push_back(seg);
             }
         }
 
@@ -223,17 +237,19 @@ namespace YSB
             const std::pair<int, int> &idInput,
             const std::set<Segment<T, 3>, SegmentCompare> &allSeg,
             const std::map<Point<T, 3>,
-                           std::set<typename std::set<Segment<T, 3>, SegmentCompare>::iterator>,
+                           std::set<typename std::set<Segment<T, 3>, SegmentCompare>::iterator,
+                                    itCmp<typename std::set<Segment<T, 3>, SegmentCompare>::iterator>>,
                            PointCompare> &near,
             const Vec<T, 3> normVec,
             std::vector<Triangle<T, 3>> &vecTri,
             std::map<int, std::vector<int>> &Triangulate,
             const PointCompare &pCmp,
+            const SegmentCompare &segCmp,
             Real tol = TOL)
         {
             // mark every segment need be used for construct new triangle,
             // on Edge will be used 1 time, or 2 times.
-            std::map<Segment<T, 3>, std::pair<int, int>> markEdge;
+            std::map<Segment<T, 3>, std::pair<int, int>, SegmentCompare> markEdge(segCmp);
             for (auto &&seg : allSeg)
             {
                 std::pair<int, int> markValue = {1, 1};
@@ -274,9 +290,9 @@ namespace YSB
                 }
 
                 Real bestangle = 2 * M_PI;
-                for (auto &&itNextSeg : near[p1])
+                for (auto &&itNextSeg : near.at(p1))
                 {
-                    auto np = ((*itNextSeg)[0] == p1) ? ((*itNextSeg)[1]) : ((*itNextSeg)[0]);
+                    auto np = (pCmp.compare((*itNextSeg)[0], p1) == 0) ? ((*itNextSeg)[1]) : ((*itNextSeg)[0]);
                     auto v0 = p0 - p1, v1 = np - p1;
 
                     Real angle = atan2(norm(cross(v1, v0)), dot(v1, v0));
@@ -296,12 +312,12 @@ namespace YSB
                 Segment<T, 3> segs[3] = {itSeg0->first, itSeg1->first, itSeg2->first};
                 Triangle<T, 3> tri(segs);
                 tri.id() = vecTri.size();
-                tri.InF() = Tri.InF();
+                tri.inF() = Tri.inF();
                 Triangulate[idInput.second].push_back(vecTri.size());
                 vecTri.push_back(tri);
 
                 assert(itSeg1 != markEdge.end() && "generatorTriangle itSeg1 wrong.");
-                assert(itSeg1 != markEdge.end() && "generatorTriangle itSeg2 wrong.");
+                assert(itSeg2 != markEdge.end() && "generatorTriangle itSeg2 wrong.");
                 if (pCmp.compare(p1, (itSeg1->first)[0]) == 0)
                 {
                     assert((itSeg1->second).first == 1 && "generatorTriangle itSeg1 wrong.");
@@ -333,11 +349,12 @@ namespace YSB
         }
 
         void clipSegment(
-            const std::pair<std::vector<Segment<T, 3>>, std::vector<int>> &itRs,
+            const std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>> &itRs,
             std::set<Point<T, 3>, PointCompare> &allP,
             std::set<Segment<T, 3>, SegmentCompare> &allSeg,
             std::map<Point<T, 3>,
-                     std::set<typename std::set<Segment<T, 3>, SegmentCompare>::iterator>,
+                     std::set<typename std::set<Segment<T, 3>, SegmentCompare>::iterator,
+                              itCmp<typename std::set<Segment<T, 3>, SegmentCompare>::iterator>>,
                      PointCompare> &near,
             const PointCompare &pCmp,
             const SegmentCompare &segCmp,
@@ -355,14 +372,19 @@ namespace YSB
                 }
                 else
                 {
-                    auto it = clip.insert({seg, std::set<Point<T, 3>, PointCompare>(pCmp)});
-                    if (it.second == false)
-                        it.first.combineNeighbor(seg);
+                    auto newSeg(seg);
+                    auto it = clip.find(newSeg);
+                    if (it != clip.end())
+                    {
+                        newSeg.combineNeighbor(it->first);
+                        clip.erase(it);
+                    }
                     else
                     {
                         allP.insert(seg[0]);
                         allP.insert(seg[1]);
                     }
+                    clip.insert({newSeg, std::set<Point<T, 3>, PointCompare>(pCmp)});
                 }
             }
 
@@ -371,7 +393,7 @@ namespace YSB
             {
                 for (auto itp = allP.begin(); itp != allP.end(); ++itp)
                 {
-                    if ((seg.first).containPoint(*itp) == Segment<T, 3>::locType::Inter)
+                    if ((seg.first).containPoint(*itp, seg.first.majorDim(), tol) == Segment<T, 3>::locType::Inter)
                     {
                         seg.second.insert(*itp);
                     }
@@ -384,19 +406,33 @@ namespace YSB
                 Point<T, 3> p0 = *(seg.second.begin()), p1;
                 for (auto itp1 = (++seg.second.begin());
                      itp1 != seg.second.end();
-                     ++itp1, p0 = p1, p1 = *itp1)
+                     ++itp1)
                 {
-                    auto itSeg = allSeg.insert(Segment<T, 3>(p0, p1, seg.neighborhood()));
-                    if (itSeg.second == false)
-                        itSeg.first.combineNeighbor(seg);
+                    p1 = *itp1;
+                    Segment<T, 3> newSeg(p0, p1, seg.first.neighborhood());
+                    auto itSeg = allSeg.find(Segment<T, 3>(p0, p1, seg.first.neighborhood()));
+                    if (itSeg != allSeg.end())
+                    {
+                        newSeg.combineNeighbor(*itSeg);
+                        allSeg.erase(itSeg);
+                    }
 
-                    auto itNear = near.insert({p0, itSeg.first});
-                    if (itNear.second == false)
-                        ((itNear.first)->second).insert(itSeg.first);
+                    itSeg = (allSeg.insert(newSeg)).first;
 
-                    itNear = near.insert({p1, itSeg.first});
+                    itCmp<typename std::set<Segment<T, 3>, SegmentCompare>::iterator> cmp(tol);
+                    std::set<typename std::set<Segment<T, 3>, SegmentCompare>::iterator,
+                             itCmp<typename std::set<Segment<T, 3>, SegmentCompare>::iterator>>
+                        itSet(cmp);
+                    itSet.insert(itSeg);
+
+                    auto itNear = near.insert({p0, itSet});
                     if (itNear.second == false)
-                        ((itNear.first)->second).insert(itSeg.first);
+                        ((itNear.first)->second).insert(itSeg);
+
+                    itNear = near.insert({p1, {itSeg}});
+                    if (itNear.second == false)
+                        ((itNear.first)->second).insert(itSeg);
+                    p0 = p1;
                 }
             }
         }
@@ -407,7 +443,8 @@ namespace YSB
             const std::set<Point<T, 3>, PointCompare> &allP,
             std::set<Segment<T, 3>, SegmentCompare> &allSeg,
             std::map<Point<T, 3>,
-                     std::set<typename std::set<Segment<T, 3>, SegmentCompare>::iterator>,
+                     std::set<typename std::set<Segment<T, 3>, SegmentCompare>::iterator,
+                              itCmp<typename std::set<Segment<T, 3>, SegmentCompare>::iterator>>,
                      PointCompare> &near,
             const SegmentCompare &segCmp,
             const int mDim, Real tol = TOL)
@@ -437,7 +474,8 @@ namespace YSB
                     bool interInfo = false;
                     for (auto &&seg : allSeg)
                     {
-                        if (intersectSegSeg(newSeg, seg) == Segment<T, 2>::intsType::One)
+                        if (intersectSegSeg(newSeg, seg) ==
+                            Segment<T, 2>::intsType::One)
                         {
                             interInfo = true;
                             break;
@@ -450,13 +488,19 @@ namespace YSB
                     if (itSeg.second == false)
                         assert(false && "Segment already exist while not in near[p0].");
 
-                    auto itNear = near.insert({*itp0, itSeg.first});
-                    if (itNear.second == false)
-                        ((itNear.first)->second).insert(itSeg.first);
+                    auto itNear = near.find(*itp0);
+                    //  auto itNear = near.insert({*itp0, {itSeg.first}});
+                    if (itNear == near.end())
+                        assert(false && "new point while add segment.");
+                    else
+                        (itNear->second).insert(itSeg.first);
 
-                    itNear = near.insert({*itp1, itSeg.first});
-                    if (itNear.second == false)
-                        ((itNear.first)->second).insert(itSeg.first);
+                    itNear = near.find(*itp1);
+                    //   itNear = near.insert({*itp1, {itSeg.first}});
+                    if (itNear == near.end())
+                        assert(false && "new point while add segment.");
+                    else
+                        (itNear->second).insert(itSeg.first);
                 }
             }
         }

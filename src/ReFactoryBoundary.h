@@ -116,7 +116,7 @@ namespace YSB
                             std::set<std::pair<int, int>> idOtherSPs, idOtherGCSs;
                             for (auto &&itTri : idOtherTris)
                             {
-                                auto idOtherSP = (*(vecTriar[itTri.first - 1]))[itTri.second].InF();
+                                auto idOtherSP = (*(vecTriar[itTri.first - 1]))[itTri.second].inF();
                                 idOtherSPs.insert(idOtherSP);
                                 idOtherGCSs.insert(coClipFaces.at(idOtherSP)[0]);
 
@@ -165,9 +165,8 @@ namespace YSB
                                         (*(vecTriar[idVecSP.first - 1]))[triangles[t1].id()].ed(ie1).neighborhood() = Neighbor;
                                         (*(vecTriar[idVecSP.first - 1]))[triangles[t0].id()].ed(ie0).IntersectionSeg() = 0;
                                         (*(vecTriar[idVecSP.first - 1]))[triangles[t1].id()].ed(ie1).IntersectionSeg() = 0;
-
                                         // Past SP in the GCS get new SP cross seg by good pair.
-                                        auto idSP = std::make_pair(triangles[t0].InF(), triangles[t1].InF());
+                                        auto idSP = std::make_pair(triangles[t0].inF(), triangles[t1].inF());
                                         auto itcomp = comb.find(idSP);
                                         if (itcomp == comb.end())
                                         {
@@ -340,7 +339,7 @@ namespace YSB
     //                 std::set<std::pair<int, int>> idOtherSPs, idOtherGCSs;
     //                 for (auto &&itTri : idOtherTris)
     //                 {
-    //                     auto idOtherSP = (*(vecTriar[itTri.first - 1]))[itTri.second].InF();
+    //                     auto idOtherSP = (*(vecTriar[itTri.first - 1]))[itTri.second].inF();
     //                     idOtherSPs.insert(idOtherSP);
     //                     idOtherGCSs.insert(coClipFaces.at(idOtherSP)[0]);
     //                 }

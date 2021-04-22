@@ -44,7 +44,7 @@ TEST_CASE("Paste", "[pa1]")
     triA[5].ed(0).IntersectionSeg() = 1; 
     PrePast<Real> pp;
     pp(triA, 1);
-    vector<SurfacePatch<Real>> vSP1 = pp.vecSP, vSP2, vecF;
+    vector<SurfacePatch<Real>> vSP1 = pp.vecSPA, vSP2, vecF;
     Past<Real> pa;
     pa.combine(vSP1, vSP2, triA, triB, vecF);
     pa(vecF, triA, triB);  

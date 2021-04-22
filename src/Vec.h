@@ -120,7 +120,7 @@ namespace YSB
 #undef RIGHT_BROADCAST
 
     // Projection for intersect in 3D space.
-    Vec<T, Dim - 1> project(int d)const
+    Vec<T, Dim - 1> project(int d) const
     {
       assert(d < Dim && Dim > 1 && "Project dimension is bigger than Point's Dim");
       Real rs[Dim - 1];
@@ -138,6 +138,22 @@ namespace YSB
         }
       }
       return Vec<T, Dim - 1>(rs);
+    }
+
+    int majorDim(int k = 1) const
+    {
+      int md = 0;
+      Vec<T, Dim> v = abs(*this);
+      Real Lar = v[0];
+      for (auto d = 1; d < Dim; ++d)
+      {
+        if (k * Lar < k * v[d])
+        {
+          md = d;
+          Lar = v[d];
+        }
+      }
+      return md;
     }
 
     ///
