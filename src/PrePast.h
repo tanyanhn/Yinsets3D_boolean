@@ -41,7 +41,7 @@ namespace YSB
                      std::vector<std::pair<int, int>>,
                      SegmentCompare>
                 boundary(cmp);
-            FindNearTriangle<T> FNTOp;
+            //FindNearTriangle<T> FNTOp;
             //FindNearTriangle<T> FNToperator;
             int size = vecTri.size();
             std::vector<int> markF(size, 1);

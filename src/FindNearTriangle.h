@@ -1,9 +1,9 @@
 #ifndef FINDNEARTRIANGLE_H
 #define FINDNEARTRIANGLE_H
 
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
+// #ifndef M_PI
+// #define M_PI 3.14159265358979323846
+// #endif
 
 #include "Triangle.h"
 #include "Segment.h"
@@ -28,7 +28,7 @@ namespace YSB
                  edgeV = edge[1] - edge[0];
 
             Real bestangle = 2 * M_PI;
-            std::pair<int, int> nearTri = -1;
+            int nearTri = -1;
 
             for (int idNeighTri = 0; idNeighTri < triangles.size(); ++idNeighTri)
             {
@@ -59,7 +59,7 @@ namespace YSB
                 }
             }
 
-            return idNeighTri;
+            return nearTri;
         }
     };
 

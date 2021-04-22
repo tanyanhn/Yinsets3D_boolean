@@ -57,8 +57,8 @@ namespace YSB
                 std::set<Segment<T, 3>, SegmentCompare> &allSeg = mapallP[idInput];
                 near.clear();
 
-                this->clipSegment(itRs, allP, allSeg, near, pCmp, segCmp, tol);
-                this->addSegment(idInput, allP, allSeg, near, mDim, segCmp, tol);
+                this->clipSegment(itRs.second, allP, allSeg, near, pCmp, segCmp, tol);
+                this->addSegment(idInput, itRs.second.second, allP, allSeg, near, mDim, segCmp, tol);
                 this->generatorTriangle(inputA[itRs.first], idInput, allSeg, near, normVec,
                                         vecTriA, TriangulateA, pCmp, tol);
                 this->addSegmentToOverlap(itRs.second.second, done, allSeg,
@@ -79,7 +79,7 @@ namespace YSB
                 std::set<Segment<T, 3>, SegmentCompare> &allSeg = mapallP[idInput];
                 near.clear();
 
-                this->clipSegment(itRs, allP, allSeg, near, pCmp, segCmp, tol);
+                this->clipSegment(itRs.second, allP, allSeg, near, pCmp, segCmp, tol);
                 this->addSegment(idInput, itRs.second.second, allP, allSeg, near, mDim, segCmp, tol);
                 this->generatorTriangle(inputB[itRs.first], idInput, allSeg, near, normVec,
                                         vecTriB, TriangulateB, pCmp, tol);
@@ -103,7 +103,7 @@ namespace YSB
                     {
                         if (idInput.first == 1)
                         {
-                            for (auto &&idNeighborTri : TriangulateA)
+                            for (auto &&idNeighborTri : TriangulateA[idInput.second])
                             {
                                 auto &neighborTri = vecTriA[idNeighborTri];
                                 if (neighborTri.edgeVec(edge, tol) != -1)
@@ -114,7 +114,7 @@ namespace YSB
                         }
                         if (idInput.first == 2)
                         {
-                            for (auto &&idNeighborTri : TriangulateB)
+                            for (auto &&idNeighborTri : TriangulateB[idInput.second])
                             {
                                 auto &neighborTri = vecTriB[idNeighborTri];
                                 if (neighborTri.edgeVec(edge, tol) != -1)
@@ -301,7 +301,7 @@ namespace YSB
                 vecTri.push_back(tri);
 
                 assert(itSeg1 != markEdge.end() && "generatorTriangle itSeg1 wrong.");
-                assert(itSeg1 != markEdge.end() && "generatorTriangle itSeg2 wrong.");
+                assert(itSeg2 != markEdge.end() && "generatorTriangle itSeg2 wrong.");
                 if (pCmp.compare(p1, (itSeg1->first)[0]) == 0)
                 {
                     assert((itSeg1->second).first == 1 && "generatorTriangle itSeg1 wrong.");
@@ -333,7 +333,7 @@ namespace YSB
         }
 
         void clipSegment(
-            const std::pair<std::vector<Segment<T, 3>>, std::vector<int>> &itRs,
+            const std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>> &itRs,
             std::set<Point<T, 3>, PointCompare> &allP,
             std::set<Segment<T, 3>, SegmentCompare> &allSeg,
             std::map<Point<T, 3>,
@@ -384,8 +384,9 @@ namespace YSB
                 Point<T, 3> p0 = *(seg.second.begin()), p1;
                 for (auto itp1 = (++seg.second.begin());
                      itp1 != seg.second.end();
-                     ++itp1, p0 = p1, p1 = *itp1)
+                     ++itp1)
                 {
+                    p1 = *itp1;
                     auto itSeg = allSeg.insert(Segment<T, 3>(p0, p1, seg.neighborhood()));
                     if (itSeg.second == false)
                         itSeg.first.combineNeighbor(seg);
@@ -397,8 +398,9 @@ namespace YSB
                     itNear = near.insert({p1, itSeg.first});
                     if (itNear.second == false)
                         ((itNear.first)->second).insert(itSeg.first);
+                    p0 = p1;
                 }
-            }
+                                                                                 }
         }
 
         void addSegment(

@@ -4,7 +4,7 @@ CPPFLAGS = -std=c++17
 
 .PHONY: clean clear test run all doxygen
 
-all : plane triangle findneartriangle triintersect prepaste
+all : plane triangle findneartriangle triintersect prepaste paste removeoverlap GCS
 
 
 platest.exe : catchmain.o planetest.cpp
@@ -30,6 +30,9 @@ pastetest.exe : catchmain.o pastetest.cpp
 
 GCStest.exe : catchmain.o GCStest.cpp
 	g++ -o $@ catchmain.o GCStest.cpp $(CPPFLAGS)
+
+triangulationtest.exe : catchmain.o triangulationtest.cpp
+	g++ -o $@ catchmain.o triangulationtest.cpp $(CPPFLAGS)
 
 catchmain.o : catchmain.cpp
 
@@ -57,6 +60,10 @@ paste : pastetest.exe
 
 GCS : GCStest.exe
 	./GCStest.exe
+
+triangulation : triangulationtest.exe
+	./triangulationtest.exe
+	
 test : test.cpp
 	g++ -o test.exe test.cpp && ./test.exe
 

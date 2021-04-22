@@ -63,7 +63,7 @@ namespace YSB
             std::vector<Triangle<T, 3>> inputA, inputB;
             collapse(inputA, 1, tol);
             y2.collapse(inputB, 2, tol);
-            intersectop(inputA, inputB, tol);
+            intersectOp(inputA, inputB, tol);
 
             // Triangulation
             Triangulation<T> triangulateOp;
