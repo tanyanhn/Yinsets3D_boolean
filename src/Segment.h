@@ -100,33 +100,42 @@ namespace YSB
         // Get majorDim that largest change Dim
         int majorDim(int k = 1) const
         {
-            int md = 0;
+            // int md = 0;
             Vec<T, Dim> v = abs(endPoint[1] - endPoint[0]);
-            Real Lar = v[0];
-            for (auto d = 1; d < Dim; ++d)
-            {
-                if (k * Lar < k * v[d])
-                {
-                    md = d;
-                    Lar = v[d];
-                }
-            }
-            return md;
+            return v.majorDim(k);
+            // Real Lar = v[0];
+            // for (auto d = 1; d < Dim; ++d)
+            // {
+            //     if (k * Lar < k * v[d])
+            //     {
+            //         md = d;
+            //         Lar = v[d];
+            //     }
+            // }
+            // return md;
         }
 
         // Projection
-        Segment<T, Dim - 1> project(int d) const
+        Segment<T, Dim - 1> project(int d = -1) const
         {
-            assert(d < Dim && "Segment::project d > Dim");
-            auto stp = endPoint[0]->project(d),
-                 fnp = endPoint[1]->project(d);
+            if (d == -1)
+            {
+                d = majorDim(-1);
+            }
+            else
+                assert(d < Dim && "Segment::project d > Dim");
+            auto stp = endPoint[0].project(d),
+                 fnp = endPoint[1].project(d);
             return Segment<T, Dim - 1>(stp, fnp);
         }
 
         // Estimate Point position with segment.
-        locType containPoint(const Point<T, Dim> &p, int mDim, Real tol = TOL) const
+        locType containPoint(const Point<T, Dim> &p, int mDim = -1, Real tol = TOL) const
         {
-            PointCompare pointcmp;
+            if (mDim == -1)
+                mDim = majorDim();
+
+            PointCompare pointcmp(tol);
             if (pointcmp(endPoint[0], p) || pointcmp(endPoint[1], p))
             {
                 return ExtPoint;
@@ -182,12 +191,22 @@ namespace YSB
 
     template <class T, int Dim>
     inline typename Segment<T, 2>::intsType
-    intersectSegSeg(
+    intersectSegLine(
         const Segment<T, Dim> &seg1, const Line<T, Dim> &l2, Real tol = TOL)
     {
-        int mDim = seg1.majorDim(-1);
-        auto proSeg1 = seg1.project(),
-             proL2 = l2.project();
+        // int mDim = seg1.majorDim(-1);
+        // auto proSeg1 = seg1.project(),
+        //      proL2 = l2.project();
+
+        int mDim1 = seg1.majorDim(1),
+            mDim2 = l2.majorDim(1), mDim;
+        for (int d = 0; d < Dim; ++d)
+        {
+            if (d != mDim1 && d != mDim2)
+                mDim = d;
+        }
+        auto proSeg1 = seg1.project(mDim),
+             proL2 = l2.project(mDim);
 
         return intersectSegLine(proSeg1, proL2, std::vector<Point<T, 2>>(), tol);
     }
@@ -244,13 +263,22 @@ namespace YSB
     template <class T, int Dim>
     inline typename Segment<T, 2>::intsType
     intersectSegSeg(
-        const Segment<T, Dim> &seg1, const Segment<T, Dim> &seg2, Real tol = TOL)
+        const Segment<T, Dim> &seg1, const Segment<T, Dim> &seg2,
+        Real tol = TOL)
     {
-        int mDim = seg1.majorDim(-1);
-        auto proSeg1 = seg1.project(),
-             proSeg2 = seg2.project();
+        int mDim1 = seg1.majorDim(1),
+            mDim2 = seg2.majorDim(1), mDim;
+        for (int d = 0; d < Dim; ++d)
+        {
+            if (d != mDim1 && d != mDim2)
+                mDim = d;
+        }
+        auto proSeg1 = seg1.project(mDim),
+             proSeg2 = seg2.project(mDim);
 
-        return intersectSegSeg(proSeg1, proSeg2, std::vector<Point<T, 2>>(), tol);
+        std::vector<Point<T, 2>> rs;
+
+        return intersectSegSeg(proSeg1, proSeg2, rs, tol);
     }
     template <class T>
     inline typename Segment<T, 2>::intsType

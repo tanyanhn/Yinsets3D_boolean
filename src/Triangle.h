@@ -156,7 +156,7 @@ namespace YSB
         }
 
         // Return norm vector
-        auto normVec() -> decltype(pla->normVec) const
+        auto normVec() const -> decltype(pla->normVec)
         {
             if (pla == nullptr)
                 new_pla();
@@ -194,16 +194,20 @@ namespace YSB
             return dist < tol;
         }
 
-        int majorDim() const
+        int majorDim(int k = 1) const
         {
             if (pla == nullptr)
                 new_pla();
 
-            return pla->majorDim();
+            return pla->majorDim(k);
         }
 
-        Triangle<T, Dim - 1> project(int d) const
+        Triangle<T, Dim - 1> project(int d = -1) const
         {
+            if (d == -1)
+            {
+                d = majorDim();
+            }
             Point<T, Dim - 1> v[3];
             v[0] = vertex[0].project(d);
             v[1] = vertex[1].project(d);
@@ -334,7 +338,11 @@ namespace YSB
                 auto projTri = this->project(mDim);
                 //std::cout<<projL.fixpoint<<projL.direction;
                 std::vector<Point<Real, 2>> rs2D;
-                projTri.intersect(projL, rs2D, tol);
+                if (max_of(abs(l.direction)) > tol)
+                    projTri.intersect(projL, rs2D, tol);
+                else
+                    rs2D.push_back(l.fixpoint);
+
                 for (auto &&ip : rs2D)
                 {
                     Real co[3];
