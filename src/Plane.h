@@ -34,20 +34,21 @@ namespace YSB
         ~Plane() = default;
 
         //  Get properly project dimension
-        int majorDim() const
+        int majorDim(int k = 1) const
         {
-            int md = 0;
-            Vec<T, 3> v = abs(normVec);
-            Real Lar = v[0];
-            for (auto d = 1; d < 3; ++d)
-            {
-                if (Lar < v[d])
-                {
-                    md = d;
-                    Lar = v[d];
-                }
-            }
-            return md;
+            return normVec.majorDim(k);
+            // int md = 0;
+            // Vec<T, 3> v = abs(normVec);
+            // Real Lar = v[0];
+            // for (auto d = 1; d < 3; ++d)
+            // {
+            //     if (Lar < v[d])
+            //     {
+            //         md = d;
+            //         Lar = v[d];
+            //     }
+            // }
+            // return md;
         }
 
         // Plane intersect get Line in 3D space.
@@ -58,7 +59,7 @@ namespace YSB
         Point<T, 3> intersect(const Line<T, 3> &l, Real tol = TOL) const;
     };
 
-   template <class T>
+    template <class T>
     inline Point<T, 3> Plane<T>::intersect(const Line<T, 3> &l, Real tol) const
     {
         // Solving equations a_1 x + b_1 y + c_1 z = d_1              (1)
@@ -74,7 +75,7 @@ namespace YSB
         { // a != 0
             // Replace y = b / a * x, z = c / a * x.
             // Get k x = d_1.
-            Real k = a_1 + b_1 * b / a + c_1 * c / a; 
+            Real k = a_1 + b_1 * b / a + c_1 * c / a;
             x = d / k + l.fixpoint[0];
             y = b / a * (x - l.fixpoint[0]) + l.fixpoint[1];
             z = c / a * (x - l.fixpoint[0]) + l.fixpoint[2];

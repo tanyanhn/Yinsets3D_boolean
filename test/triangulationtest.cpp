@@ -1,5 +1,5 @@
 #include "../catch.hpp"
-#include "../src/Yinset.h"
+#include "../src/YinSet.h"
 #include <vector>
 
 using namespace YSB;
@@ -14,17 +14,16 @@ TEST_CASE("Paste", "[pa1]")
                    tripoints3[] = {tp1, tp4, tp3}, tripoints4[] = {tp2, tp1, tp3},
                    tripoints5[] = {tp5, tp6, tp7}, tripoints6[] = {tp5, tp7, tp8},
                    tripoints7[] = {tp6, tp8, tp7}, tripoints8[] = {tp5, tp8, tp6};
-    Triangle<Real, 3> tri1(tripoints1), tri2(tripoints2), tri3(tripoints3), tri4(tripoints4), 
-                      tri5(tripoints5), tri6(tripoints6), tri7(tripoints7), tri8(tripoints8);
+    Triangle<Real, 3> tri1(tripoints1), tri2(tripoints2), tri3(tripoints3), tri4(tripoints4),
+        tri5(tripoints5), tri6(tripoints6), tri7(tripoints7), tri8(tripoints8);
     vector<Triangle<Real, 3>> triA{tri1, tri2, tri3, tri4}, triB{tri5, tri6, tri7, tri8};
-    
+
     TriangleIntersection<Real> iOp;
     iOp(triA, triB);
-    REQUIRE(iOp.resultA.size() == 4);  
+    REQUIRE(iOp.resultA.size() == 4);
     REQUIRE(iOp.resultB.size() == 4);
 
     Triangulation<Real> triangulateOp;
-            triangulateOp(triA, triB,
-                          iOp.resultA, iOp.resultB);
-    
+    triangulateOp(triA, triB,
+                  iOp.resultA, iOp.resultB);
 }
