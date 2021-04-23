@@ -293,9 +293,11 @@ namespace YSB
                 for (auto &&itNextSeg : near.at(p1))
                 {
                     auto np = (pCmp.compare((*itNextSeg)[0], p1) == 0) ? ((*itNextSeg)[1]) : ((*itNextSeg)[0]);
-                    if(pCmp.compare(p0, np) == 0)
-                    continue;
+                    
                     auto v0 = p0 - p1, v1 = np - p1;
+
+                    if(norm(cross(v1, v0)) < tol)
+                    continue;
 
                     Real angle = atan2(norm(cross(v1, v0)), dot(v1, v0));
                     if (dot(cross(v1, v0), normVec) < 0)
@@ -476,8 +478,9 @@ namespace YSB
                     bool interInfo = false;
                     for (auto &&seg : allSeg)
                     {
-                        if (intersectSegSeg(newSeg, seg) ==
-                            Segment<T, 2>::intsType::One)
+                        auto interType = intersectSegSeg(newSeg, seg);
+                        if (interType == Segment<T, 2>::intsType::One ||
+                            interType == Segment<T, 2>::intsType::Overlap)
                         {
                             interInfo = true;
                             break;
