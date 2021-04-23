@@ -15,7 +15,7 @@ namespace YSB
         SegmentCompare cmp;
         explicit itCmp(Real tol = TOL) : cmp(tol) {}
         bool operator()(
-            T it1, T it2)
+           const T it1, const T it2) const
         {
             return cmp(*it1, *it2);
         }
@@ -293,6 +293,8 @@ namespace YSB
                 for (auto &&itNextSeg : near.at(p1))
                 {
                     auto np = (pCmp.compare((*itNextSeg)[0], p1) == 0) ? ((*itNextSeg)[1]) : ((*itNextSeg)[0]);
+                    if(pCmp.compare(p0, np) == 0)
+                    continue;
                     auto v0 = p0 - p1, v1 = np - p1;
 
                     Real angle = atan2(norm(cross(v1, v0)), dot(v1, v0));
@@ -361,7 +363,7 @@ namespace YSB
             Real tol = TOL)
         {
             // std::set<Point<T, 3>, PointCompare> allP(pCmp);
-            std::map<Segment<T, 3>, std::set<Point<T, 3>, PointCompare>, SegmentCompare> clip(segCmp);
+            std::map<Segment<T, 3>,  std::set<Point<T, 3>, PointCompare>, SegmentCompare> clip(segCmp);
 
             // insert all point and segment.
             for (auto &&seg : itRs.first)
@@ -372,7 +374,7 @@ namespace YSB
                 }
                 else
                 {
-                    auto newSeg(seg);
+                    Segment<T, 3> newSeg(seg);
                     auto it = clip.find(newSeg);
                     if (it != clip.end())
                     {
@@ -393,7 +395,7 @@ namespace YSB
             {
                 for (auto itp = allP.begin(); itp != allP.end(); ++itp)
                 {
-                    if ((seg.first).containPoint(*itp, seg.first.majorDim(), tol) == Segment<T, 3>::locType::Inter)
+                    if ((seg.first).containPoint(*itp, seg.first.majorDim(), tol) != Segment<T, 3>::locType::Outer)
                     {
                         seg.second.insert(*itp);
                     }
@@ -429,7 +431,7 @@ namespace YSB
                     if (itNear.second == false)
                         ((itNear.first)->second).insert(itSeg);
 
-                    itNear = near.insert({p1, {itSeg}});
+                    itNear = near.insert({p1, itSet});
                     if (itNear.second == false)
                         ((itNear.first)->second).insert(itSeg);
                     p0 = p1;
@@ -469,7 +471,7 @@ namespace YSB
                     }
 
                     if (exist == true)
-                        break;
+                        continue;
 
                     bool interInfo = false;
                     for (auto &&seg : allSeg)
@@ -482,7 +484,7 @@ namespace YSB
                         }
                     }
                     if (interInfo == true)
-                        break;
+                        continue;
 
                     auto itSeg = allSeg.insert(newSeg);
                     if (itSeg.second == false)
