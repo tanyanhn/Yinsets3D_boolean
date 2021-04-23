@@ -26,4 +26,5 @@ TEST_CASE("Paste", "[pa1]")
     Triangulation<Real> triangulateOp;
     triangulateOp(triA, triB,
                   iOp.resultA, iOp.resultB);
-}
+}  
+   
