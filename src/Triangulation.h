@@ -393,7 +393,9 @@ namespace YSB
             {
                 for (auto itp = allP.begin(); itp != allP.end(); ++itp)
                 {
-                    if ((seg.first).containPoint(*itp, seg.first.majorDim(), tol) == Segment<T, 3>::locType::Inter)
+                    auto ctType = (seg.first).containPoint(*itp, seg.first.majorDim(), tol);
+                    if (ctType == Segment<T, 3>::locType::Inter ||
+                        ctType == Segment<T, 3>::locType::ExtPoint)
                     {
                         seg.second.insert(*itp);
                     }
@@ -429,7 +431,7 @@ namespace YSB
                     if (itNear.second == false)
                         ((itNear.first)->second).insert(itSeg);
 
-                    itNear = near.insert({p1, {itSeg}});
+                    itNear = near.insert({p1, itSet});
                     if (itNear.second == false)
                         ((itNear.first)->second).insert(itSeg);
                     p0 = p1;
@@ -474,8 +476,9 @@ namespace YSB
                     bool interInfo = false;
                     for (auto &&seg : allSeg)
                     {
-                        if (intersectSegSeg(newSeg, seg) ==
-                            Segment<T, 2>::intsType::One)
+                        auto interType = intersectSegSeg(newSeg, seg);
+                        if (interType == Segment<T, 2>::intsType::One ||
+                            interType == Segment<T, 2>::intsType::Overlap)
                         {
                             interInfo = true;
                             break;

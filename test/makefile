@@ -1,6 +1,6 @@
 
-# CPPFLAGS = -g -std=c++17
-CPPFLAGS = -std=c++17
+ CPPFLAGS = -g -std=c++17
+# CPPFLAGS = -std=c++17
 
 .PHONY: clean clear test run all doxygen
 
