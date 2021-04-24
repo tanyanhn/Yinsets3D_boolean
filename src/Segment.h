@@ -136,7 +136,7 @@ namespace YSB
                 mDim = majorDim();
 
             PointCompare pointcmp(tol);
-            if (pointcmp(endPoint[0], p) || pointcmp(endPoint[1], p))
+            if (pointcmp.compare(endPoint[0], p) == 0 || pointcmp.compare(endPoint[1], p) == 0)
             {
                 return ExtPoint;
             }
