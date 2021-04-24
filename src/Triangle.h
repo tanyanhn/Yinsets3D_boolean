@@ -341,7 +341,7 @@ namespace YSB
                 if (max_of(abs(l.direction)) > tol)
                     projTri.intersect(projL, rs2D, tol);
                 else
-                    rs2D.push_back(l.fixpoint);
+                    rs2D.push_back(projL.fixpoint);
 
                 for (auto &&ip : rs2D)
                 {

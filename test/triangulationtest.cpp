@@ -22,11 +22,32 @@ TEST_CASE("Paste", "[pa1]")
     iOp(triA, triB);
     REQUIRE(iOp.resultA.size() == 4);
     REQUIRE(iOp.resultA[0].first.size() == 6);
-    REQUIRE(iOp.resultB.size() == 4); 
+    REQUIRE(iOp.resultB.size() == 4);    
 
     Triangulation<Real> triangulateOp;
     triangulateOp(triA, triB,
                   iOp.resultA, iOp.resultB);
+    RemoveOverlap<Real> removeOverlapOp;
+            removeOverlapOp(triangulateOp.TriangulateA,
+                            triangulateOp.TriangulateB,
+                            triangulateOp.vecTriA,
+                            triangulateOp.vecTriB,
+                            iOp.resultA, iOp.resultB);
+    PrePast<Real> prePastOp;
+            prePastOp(triangulateOp.vecTriA, triangulateOp.vecTriB);
+
+    Locate<Real> locateOp; 
+            locateOp(triA, triB,
+                     triangulateOp.vecTriA, triangulateOp.vecTriB,
+                     prePastOp.vecSPA, prePastOp.vecSPB);
+    Past<Real> pastOp;
+            std::vector<SurfacePatch<Real>> vecF;
+            pastOp.combine(prePastOp.vecSPA, prePastOp.vecSPB,
+                           triangulateOp.vecTriA, triangulateOp.vecTriB,
+                           vecF);
+            pastOp(vecF, triangulateOp.vecTriA, triangulateOp.vecTriB);
+    REQUIRE(pastOp.vecGCS.size() == 1); 
+    REQUIRE(pastOp.vecGCS[0].tris().size() == 6); 
 }  
     
  
