@@ -31,10 +31,13 @@ namespace YSB
         explicit YinSet(const std::vector<GluingCompactSurface<T>> &vf, Real tol = TOL)
             : vecFace(vf)
         {
-            BuildHasse(tol);
+            //BuildHasse(tol);
         }
 
-        void collapse(std::vector<Triangle<T, 3>> &rs, int idYinset, Real tol = TOL) const
+        std::vector<GluingCompactSurface<T>> &gcss() { return vecFace; }
+        const std::vector<GluingCompactSurface<T>> &gcss() const { return vecFace; }
+
+        void collapse(std::vector<Triangle<T, 3>> &rs, int idYinset, Real tol = TOL) 
         {
             SegmentCompare segcmp(tol);
 
@@ -56,7 +59,7 @@ namespace YSB
             // }
         }
 
-        YinSet<T> meet(const YinSet<T> &y2, const int usingRFB = 0, Real tol = TOL)
+        YinSet<T> meet(YinSet<T> &y2, const int usingRFB = 0, Real tol = TOL)
         {
             //Intersection Triangle.
             TriangleIntersection<T> intersectOp;
@@ -76,8 +79,8 @@ namespace YSB
                             triangulateOp.TriangulateB,
                             triangulateOp.vecTriA,
                             triangulateOp.vecTriB,
-                            triangulateOp.resultA,
-                            triangulateOp.resultB, tol);
+                            intersectOp.resultA,
+                            intersectOp.resultB, tol);
 
             // PrePast
             PrePast<T> prePastOp;
@@ -92,13 +95,13 @@ namespace YSB
             // std::map<std::pair<int, int>,
             //          std::vector<std::pair<int, int>>> *pCoClipFaces = &prePastOp.coClipFaces;
 
-            if (usingRFB == 1)
-            {
-                ReFactoryBoundary<T> reFactoryBoundaryOp;
-                reFactoryBoundaryOp(triangulateOp.vecTriA, triangulateOp.vecTriB,
-                                    prePastOp.vecSPA, prePastOp.vecSPB,
-                                    prePastOp.ClipFaces, prePastOp.coClipFaces, tol);
-            }
+            // if (usingRFB == 1)
+            // {
+            //     ReFactoryBoundary<T> reFactoryBoundaryOp;
+            //     reFactoryBoundaryOp(triangulateOp.vecTriA, triangulateOp.vecTriB,
+            //                         prePastOp.vecSPA, prePastOp.vecSPB,
+            //                         prePastOp.ClipFaces, prePastOp.coClipFaces, tol);
+            // }
 
             // Locate SurfacePatch.
             Locate<T> locateOp;
@@ -118,9 +121,9 @@ namespace YSB
             return YinSet<T>(pastOp.vecGCS, tol);
         }
 
-        void BuildHasse(Real tol = TOL) const;
+        // void BuildHasse(Real tol = TOL) const;
 
-        ~YinSet();
+
     };
 } // namespace YSB
 
