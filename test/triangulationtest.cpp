@@ -21,10 +21,12 @@ TEST_CASE("Paste", "[pa1]")
     TriangleIntersection<Real> iOp;
     iOp(triA, triB);
     REQUIRE(iOp.resultA.size() == 4);
-    REQUIRE(iOp.resultB.size() == 4);
+    REQUIRE(iOp.resultA[0].first.size() == 6);
+    REQUIRE(iOp.resultB.size() == 4); 
 
     Triangulation<Real> triangulateOp;
     triangulateOp(triA, triB,
                   iOp.resultA, iOp.resultB);
 }  
-   
+    
+ 
