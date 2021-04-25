@@ -66,13 +66,14 @@ namespace YSB
             std::vector<Triangle<T, 3>> inputA, inputB;
             collapse(inputA, 1, tol);
             y2.collapse(inputB, 2, tol);
+            std::cout<<inputA.size()<<" "<<inputB.size()<<std::endl;
             intersectOp(inputA, inputB, tol);
 
             // Triangulation
             Triangulation<T> triangulateOp;
             triangulateOp(inputA, inputB,
                           intersectOp.resultA, intersectOp.resultB, tol);
-
+            
             // RemoveOverlap
             RemoveOverlap<T> removeOverlapOp;
             removeOverlapOp(triangulateOp.TriangulateA,

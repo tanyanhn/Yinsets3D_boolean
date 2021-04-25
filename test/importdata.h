@@ -38,6 +38,8 @@ YinSet<Real> importdata(string s)
                 vectri.push_back(tri);
                 size++;
             }
+            else if(c == 'g')
+            break;
         }
         GluingCompactSurface<Real> gcs(vectri);
         vector<GluingCompactSurface<Real>> vecgcs = {gcs};
