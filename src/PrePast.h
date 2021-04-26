@@ -28,6 +28,13 @@ namespace YSB
         }
 
         void operator()(
+            std::vector<Triangle<T, 3>> &vecTriA,
+            Real tol = TOL)
+        {
+            this->operator()(vecTriA, 1, tol);
+        }
+
+        void operator()(
             std::vector<Triangle<T, 3>> &vecTri,
             const int idYinset, Real tol = TOL)
         {

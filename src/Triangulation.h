@@ -20,7 +20,7 @@ namespace YSB
             return cmp(*it1, *it2);
         }
     };
-
+// int iterationA = 0, iterationB = 0;    
     template <class T>
     struct Triangulation
     {
@@ -55,8 +55,10 @@ namespace YSB
                 near(pCmp);
             std::set<std::pair<int, int>> done;
 
+            
             for (auto &&itRs : resultA)
             {
+                //iterationA++;
                 int idYinset = 1;
                 int mDim = inputA[itRs.first].majorDim();
                 auto normVec = inputA[itRs.first].normVec();
@@ -68,7 +70,10 @@ namespace YSB
                 std::set<Point<T, 3>, PointCompare> &allP = mapallP[idInput];
                 std::set<Segment<T, 3>, SegmentCompare> &allSeg = mapallSeg[idInput];
                 near.clear();
-
+                // if(iterationA == 7)
+                // {
+                //     int a = iterationA;
+                // }
                 this->clipSegment(itRs.second, allP, allSeg, near, pCmp, segCmp, tol);
                 this->addSegment(idInput, itRs.second.second, allP, allSeg, near, segCmp, mDim, tol);
                 this->generatorTriangle(inputA[itRs.first], idInput, allSeg, near, normVec,
@@ -79,6 +84,7 @@ namespace YSB
 
             for (auto &&itRs : resultB)
             {
+                //iterationB++;
                 int idYinset = 2;
                 int mDim = inputB[itRs.first].majorDim();
                 auto normVec = inputB[itRs.first].normVec();
@@ -90,7 +96,10 @@ namespace YSB
                 std::set<Point<T, 3>, PointCompare> &allP = mapallP[idInput];
                 std::set<Segment<T, 3>, SegmentCompare> &allSeg = mapallSeg[idInput];
                 near.clear();
-
+                // if(iterationB == 75)
+                // {
+                //     int b = iterationB;
+                // }
                 this->clipSegment(itRs.second, allP, allSeg, near, pCmp, segCmp, tol);
                 this->addSegment(idInput, itRs.second.second, allP, allSeg, near, segCmp, mDim, tol);
                 this->generatorTriangle(inputB[itRs.first], idInput, allSeg, near, normVec,
@@ -292,12 +301,16 @@ namespace YSB
                 Real bestangle = 2 * M_PI;
                 for (auto &&NextSeg : near.at(p1))
                 {
+                    SegmentCompare segcmp;
+                    if(segcmp.compare(NextSeg, itSeg0->first) == 0)
+                    continue;
                     auto np = (pCmp.compare((NextSeg)[0], p1) == 0) ? ((NextSeg)[1]) : ((NextSeg)[0]);
                     
                     auto v0 = p0 - p1, v1 = np - p1;
 
-                    if(norm(cross(v1, v0)) < tol)
-                    continue;
+                    // if(norm(cross(v1, v0)) / norm(v1) < tol)
+                    // continue;
+                    
 
                     Real angle = atan2(norm(cross(v1, v0)), dot(v1, v0));
                     if (dot(cross(v1, v0), normVec) < 0)
@@ -312,6 +325,12 @@ namespace YSB
 
                 auto itSeg1 = markEdge.find(Segment<T, 3>(p1, p2));
                 auto itSeg2 = markEdge.find(Segment<T, 3>(p2, p0));
+                if(itSeg1 == markEdge.end())
+                assert(itSeg1 != markEdge.end() && "generatorTriangle itSeg1 wrong.");
+                if(itSeg2 == markEdge.end())
+                assert(itSeg2 != markEdge.end() && "generatorTriangle itSeg2 wrong.");
+
+
                 Segment<T, 3> Seg0(p0, p1, itSeg0->first.neighborhood());
                 Segment<T, 3> Seg1(p1, p2, itSeg1->first.neighborhood());
                 Segment<T, 3> Seg2(p2, p0, itSeg2->first.neighborhood());
@@ -322,8 +341,6 @@ namespace YSB
                 Triangulate[idInput.second].push_back(vecTri.size());
                 vecTri.push_back(tri);
 
-                assert(itSeg1 != markEdge.end() && "generatorTriangle itSeg1 wrong.");
-                assert(itSeg2 != markEdge.end() && "generatorTriangle itSeg2 wrong.");
                 if (pCmp.compare(p1, (itSeg1->first)[0]) == 0)
                 {
                     assert((itSeg1->second).first == 1 && "generatorTriangle itSeg1 wrong.");
@@ -426,7 +443,7 @@ namespace YSB
                         allSeg.erase(itSeg);
                     }
                     auto insertinfo = allSeg.insert(newSeg);
-                    itSeg = insertinfo.first;
+                    // itSeg = insertinfo.first;
                     if (insertinfo.second == false)
                         assert(false && "insert error.");
 
@@ -437,13 +454,13 @@ namespace YSB
                     //     itSet(cmp);
                     // itSet.insert(itSeg);
 
-                    auto itNear = near.insert({p0, {*itSeg}});
+                    auto itNear = near.insert({p0, {newSeg}});
                     if (itNear.second == false)
-                        ((itNear.first)->second).insert(*itSeg);
+                        ((itNear.first)->second).insert(newSeg);
 
-                    itNear = near.insert({p1, {*itSeg}});
+                    itNear = near.insert({p1, {newSeg}});
                     if (itNear.second == false)
-                        ((itNear.first)->second).insert(*itSeg);
+                        ((itNear.first)->second).insert(newSeg);
                     p0 = p1;
                 }
             }

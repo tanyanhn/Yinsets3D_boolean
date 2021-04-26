@@ -17,13 +17,16 @@ TEST_CASE("Paste", "[pa1]")
     Triangle<Real, 3> tri1(tripoints1), tri2(tripoints2), tri3(tripoints3), tri4(tripoints4),
         tri5(tripoints5), tri6(tripoints6), tri7(tripoints7), tri8(tripoints8);
     vector<Triangle<Real, 3>> triA{tri1, tri2, tri3, tri4}, triB{tri5, tri6, tri7, tri8};
-
+    Segment<Real, 3> seg1(tp1, tp2), seg2(tp2, tp1);
+    SegmentCompare segcmp;
+    REQUIRE(segcmp.compare(seg1, seg2) == 0);
     TriangleIntersection<Real> iOp;
     iOp(triA, triB);
     REQUIRE(iOp.resultA.size() == 4);
     REQUIRE(iOp.resultA[0].first.size() == 6);
     REQUIRE(iOp.resultB.size() == 4);    
 
+       
     Triangulation<Real> triangulateOp;
     triangulateOp(triA, triB,
                   iOp.resultA, iOp.resultB);

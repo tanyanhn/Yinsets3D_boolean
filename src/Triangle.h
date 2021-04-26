@@ -144,6 +144,16 @@ namespace YSB
         const std::pair<int, int> &inF() const { return inFace; }
 
         bool IfRemoved() const { return removed; }
+        
+        void reverse()
+        {
+            auto temp = vertex[1];
+            vertex[1] = vertex[2];
+            vertex[2] = temp;
+            edge[0] = Segment<T, Dim>(vertex[0], vertex[1]);
+            edge[1] = Segment<T, Dim>(vertex[1], vertex[2]);
+            edge[2] = Segment<T, Dim>(vertex[2], vertex[0]);
+        }
 
         // Update pointer pla.
         Plane<T> *new_pla() const
