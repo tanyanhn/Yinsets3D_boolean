@@ -50,6 +50,10 @@ namespace YSB
                 {
                     iA = idA;
                     iB = idB;
+                    if(idB==575)
+                    {
+                        int a = idB;
+                    }
                     type = inputA[iA].intersect(inputA[iB], result, tol);
                 }
                 else if (inYinsetA == 1 && inYinsetB == 2)

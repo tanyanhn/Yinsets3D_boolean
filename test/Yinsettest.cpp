@@ -1,6 +1,7 @@
 #include "../catch.hpp"
 #include "../src/YinSet.h"
 #include <vector>
+#include "exportdata.h"
 
 using namespace YSB;
 using namespace std;
@@ -22,8 +23,18 @@ TEST_CASE("Paste", "[pa1]")
     vector<GluingCompactSurface<Real>> vecgcs1{gcs1}, vecgcs2{gcs2};
     YinSet<Real> y1(vecgcs1), y2(vecgcs2);
     auto res = y1.meet(y2);
-    REQUIRE(res.gcss().size() == 1); 
-    REQUIRE(res.gcss()[0].tris().size() == 6); 
+    // exportdata("../res/tetrahedronmeet", res);
+    // REQUIRE(res.gcss().size() == 1); 
+    // REQUIRE(res.gcss()[0].tris().size() == 6); 
+
+    // auto res1 = y1.complement();
+    // REQUIRE(res1.gcss().size() == 1); 
+    // REQUIRE(res1.gcss()[0].tris().size() == 4); 
+
+    auto res2 = y1.join(y2);
+    exportdata("../res/tetrahedronjoin", res2);
+
+    REQUIRE(1 == 1); 
 }  
     
  

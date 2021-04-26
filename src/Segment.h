@@ -290,21 +290,37 @@ namespace YSB
         PointCompare cmp(tol);
         if (cmp.compare(seg1[0], seg2[0]) == 0)
         {
+            if(seg1.containPoint(seg2[1]) == Segment<T, 2>::locType::Inter||
+               seg2.containPoint(seg1[1]) == Segment<T, 2>::locType::Inter||
+               cmp.compare(seg1[1], seg2[1]) == 0)
+               return Segment<T, 2>::intsType::Overlap;
             result.push_back(seg1[0]);
             return Segment<T, 2>::intsType::EndPoint;
         }
         if (cmp.compare(seg1[0], seg2[1]) == 0)
         {
+            if(seg1.containPoint(seg2[0]) == Segment<T, 2>::locType::Inter||
+               seg2.containPoint(seg1[1]) == Segment<T, 2>::locType::Inter||
+               cmp.compare(seg1[1], seg2[0]) == 0)
+               return Segment<T, 2>::intsType::Overlap;
             result.push_back(seg1[0]);
             return Segment<T, 2>::intsType::EndPoint;
         }
         if (cmp.compare(seg1[1], seg2[0]) == 0)
         {
+            if(seg1.containPoint(seg2[1]) == Segment<T, 2>::locType::Inter||
+               seg2.containPoint(seg1[0]) == Segment<T, 2>::locType::Inter||
+               cmp.compare(seg1[0], seg2[1]) == 0)
+               return Segment<T, 2>::intsType::Overlap;
             result.push_back(seg1[1]);
             return Segment<T, 2>::intsType::EndPoint;
         }
         if (cmp.compare(seg1[1], seg2[1]) == 0)
         {
+            if(seg1.containPoint(seg2[0]) == Segment<T, 2>::locType::Inter||
+               seg2.containPoint(seg1[0]) == Segment<T, 2>::locType::Inter||
+               cmp.compare(seg1[0], seg2[0]) == 0)
+               return Segment<T, 2>::intsType::Overlap;
             result.push_back(seg1[1]);
             return Segment<T, 2>::intsType::EndPoint;
         }

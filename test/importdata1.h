@@ -36,6 +36,10 @@ YinSet<Real> importdata1(string s)
                     {
                         vn++;
                     }
+                    else if(ss[1] == 't')
+                    {
+                        ;
+                    }
                     else
                     {
                         vnum++;
@@ -51,17 +55,19 @@ YinSet<Real> importdata1(string s)
                 int a = 0, b = 0, c = 0;
                 if (ss[0] == 'f')
                 {
-                    for (int k = 0; s2[k] != '/'; k++)
+                    // if(vnum==2708)
+                    // int asd = vnum;
+                    for (int k = 0; s2[k] != '/'&& s2[k] != 0 ; k++)
                     {
                         a = a * 10 + (s2[k] - 48);
                     }
         
-                    for (int k = 0; s3[k] != '/'; k++)
+                    for (int k = 0; s3[k] != '/'&& s3[k] != 0; k++)
                     {
                         b = b * 10 + (s3[k] - 48);
                     }
         
-                    for (int k = 0; s4[k] != '/'; k++)
+                    for (int k = 0; s4[k] != '/'&& s4[k] != 0; k++)
                     {
                         c = c * 10 + (s4[k] - 48);
                     }
