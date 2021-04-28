@@ -118,6 +118,17 @@ namespace YSB
             std::vector<Triangle<T, 3>> inputA, inputB;
             collapse(inputA, 1, tol);
             y2.collapse(inputB, 2, tol);
+            // for(int i=0;i<inputA.size();i++)
+            // {
+            //     T r1[3] = {-0.525730, -0.850652, 0.000000}, r2[3] = {-0.894426,-0.447216,0.000000}, r3[3] = {-0.688189, -0.525736, -0.499997};
+            //     Point<T, 3> tp1(r1), tp2(r2), tp3(r3);
+            //     Point<T, 3> tripoints1[] = {tp1, tp2, tp3};
+            //     Triangle<Real, 3> tri1(tripoints1);
+            //     if(tri1.equal(inputA[i]))
+            //     {
+            //         int a = i;
+            //     }
+            // }
             //std::cout<<inputA.size()<<" "<<inputB.size()<<std::endl;
             intersectOp(inputA, inputB, tol);
 

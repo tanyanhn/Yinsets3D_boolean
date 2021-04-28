@@ -6,7 +6,7 @@
 namespace YSB
 {
     using Real = double;
-    const Real TOL = 10e-8;
+    const Real TOL = 10e-6;
     const int spaceDim = 3;
     const Real GreatValue = 10e10;
     #ifndef M_PI

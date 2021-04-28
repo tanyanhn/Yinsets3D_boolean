@@ -227,7 +227,7 @@ namespace YSB
 	Point<T, 2> p4 = l2.fixpoint;
 */
         l2.moveFixpoint(seg1[0][mDim], mDim);
-        l2.direction = l2.direction * norm(p2 - p1);
+        l2.direction = normalize(l2.direction) * norm(p2 - p1);
 
         Point<T, 2> p3 = l2.fixpoint, p4 = l2.fixpoint + l2.direction;
         Vec<T, 2> A[2], b;

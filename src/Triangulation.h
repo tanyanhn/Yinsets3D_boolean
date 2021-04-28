@@ -70,9 +70,9 @@ namespace YSB
                 std::set<Point<T, 3>, PointCompare> &allP = mapallP[idInput];
                 std::set<Segment<T, 3>, SegmentCompare> &allSeg = mapallSeg[idInput];
                 near.clear();
-                // if(iterationA == 7)
+                // if(itRs.first == 104)
                 // {
-                //     int a = iterationA;
+                //     int a = 1;
                 // }
                 this->clipSegment(itRs.second, allP, allSeg, near, pCmp, segCmp, tol);
                 this->addSegment(idInput, itRs.second.second, allP, allSeg, near, segCmp, mDim, tol);

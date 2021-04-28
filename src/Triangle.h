@@ -305,11 +305,11 @@ namespace YSB
             {
                 min1 = std::min(vertex[0][d], std::min(vertex[1][d], vertex[2][d]));
                 max2 = std::max(tri2.vertex[0][d], std::max(tri2.vertex[1][d], tri2.vertex[2][d]));
-                if (min1 > max2)
+                if (min1 > max2 + tol)
                     return intsType::Never;
                 max1 = std::max(vertex[0][d], std::max(vertex[1][d], vertex[2][d]));
                 min2 = std::min(tri2.vertex[0][d], std::min(tri2.vertex[1][d], tri2.vertex[2][d]));
-                if (min2 > max1)
+                if (min2 > max1 + tol)
                     return intsType::Never;
             }
             if (pla == nullptr)
