@@ -23,9 +23,9 @@ TEST_CASE("Paste", "[pa1]")
     vector<GluingCompactSurface<Real>> vecgcs1{gcs1}, vecgcs2{gcs2};
     YinSet<Real> y1(vecgcs1), y2(vecgcs2);
     auto res = y1.meet(y2);
-    // exportdata("../res/tetrahedronmeet", res);
-    // REQUIRE(res.gcss().size() == 1); 
-    // REQUIRE(res.gcss()[0].tris().size() == 6); 
+    exportdata("../res/tetrahedronmeet", res);
+    REQUIRE(res.gcss().size() == 1); 
+    REQUIRE(res.gcss()[0].tris().size() == 6); 
 
     // auto res1 = y1.complement();
     // REQUIRE(res1.gcss().size() == 1); 

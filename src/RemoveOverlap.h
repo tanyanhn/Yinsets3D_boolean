@@ -86,45 +86,45 @@ namespace YSB
             }
         }
 
-        for (auto &&it : resultB)
-        {
-            int iA = it.first;
-            int numOverlap = it.second.second.size();
-            for (int iOverlap = 0; iOverlap < numOverlap; ++iOverlap)
-            {
-                auto &TriangulateAiA = TriangulateB[iA];
-                int numsmalltriA = TriangulateAiA.size(), numsmalltriB;
-                int iB = it.second.second[iOverlap].second;
-                std::vector<int> tmp[2];
-                int ivecB = it.second.second[iOverlap].first;
-                if (ivecB == 1)
-                {
-                    continue;
-                }
-                else
-                {
-                    tmp[ivecB - 1] = TriangulateB[iB];
-                }
-                auto &TriangulateBiB = tmp[ivecB - 1];
-                numsmalltriB = TriangulateBiB.size();
+        // for (auto &&it : resultB)
+        // {
+        //     int iA = it.first;
+        //     int numOverlap = it.second.second.size();
+        //     for (int iOverlap = 0; iOverlap < numOverlap; ++iOverlap)
+        //     {
+        //         auto &TriangulateAiA = TriangulateB[iA];
+        //         int numsmalltriA = TriangulateAiA.size(), numsmalltriB;
+        //         int iB = it.second.second[iOverlap].second;
+        //         std::vector<int> tmp[2];
+        //         int ivecB = it.second.second[iOverlap].first;
+        //         if (ivecB == 1)
+        //         {
+        //             continue;
+        //         }
+        //         else
+        //         {
+        //             tmp[ivecB - 1] = TriangulateB[iB];
+        //         }
+        //         auto &TriangulateBiB = tmp[ivecB - 1];
+        //         numsmalltriB = TriangulateBiB.size();
 
-                for (int ismalltriA = 0; ismalltriA < numsmalltriA; ++ismalltriA)
-                {
-                    for (int ismalltriB = 0; ismalltriB < numsmalltriB; ++ismalltriB)
-                    {
-                        if (vecTriB[TriangulateAiA[ismalltriA]].equal((*(vecTriarr[ivecB - 1]))[TriangulateBiB[ismalltriB]], tol))
-                        {
-                            if (dot(vecTriB[TriangulateAiA[ismalltriA]].normVec(),
-                                    (*(vecTriarr[ivecB - 1]))[TriangulateBiB[ismalltriB]].normVec()) < 0)
-                            {
-                                RemoveTriangle(vecTriA, vecTriB, vecTriB, TriangulateAiA[ismalltriA], tol);
-                            }
-                            RemoveTriangle(vecTriA, vecTriB, (*(vecTriarr[ivecB - 1])), TriangulateBiB[ismalltriB], tol);
-                        }
-                    }
-                }
-            }
-        }
+        //         for (int ismalltriA = 0; ismalltriA < numsmalltriA; ++ismalltriA)
+        //         {
+        //             for (int ismalltriB = 0; ismalltriB < numsmalltriB; ++ismalltriB)
+        //             {
+        //                 if (vecTriB[TriangulateAiA[ismalltriA]].equal((*(vecTriarr[ivecB - 1]))[TriangulateBiB[ismalltriB]], tol))
+        //                 {
+        //                     if (dot(vecTriB[TriangulateAiA[ismalltriA]].normVec(),
+        //                             (*(vecTriarr[ivecB - 1]))[TriangulateBiB[ismalltriB]].normVec()) < 0)
+        //                     {
+        //                         RemoveTriangle(vecTriA, vecTriB, vecTriB, TriangulateAiA[ismalltriA], tol);
+        //                     }
+        //                     RemoveTriangle(vecTriA, vecTriB, (*(vecTriarr[ivecB - 1])), TriangulateBiB[ismalltriB], tol);
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
     }
 
     template <class T>

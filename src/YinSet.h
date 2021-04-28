@@ -158,7 +158,7 @@ namespace YSB
 
             // Locate SurfacePatch.
             Locate<T> locateOp;
-            locateOp(inputA, inputB,
+            locateOp(inputA, inputB, vecFace[0].Type(), y2.vecFace[0].Type(),
                      triangulateOp.vecTriA, triangulateOp.vecTriB,
                      prePastOp.vecSPA, prePastOp.vecSPB, tol);
 
@@ -178,7 +178,8 @@ namespace YSB
         {
             auto comp1 = complement();
             auto comp2 = y2.complement();
-            return comp1.meet(comp2);
+            auto comp3 = comp1.meet(comp2);
+            return comp3.complement();
         }
 
         // void BuildHasse(Real tol = TOL) const;
