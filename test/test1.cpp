@@ -13,8 +13,8 @@ TEST_CASE("monkey&&monkey", "[mm]")
            s2("D://github//Yinsets3D_boolean//dataset//icosphere//icosphere2.obj");
     // string smonkey1("D://github//Yinsets3D_boolean//dataset//teddy&monkey//monkey1.obj"),
     //        smonkey2("D://github//Yinsets3D_boolean//dataset//teddy&monkey//monkey2.obj");
-    // string steddy("..//dataset//teddy&cow//teddy.obj"),
-    //     scow("dataset//teddy&cow//cow.obj");
+    // string s1("D://github//Yinsets3D_boolean//dataset//teddy&cow//teddy.obj"),
+    //     s2("D://github//Yinsets3D_boolean//dataset//teddy&cow//cow.obj");
     YinSet<Real> y1 = importdata1(s1), y2 = importdata1(s2);
 
     auto res = y1.meet(y2);

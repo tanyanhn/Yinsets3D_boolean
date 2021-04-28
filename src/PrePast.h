@@ -60,9 +60,12 @@ namespace YSB
                     All.insert(i);
                 }
             }
-
-            F.push_back((*All.begin()));
-            All.erase(All.begin());
+            if(!All.empty())
+            {
+                F.push_back((*All.begin()));
+                All.erase(All.begin());
+            }
+            
             while (!All.empty() || !F.empty())
             {
                 Triangle<T, 3> &tri = vecTri[F.back()];
@@ -79,6 +82,8 @@ namespace YSB
                     if (e.IntersectionSeg() == 0)
                     {
                         std::pair<int, int> nearTri;
+                        
+                        assert(e.neighborhood().size() == 2 && "Not a closed surface");
                         nearTri = (e.neighborhood()[0].second != tri.id()) ? e.neighborhood()[0] : e.neighborhood()[1];
                         //     nearTri = FNToperator(tri, e, vecTri, std::vector<Triangle<T, 3>>(), tol);
                         // else if (idYinset == 2)

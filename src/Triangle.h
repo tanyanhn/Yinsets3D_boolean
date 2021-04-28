@@ -5,7 +5,7 @@
 #include "Plane.h"
 #include "PointCompare.h"
 #include <set>
-
+#include "SegmentCompare.h"
 //Test git
 
 namespace YSB
@@ -150,9 +150,12 @@ namespace YSB
             auto temp = vertex[1];
             vertex[1] = vertex[2];
             vertex[2] = temp;
-            edge[0] = Segment<T, Dim>(vertex[0], vertex[1]);
-            edge[1] = Segment<T, Dim>(vertex[1], vertex[2]);
-            edge[2] = Segment<T, Dim>(vertex[2], vertex[0]);
+            auto neighbor0 = edge[0].neighborhood();
+            auto neighbor1 = edge[1].neighborhood();
+            auto neighbor2 = edge[2].neighborhood();
+            edge[0] = Segment<T, Dim>(vertex[0], vertex[1], neighbor2);
+            edge[1] = Segment<T, Dim>(vertex[1], vertex[2], neighbor1);
+            edge[2] = Segment<T, Dim>(vertex[2], vertex[0], neighbor0);
         }
 
         // Update pointer pla.
@@ -176,14 +179,13 @@ namespace YSB
         // Find edge direction in Triangle.
         int edgeVec(const Segment<T, Dim> &seg, Real tol = TOL) const
         {
-            PointCompare cmp(tol);
+            SegmentCompare cmp(tol);
             int id = -1;
             for (int i = 0; i < Dim; ++i)
             {
-                if (cmp.compare(vertex[i], seg[0]) != 0 && cmp.compare(vertex[i], seg[1]) != 0)
+                if (cmp.compare(edge[i], seg) == 0)
                     id = i;
             }
-            id = (id + 1) % 3;
             return id;
         }
 

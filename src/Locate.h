@@ -14,6 +14,7 @@ namespace YSB
         int operator()(const std::vector<Triangle<T, 3>> &yinset, const Point<T, 3> &p, Real tol = TOL);
         int operator()(const std::vector<Triangle<T, 3>> &yinset, std::vector<Triangle<T, 3>> &vecTri, const SurfacePatch<T> &faces, Real tol = TOL);
         void operator()(const std::vector<Triangle<T, 3>> &inputA, const std::vector<Triangle<T, 3>> &inputB,
+                        int ifboundA, int ifboundB,
                         std::vector<Triangle<T, 3>> &vecTriA, std::vector<Triangle<T, 3>> &vecTriB,
                         std::vector<SurfacePatch<T>> &vecSPA, std::vector<SurfacePatch<T>> &vecSPB, Real tol = TOL);
     };
@@ -73,7 +74,7 @@ namespace YSB
             }
 
             if (intsp.size() == 0)
-                return -1;
+                return -2;
 
             T min_D = YSB::GreatValue;
             Point<T, 3> tmpp;
@@ -119,6 +120,8 @@ namespace YSB
     inline void Locate<T>::operator()(
         const std::vector<Triangle<T, 3>> &inputA,
         const std::vector<Triangle<T, 3>> &inputB,
+        int ifboundA,
+        int ifboundB,
         std::vector<Triangle<T, 3>> &vecTriA,
         std::vector<Triangle<T, 3>> &vecTriB,
         std::vector<SurfacePatch<T>> &vecSPA,
@@ -127,7 +130,9 @@ namespace YSB
         for (auto &&iSP : vecSPA)
         {
             int k = this->operator()(inputB, vecTriA, iSP, tol);
-            if (k == -1)
+            if(ifboundA == 0 && k == -2)
+            k = 1;
+            if (k < 0)
             {
                 iSP.removed = true;
                 for (auto &&it : iSP.tris())
@@ -145,7 +150,9 @@ namespace YSB
         for (auto &&iSP : vecSPB)
         {
             int k = this->operator()(inputA, vecTriB, iSP, tol);
-            if (k == -1)
+            if(ifboundB == 0 && k == -2)
+            k = 1;
+            if (k < 0)
             {
                 iSP.removed = true;
                 for (auto &&it : iSP.tris())
