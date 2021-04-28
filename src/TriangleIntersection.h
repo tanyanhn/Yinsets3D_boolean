@@ -42,6 +42,10 @@ namespace YSB
         {
             for (int idB = idA + 1; idB < numA + numB; ++idB)
             {
+                // if(idA==103&&idB==104)
+                // {
+                //     int a= idA;
+                // }
                 int iA, iB;
                 result.clear();
                 int inYinsetA = idA < numA ? (1) : (2),
@@ -50,10 +54,7 @@ namespace YSB
                 {
                     iA = idA;
                     iB = idB;
-                    if(idB==575)
-                    {
-                        int a = idB;
-                    }
+                    
                     type = inputA[iA].intersect(inputA[iB], result, tol);
                 }
                 else if (inYinsetA == 1 && inYinsetB == 2)
