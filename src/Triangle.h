@@ -5,7 +5,7 @@
 #include "Plane.h"
 #include "PointCompare.h"
 #include <set>
-
+#include "SegmentCompare.h"
 //Test git
 
 namespace YSB
@@ -144,6 +144,19 @@ namespace YSB
         const std::pair<int, int> &inF() const { return inFace; }
 
         bool IfRemoved() const { return removed; }
+        
+        void reverse()
+        {
+            auto temp = vertex[1];
+            vertex[1] = vertex[2];
+            vertex[2] = temp;
+            auto neighbor0 = edge[0].neighborhood();
+            auto neighbor1 = edge[1].neighborhood();
+            auto neighbor2 = edge[2].neighborhood();
+            edge[0] = Segment<T, Dim>(vertex[0], vertex[1], neighbor2);
+            edge[1] = Segment<T, Dim>(vertex[1], vertex[2], neighbor1);
+            edge[2] = Segment<T, Dim>(vertex[2], vertex[0], neighbor0);
+        }
 
         // Update pointer pla.
         Plane<T> *new_pla() const
@@ -166,14 +179,13 @@ namespace YSB
         // Find edge direction in Triangle.
         int edgeVec(const Segment<T, Dim> &seg, Real tol = TOL) const
         {
-            PointCompare cmp(tol);
+            SegmentCompare cmp(tol);
             int id = -1;
             for (int i = 0; i < Dim; ++i)
             {
-                if (cmp.compare(vertex[i], seg[0]) != 0 && cmp.compare(vertex[i], seg[1]) != 0)
+                if (cmp.compare(edge[i], seg) == 0)
                     id = i;
             }
-            id = (id + 1) % 3;
             return id;
         }
 
@@ -293,11 +305,11 @@ namespace YSB
             {
                 min1 = std::min(vertex[0][d], std::min(vertex[1][d], vertex[2][d]));
                 max2 = std::max(tri2.vertex[0][d], std::max(tri2.vertex[1][d], tri2.vertex[2][d]));
-                if (min1 > max2)
+                if (min1 > max2 + tol)
                     return intsType::Never;
                 max1 = std::max(vertex[0][d], std::max(vertex[1][d], vertex[2][d]));
                 min2 = std::min(tri2.vertex[0][d], std::min(tri2.vertex[1][d], tri2.vertex[2][d]));
-                if (min2 > max1)
+                if (min2 > max1 + tol)
                     return intsType::Never;
             }
             if (pla == nullptr)
@@ -341,7 +353,7 @@ namespace YSB
                 if (max_of(abs(l.direction)) > tol)
                     projTri.intersect(projL, rs2D, tol);
                 else
-                    rs2D.push_back(l.fixpoint);
+                    rs2D.push_back(projL.fixpoint);
 
                 for (auto &&ip : rs2D)
                 {

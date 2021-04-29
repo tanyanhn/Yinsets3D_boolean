@@ -136,7 +136,7 @@ namespace YSB
                 mDim = majorDim();
 
             PointCompare pointcmp(tol);
-            if (pointcmp(endPoint[0], p) || pointcmp(endPoint[1], p))
+            if (pointcmp.compare(endPoint[0], p) == 0 || pointcmp.compare(endPoint[1], p) == 0)
             {
                 return ExtPoint;
             }
@@ -227,7 +227,7 @@ namespace YSB
 	Point<T, 2> p4 = l2.fixpoint;
 */
         l2.moveFixpoint(seg1[0][mDim], mDim);
-        l2.direction = l2.direction * norm(p2 - p1);
+        l2.direction = normalize(l2.direction) * norm(p2 - p1);
 
         Point<T, 2> p3 = l2.fixpoint, p4 = l2.fixpoint + l2.direction;
         Vec<T, 2> A[2], b;
@@ -290,21 +290,37 @@ namespace YSB
         PointCompare cmp(tol);
         if (cmp.compare(seg1[0], seg2[0]) == 0)
         {
+            if(seg1.containPoint(seg2[1]) == Segment<T, 2>::locType::Inter||
+               seg2.containPoint(seg1[1]) == Segment<T, 2>::locType::Inter||
+               cmp.compare(seg1[1], seg2[1]) == 0)
+               return Segment<T, 2>::intsType::Overlap;
             result.push_back(seg1[0]);
             return Segment<T, 2>::intsType::EndPoint;
         }
         if (cmp.compare(seg1[0], seg2[1]) == 0)
         {
+            if(seg1.containPoint(seg2[0]) == Segment<T, 2>::locType::Inter||
+               seg2.containPoint(seg1[1]) == Segment<T, 2>::locType::Inter||
+               cmp.compare(seg1[1], seg2[0]) == 0)
+               return Segment<T, 2>::intsType::Overlap;
             result.push_back(seg1[0]);
             return Segment<T, 2>::intsType::EndPoint;
         }
         if (cmp.compare(seg1[1], seg2[0]) == 0)
         {
+            if(seg1.containPoint(seg2[1]) == Segment<T, 2>::locType::Inter||
+               seg2.containPoint(seg1[0]) == Segment<T, 2>::locType::Inter||
+               cmp.compare(seg1[0], seg2[1]) == 0)
+               return Segment<T, 2>::intsType::Overlap;
             result.push_back(seg1[1]);
             return Segment<T, 2>::intsType::EndPoint;
         }
         if (cmp.compare(seg1[1], seg2[1]) == 0)
         {
+            if(seg1.containPoint(seg2[0]) == Segment<T, 2>::locType::Inter||
+               seg2.containPoint(seg1[0]) == Segment<T, 2>::locType::Inter||
+               cmp.compare(seg1[0], seg2[0]) == 0)
+               return Segment<T, 2>::intsType::Overlap;
             result.push_back(seg1[1]);
             return Segment<T, 2>::intsType::EndPoint;
         }

@@ -12,8 +12,9 @@ namespace YSB
     struct Locate
     {
         int operator()(const std::vector<Triangle<T, 3>> &yinset, const Point<T, 3> &p, Real tol = TOL);
-        int operator()(const std::vector<Triangle<T, 3>> &yinset, const SurfacePatch<T> &faces, Real tol = TOL);
+        int operator()(const std::vector<Triangle<T, 3>> &yinset, std::vector<Triangle<T, 3>> &vecTri, const SurfacePatch<T> &faces, Real tol = TOL);
         void operator()(const std::vector<Triangle<T, 3>> &inputA, const std::vector<Triangle<T, 3>> &inputB,
+                        int ifboundA, int ifboundB,
                         std::vector<Triangle<T, 3>> &vecTriA, std::vector<Triangle<T, 3>> &vecTriB,
                         std::vector<SurfacePatch<T>> &vecSPA, std::vector<SurfacePatch<T>> &vecSPB, Real tol = TOL);
     };
@@ -31,7 +32,7 @@ namespace YSB
         for (int i = 0; i < 3; i++)
             a[i] = RandomGenerate<T>();
         Vec<T, 3> res(a);
-        return res;
+        return normalize(res);
     }
 
     template <class T>
@@ -73,7 +74,7 @@ namespace YSB
             }
 
             if (intsp.size() == 0)
-                return -1;
+                return -2;
 
             T min_D = YSB::GreatValue;
             Point<T, 3> tmpp;
@@ -101,16 +102,17 @@ namespace YSB
     template <class T>
     inline int Locate<T>::operator()(
         const std::vector<Triangle<T, 3>> &yinset,
+        std::vector<Triangle<T, 3>> &vecTri,
         const SurfacePatch<T> &face, Real tol)
     {
-        const Triangle<T, 3> &tri = face.tris()[0];
-        Point<T, 3> zero(0);
+        const Triangle<T, 3> &tri = vecTri[face.tris()[0].second];
+        Point<T, 3> zero(0.0);
 
         Point<T, 3> barycenter = zero +
-                                 ((tri.vert(0) - zero) + (tri.vert(1) - zero) + (tri.vert(2) - zero)) / 3;
+                                 ((tri.vert(0) - zero) + (tri.vert(1) - zero) + (tri.vert(2) - zero)) / 3.0;
 
         int rs = this->operator()(yinset, barycenter, tol);
-        assert(rs != 0 && "Locate shouldn't on Surface.");
+        //assert(rs != 0 && "Locate shouldn't on Surface.");
         return rs;
     }
 
@@ -118,6 +120,8 @@ namespace YSB
     inline void Locate<T>::operator()(
         const std::vector<Triangle<T, 3>> &inputA,
         const std::vector<Triangle<T, 3>> &inputB,
+        int ifboundA,
+        int ifboundB,
         std::vector<Triangle<T, 3>> &vecTriA,
         std::vector<Triangle<T, 3>> &vecTriB,
         std::vector<SurfacePatch<T>> &vecSPA,
@@ -125,36 +129,42 @@ namespace YSB
     {
         for (auto &&iSP : vecSPA)
         {
-            int k = this->operator()(inputB, iSP, tol);
-            if (k == -1)
+            int k = this->operator()(inputB, vecTriA, iSP, tol);
+            if(ifboundA == 0 && k == -2)
+            k = 1;
+            if (k < 0)
             {
                 iSP.removed = true;
                 for (auto &&it : iSP.tris())
                 {
-                    RemoveTriangle(vecTriA, vecTriB, vecTriA, it.second);
+                    RemoveTriangle(vecTriA, vecTriB, vecTriA, it.second, TOL);
                 }
             }
             else if (k == 1)
                 ;
             else if (k == 0)
-                assert(false && "Locate SurfacePatch have wrong.");
+                // assert(false && "Locate SurfacePatch have wrong.")
+                ;
         }
 
         for (auto &&iSP : vecSPB)
         {
-            int k = this->operator()(inputA, iSP, tol);
-            if (k == -1)
+            int k = this->operator()(inputA, vecTriB, iSP, tol);
+            if(ifboundB == 0 && k == -2)
+            k = 1;
+            if (k < 0)
             {
                 iSP.removed = true;
                 for (auto &&it : iSP.tris())
                 {
-                    RemoveTriangle(vecTriA, vecTriB, vecTriB, it.second);
+                    RemoveTriangle(vecTriA, vecTriB, vecTriB, it.second, TOL);
                 }
             }
             else if (k == 1)
                 ;
             else if (k == 0)
-                assert(false && "Locate SurfacePatch have wrong.");
+                // assert(false && "Locate SurfacePatch have wrong.")
+                ;
         }
     }
 }
