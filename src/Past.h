@@ -106,7 +106,10 @@ namespace YSB
                         }
                     }
 
-                    if (connectF.empty())
+                    
+                }
+
+                if (connectF.empty())
                     {
                         std::vector<std::pair<int, int>> id;
                         for (auto &&i : pastF)
@@ -121,7 +124,6 @@ namespace YSB
                         connectF.push_back((*All.begin()));
                         All.erase(All.begin());
                     }
-                }
             }
         }
     };

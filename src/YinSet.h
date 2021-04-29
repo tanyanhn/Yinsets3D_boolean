@@ -31,10 +31,13 @@ namespace YSB
         explicit YinSet(const std::vector<GluingCompactSurface<T>> &vf, Real tol = TOL)
             : vecFace(vf)
         {
-            BuildHasse(tol);
+            //BuildHasse(tol);
         }
 
-        void collapse(std::vector<Triangle<T, 3>> &rs, int idYinset, Real tol = TOL) const
+        std::vector<GluingCompactSurface<T>> &gcss() { return vecFace; }
+        const std::vector<GluingCompactSurface<T>> &gcss() const { return vecFace; }
+
+        void collapse(std::vector<Triangle<T, 3>> &rs, int idYinset, Real tol = TOL) 
         {
             SegmentCompare segcmp(tol);
 
@@ -56,28 +59,92 @@ namespace YSB
             // }
         }
 
-        YinSet<T> meet(const YinSet<T> &y2, const int usingRFB = 0, Real tol = TOL)
+        YinSet<T> complement(const int usingRFB = 0, Real tol = TOL)
         {
-            //Intersection Triangle.
             TriangleIntersection<T> intersectOp;
             std::vector<Triangle<T, 3>> inputA, inputB;
             collapse(inputA, 1, tol);
-            y2.collapse(inputB, 2, tol);
             intersectOp(inputA, inputB, tol);
 
             // Triangulation
             Triangulation<T> triangulateOp;
             triangulateOp(inputA, inputB,
                           intersectOp.resultA, intersectOp.resultB, tol);
+            
+            
 
+            // PrePast
+            PrePast<T> prePastOp;
+            prePastOp(triangulateOp.vecTriA, tol);
+            for(auto &&tri : triangulateOp.vecTriA)
+            {
+                tri.reverse();
+            }
+            // std::vector<Triangle<T, 3>> *pVecTriA = &triangulateOp.vecTriA;
+            // std::vector<Triangle<T, 3>> *pVecTriB = &triangulateOp.vecTriB;
+            // std::vector<SurfacePatch<T>> *pVecSPA = &prePastOp.vecSPA;
+            // std::vector<SurfacePatch<T>> *pVecSPB = &prePastOp.vecSPB;
+            // std::map<std::pair<int, int>,
+            //          std::vector<std::pair<int, int>>> *pClipFaces = &prePastOp.ClipFaces;
+            // std::map<std::pair<int, int>,
+            //          std::vector<std::pair<int, int>>> *pCoClipFaces = &prePastOp.coClipFaces;
+
+            // if (usingRFB == 1)
+            // {
+            //     ReFactoryBoundary<T> reFactoryBoundaryOp;
+            //     reFactoryBoundaryOp(triangulateOp.vecTriA, triangulateOp.vecTriB,
+            //                         prePastOp.vecSPA, prePastOp.vecSPB,
+            //                         prePastOp.ClipFaces, prePastOp.coClipFaces, tol);
+            // }
+
+            // Locate SurfacePatch.
+
+            // Past SurfacePatch to GluingCompactSurface.
+            Past<T> pastOp;
+            std::vector<SurfacePatch<T>> vecF;
+            pastOp.combine(prePastOp.vecSPA, prePastOp.vecSPB,
+                           triangulateOp.vecTriA, triangulateOp.vecTriB,
+                           vecF);
+            pastOp(vecF, triangulateOp.vecTriA, triangulateOp.vecTriB, tol);
+
+            // Yinset Constructor
+            return YinSet<T>(pastOp.vecGCS, tol);
+        }
+
+        YinSet<T> meet(YinSet<T> &y2, const int usingRFB = 0, Real tol = TOL)
+        {
+            //Intersection Triangle.
+            TriangleIntersection<T> intersectOp;
+            std::vector<Triangle<T, 3>> inputA, inputB;
+            collapse(inputA, 1, tol);
+            y2.collapse(inputB, 2, tol);
+            // for(int i=0;i<inputA.size();i++)
+            // {
+            //     T r1[3] = {-0.525730, -0.850652, 0.000000}, r2[3] = {-0.894426,-0.447216,0.000000}, r3[3] = {-0.688189, -0.525736, -0.499997};
+            //     Point<T, 3> tp1(r1), tp2(r2), tp3(r3);
+            //     Point<T, 3> tripoints1[] = {tp1, tp2, tp3};
+            //     Triangle<Real, 3> tri1(tripoints1);
+            //     if(tri1.equal(inputA[i]))
+            //     {
+            //         int a = i;
+            //     }
+            // }
+            //std::cout<<inputA.size()<<" "<<inputB.size()<<std::endl;
+            intersectOp(inputA, inputB, tol);
+
+            // Triangulation
+            Triangulation<T> triangulateOp;
+            triangulateOp(inputA, inputB,
+                          intersectOp.resultA, intersectOp.resultB, tol);
+            
             // RemoveOverlap
             RemoveOverlap<T> removeOverlapOp;
             removeOverlapOp(triangulateOp.TriangulateA,
                             triangulateOp.TriangulateB,
                             triangulateOp.vecTriA,
                             triangulateOp.vecTriB,
-                            triangulateOp.resultA,
-                            triangulateOp.resultB, tol);
+                            intersectOp.resultA,
+                            intersectOp.resultB, tol);
 
             // PrePast
             PrePast<T> prePastOp;
@@ -92,17 +159,17 @@ namespace YSB
             // std::map<std::pair<int, int>,
             //          std::vector<std::pair<int, int>>> *pCoClipFaces = &prePastOp.coClipFaces;
 
-            if (usingRFB == 1)
-            {
-                ReFactoryBoundary<T> reFactoryBoundaryOp;
-                reFactoryBoundaryOp(triangulateOp.vecTriA, triangulateOp.vecTriB,
-                                    prePastOp.vecSPA, prePastOp.vecSPB,
-                                    prePastOp.ClipFaces, prePastOp.coClipFaces, tol);
-            }
+            // if (usingRFB == 1)
+            // {
+            //     ReFactoryBoundary<T> reFactoryBoundaryOp;
+            //     reFactoryBoundaryOp(triangulateOp.vecTriA, triangulateOp.vecTriB,
+            //                         prePastOp.vecSPA, prePastOp.vecSPB,
+            //                         prePastOp.ClipFaces, prePastOp.coClipFaces, tol);
+            // }
 
             // Locate SurfacePatch.
             Locate<T> locateOp;
-            locateOp(inputA, inputB,
+            locateOp(inputA, inputB, vecFace[0].Type(), y2.vecFace[0].Type(),
                      triangulateOp.vecTriA, triangulateOp.vecTriB,
                      prePastOp.vecSPA, prePastOp.vecSPB, tol);
 
@@ -118,9 +185,17 @@ namespace YSB
             return YinSet<T>(pastOp.vecGCS, tol);
         }
 
-        void BuildHasse(Real tol = TOL) const;
+        YinSet<T> join(YinSet<T> &y2, const int usingRFB = 0, Real tol = TOL)
+        {
+            auto comp1 = complement();
+            auto comp2 = y2.complement();
+            auto comp3 = comp1.meet(comp2);
+            return comp3.complement();
+        }
 
-        ~YinSet();
+        // void BuildHasse(Real tol = TOL) const;
+
+
     };
 } // namespace YSB
 

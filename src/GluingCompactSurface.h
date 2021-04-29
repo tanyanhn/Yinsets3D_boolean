@@ -53,7 +53,7 @@ namespace YSB
 
         void collapse(std::vector<Triangle<T, 3>> &rs,
                       //   std::map<Segment<T, 3>, std::vector<int>, SegmentCompare> segs,
-                      int idYinset, int idFace, Real tol = TOL) const
+                      int idYinset, int idFace, Real tol = TOL)
         {
             int size = rs.size();
             for (auto &&tri : vecTriangle)
