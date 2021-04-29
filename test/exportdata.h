@@ -2,17 +2,26 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include "../src/YinSet.h"
 
 using namespace std;
 using namespace YSB;
 
-void exportdata(string s, YinSet<Real> y)
+void exportdata(string s, YinSet<Real> &y, string folder)
 {
-    vector<GluingCompactSurface<Real>> vecgcs = y.gcss();
+    const char *path = folder.c_str();
+    int isCreate = mkdir(path, S_IRUSR | S_IWUSR | S_IXUSR | S_IRWXG | S_IRWXO);
+    if (!isCreate)
+        printf("create path:%s\n", path);
+    else
+        printf("create path failed! error code : %d %s \n", isCreate, path);
+
+    auto &&vecgcs = y.gcss();
     for (int i = 0; i < vecgcs.size(); i++)
     {
-        ofstream outfile(s + to_string(i) + ".obj");
+        ofstream outfile(folder + "/" + s + to_string(i) + ".obj");
         if (outfile.is_open())
         {
             vector<Triangle<Real, 3>> vectri;
