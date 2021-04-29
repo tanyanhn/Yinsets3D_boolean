@@ -4,13 +4,17 @@
 
 .PHONY: clean clear test run all doxygen
 
-all : plane triangle findneartriangle triintersect prepaste paste removeoverlap GCS triangulation Yinset
+all : plane triangle findneartriangle triintersect prepaste \
+	 paste removeoverlap GCS triangulation Yinset \
+	 locate
 
+locatetest.exe : catchmain.o locatetest.cpp 
+	g++ -o $@ catchmain.o locatetest.cpp $(CPPFLAGS)
 
 platest.exe : catchmain.o planetest.cpp
 	g++ -o $@ catchmain.o planetest.cpp $(CPPFLAGS)
 
-tritest.exe : catchmain.o triangletest.cpp
+triangletest.exe : catchmain.o triangletest.cpp
 	g++ -o $@ catchmain.o triangletest.cpp $(CPPFLAGS)
 
 findneartriangle.exe : catchmain.o findneartritest.cpp
@@ -46,8 +50,8 @@ catchmain.o : catchmain.cpp
 plane : platest.exe
 	./platest.exe
 
-triangle : tritest.exe
-	./tritest.exe
+triangle : triangletest.exe
+	./triangletest.exe
 
 findneartriangle : findneartriangle.exe
 	./findneartriangle.exe
@@ -72,6 +76,9 @@ triangulation : triangulationtest.exe
 
 Yinset : Yinsettest.exe
 	./Yinsettest.exe
+	
+locate : locatetest.exe 
+	./locatetest.exe 
 
 test : test.cpp
 	g++ -o test.exe test.cpp && ./test.exe
