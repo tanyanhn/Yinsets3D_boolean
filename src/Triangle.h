@@ -144,7 +144,7 @@ namespace YSB
         const std::pair<int, int> &inF() const { return inFace; }
 
         bool IfRemoved() const { return removed; }
-        
+
         void reverse()
         {
             auto temp = vertex[1];
@@ -341,27 +341,28 @@ namespace YSB
             Real dist = norm(dot(dir, pla->normVec));
             if (dist < tol)
             { // parallel
-                int mDim = majorDim();
-                l.moveFixpoint(vertex[0][l.majorDim()], l.majorDim());
-                if (norm(dot(l.fixpoint - vertex[0], pla->normVec)) > tol)
-                    return 0;
-
-                auto projL = l.project(mDim);
-                auto projTri = this->project(mDim);
-                //std::cout<<projL.fixpoint<<projL.direction;
-                std::vector<Point<Real, 2>> rs2D;
-                if (max_of(abs(l.direction)) > tol)
-                    projTri.intersect(projL, rs2D, tol);
-                else
-                    rs2D.push_back(projL.fixpoint);
-
-                for (auto &&ip : rs2D)
+                if (norm(dot(l.fixpoint - this->vertex[0], pla->normVec)) < 2 * tol)
                 {
-                    Real co[3];
-                    projTri.barycentric(ip, co, tol);
-                    result.emplace_back(this->barycentric(co));
+                    int mDim = majorDim();
+                    l.moveFixpoint(vertex[0][l.majorDim()], l.majorDim());
+                    if (norm(dot(l.fixpoint - vertex[0], pla->normVec)) > tol)
+                        return 0;
+
+                    auto projL = l.project(mDim);
+                    auto projTri = this->project(mDim);
+                    std::vector<Point<Real, 2>> rs2D;
+                    projTri.intersect(projL, rs2D, tol);
+
+                    for (auto &&ip : rs2D)
+                    {
+                        Real co[3];
+                        projTri.barycentric(ip, co, tol);
+                        result.emplace_back(this->barycentric(co));
+                    }
+                    return rs2D.size();
                 }
-                return rs2D.size();
+                else
+                    return 0;
             }
 
             auto p = pla->intersect(l, tol);

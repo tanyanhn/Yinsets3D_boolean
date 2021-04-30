@@ -31,13 +31,18 @@ namespace YSB
         explicit YinSet(const std::vector<GluingCompactSurface<T>> &vf, Real tol = TOL)
             : vecFace(vf)
         {
+            ensureFace(tol);
             //BuildHasse(tol);
         }
 
-        std::vector<GluingCompactSurface<T>> &gcss() { return vecFace; }
+        std::vector<GluingCompactSurface<T>> &
+        gcss()
+        {
+            return vecFace;
+        }
         const std::vector<GluingCompactSurface<T>> &gcss() const { return vecFace; }
 
-        void collapse(std::vector<Triangle<T, 3>> &rs, int idYinset, Real tol = TOL) 
+        void collapse(std::vector<Triangle<T, 3>> &rs, int idYinset, Real tol = TOL)
         {
             SegmentCompare segcmp(tol);
 
@@ -59,6 +64,25 @@ namespace YSB
             // }
         }
 
+        void ensureFace(Real tol = TOL)
+        {
+            TriangleIntersection<T> intersectOp;
+            std::vector<Triangle<T, 3>> inputA, inputB;
+            collapse(inputA, 1, tol);
+            intersectOp(inputA, inputB, tol);
+            for (auto &&tri : intersectOp.resultA)
+            {
+                for (auto &&seg : tri.second.first)
+                {
+                    if (seg.neighborhood().size() >= 2)
+                    {
+                        std::cout << "Contain face not close.";
+                        abort();
+                    }
+                }
+            }
+        }
+
         YinSet<T> complement(const int usingRFB = 0, Real tol = TOL)
         {
             TriangleIntersection<T> intersectOp;
@@ -66,17 +90,18 @@ namespace YSB
             collapse(inputA, 1, tol);
             intersectOp(inputA, inputB, tol);
 
+            ensureFace(intersectOp.resultA);
+            ensureFace(intersectOp.resultB);
+
             // Triangulation
             Triangulation<T> triangulateOp;
             triangulateOp(inputA, inputB,
                           intersectOp.resultA, intersectOp.resultB, tol);
-            
-            
 
             // PrePast
             PrePast<T> prePastOp;
             prePastOp(triangulateOp.vecTriA, tol);
-            for(auto &&tri : triangulateOp.vecTriA)
+            for (auto &&tri : triangulateOp.vecTriA)
             {
                 tri.reverse();
             }
@@ -136,7 +161,7 @@ namespace YSB
             Triangulation<T> triangulateOp;
             triangulateOp(inputA, inputB,
                           intersectOp.resultA, intersectOp.resultB, tol);
-            
+
             // RemoveOverlap
             RemoveOverlap<T> removeOverlapOp;
             removeOverlapOp(triangulateOp.TriangulateA,
@@ -194,8 +219,6 @@ namespace YSB
         }
 
         // void BuildHasse(Real tol = TOL) const;
-
-
     };
 } // namespace YSB
 

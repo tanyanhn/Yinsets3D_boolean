@@ -15,12 +15,12 @@ namespace YSB
         SegmentCompare cmp;
         explicit itCmp(Real tol = TOL) : cmp(tol) {}
         bool operator()(
-           const T it1, const T it2) const
+            const T it1, const T it2) const
         {
             return cmp(*it1, *it2);
         }
     };
-// int iterationA = 0, iterationB = 0;    
+    // int iterationA = 0, iterationB = 0;
     template <class T>
     struct Triangulation
     {
@@ -55,9 +55,9 @@ namespace YSB
                 near(pCmp);
             std::set<std::pair<int, int>> done;
 
-            
             for (auto &&itRs : resultA)
             {
+                int k = itRs.first;
                 //iterationA++;
                 int idYinset = 1;
                 int mDim = inputA[itRs.first].majorDim();
@@ -288,13 +288,14 @@ namespace YSB
                     p1 = (itSeg0->first)[1];
                     (itSeg0->second).first -= 1;
                 }
-                else if((itSeg0->second).second == 1)
+                else if ((itSeg0->second).second == 1)
                 {
                     p0 = (itSeg0->first)[1];
                     p1 = (itSeg0->first)[0];
                     (itSeg0->second).second -= 1;
                 }
-                else{
+                else
+                {
                     assert(itSeg0->second != zero && "markedge wrong.");
                 }
 
@@ -302,15 +303,14 @@ namespace YSB
                 for (auto &&NextSeg : near.at(p1))
                 {
                     SegmentCompare segcmp;
-                    if(segcmp.compare(NextSeg, itSeg0->first) == 0)
-                    continue;
+                    if (segcmp.compare(NextSeg, itSeg0->first) == 0)
+                        continue;
                     auto np = (pCmp.compare((NextSeg)[0], p1) == 0) ? ((NextSeg)[1]) : ((NextSeg)[0]);
-                    
+
                     auto v0 = p0 - p1, v1 = np - p1;
 
                     // if(norm(cross(v1, v0)) / norm(v1) < tol)
                     // continue;
-                    
 
                     Real angle = atan2(norm(cross(v1, v0)), dot(v1, v0));
                     if (dot(cross(v1, v0), normVec) < 0)
@@ -325,11 +325,10 @@ namespace YSB
 
                 auto itSeg1 = markEdge.find(Segment<T, 3>(p1, p2));
                 auto itSeg2 = markEdge.find(Segment<T, 3>(p2, p0));
-                if(itSeg1 == markEdge.end())
-                assert(itSeg1 != markEdge.end() && "generatorTriangle itSeg1 wrong.");
-                if(itSeg2 == markEdge.end())
-                assert(itSeg2 != markEdge.end() && "generatorTriangle itSeg2 wrong.");
-
+                if (itSeg1 == markEdge.end())
+                    assert(itSeg1 != markEdge.end() && "generatorTriangle itSeg1 wrong.");
+                if (itSeg2 == markEdge.end())
+                    assert(itSeg2 != markEdge.end() && "generatorTriangle itSeg2 wrong.");
 
                 Segment<T, 3> Seg0(p0, p1, itSeg0->first.neighborhood());
                 Segment<T, 3> Seg1(p1, p2, itSeg1->first.neighborhood());
@@ -364,11 +363,9 @@ namespace YSB
                 auto iSeg0 = itSeg0->first;
                 auto iSeg1 = itSeg1->first;
                 auto iSeg2 = itSeg2->first;
-                
+
                 if (markEdge[iSeg0] == zero)
-                {
                     markEdge.erase(iSeg0);
-                }
                 if (markEdge[iSeg1] == zero)
                     markEdge.erase(iSeg1);
                 if (markEdge[iSeg2] == zero)
@@ -387,7 +384,7 @@ namespace YSB
             Real tol = TOL)
         {
             // std::set<Point<T, 3>, PointCompare> allP(pCmp);
-            std::map<Segment<T, 3>,  std::set<Point<T, 3>, PointCompare>, SegmentCompare> clip(segCmp);
+            std::map<Segment<T, 3>, std::set<Point<T, 3>, PointCompare>, SegmentCompare> clip(segCmp);
 
             // insert all point and segment.
             for (auto &&seg : itRs.first)
@@ -446,7 +443,6 @@ namespace YSB
                     // itSeg = insertinfo.first;
                     if (insertinfo.second == false)
                         assert(false && "insert error.");
-
 
                     // itCmp<typename std::set<Segment<T, 3>, SegmentCompare>::iterator> cmp(tol);
                     // std::set<typename std::set<Segment<T, 3>, SegmentCompare>::iterator,

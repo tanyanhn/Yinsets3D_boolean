@@ -59,6 +59,14 @@ namespace YSB
         {
             fixpoint = fixpoint + direction * (x - fixpoint[d]) / direction[d];
         }
+
+        bool containPoint(const Point<T, Dim> &p, Real tol = TOL)
+        {
+            int mDim = this->majorDim();
+            this->moveFixpoint(p[mDim], mDim);
+
+            return norm(cross(p - fixpoint, direction)) / norm(direction) < tol;
+        }
     };
 
 } // namespace YSB

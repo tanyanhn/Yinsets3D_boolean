@@ -237,15 +237,30 @@ namespace YSB
         Real det = cross(A[0], A[1]);
         Real sc = norm(A[0]);
 
-        if (std::abs(det / sc) < tol)
-        { // parallel segments
-            Real r = cross(A[0], b) / sc;
-            if (std::abs(r) > tol)
-                return Segment<T, 2>::intsType::None;
-            result.push_back(p1);
-            result.push_back(p2);
-            return Segment<T, 2>::intsType::Overlap;
+        bool contain1 = l2.containPoint(p1, tol),
+             contain2 = l2.containPoint(p2, tol);
+
+        if (contain1 || contain2)
+        {
+            if (contain1)
+                result.push_back(p1);
+            if (contain2)
+                result.push_back(p2);
+            if (contain1 && contain2)
+                return Segment<T, 2>::intsType::Overlap;
+
+            return Segment<T, 2>::intsType::One;
         }
+
+        // if (std::abs(det / sc) < tol)
+        // { // parallel segments
+        //     Real r = cross(A[0], b) / sc;
+        //     if (std::abs(r) > tol)
+        //         return Segment<T, 2>::intsType::None;
+        //     result.push_back(p1);
+        //     result.push_back(p2);
+        //     return Segment<T, 2>::intsType::Overlap;
+        // }
 
         // solve for intersections by Cramer's rule
         Real x[2];
@@ -254,7 +269,13 @@ namespace YSB
 
         if (x[0] > -tol / sc && x[0] < 1 + tol / sc)
         {
-            result.emplace_back(p1 + (p2 - p1) * x[0]);
+            if (std::abs(x[0]) < tol / sc)
+                result.emplace_back(p1);
+            else if (std::abs(x[0] - 1) < tol / sc)
+                result.emplace_back(p2);
+            else
+                result.emplace_back(p1 + (p2 - p1) * x[0]);
+
             return Segment<T, 2>::intsType::One;
         }
         return Segment<T, 2>::intsType::None;
@@ -280,6 +301,7 @@ namespace YSB
 
         return intersectSegSeg(proSeg1, proSeg2, rs, tol);
     }
+
     template <class T>
     inline typename Segment<T, 2>::intsType
     intersectSegSeg(
@@ -290,37 +312,37 @@ namespace YSB
         PointCompare cmp(tol);
         if (cmp.compare(seg1[0], seg2[0]) == 0)
         {
-            if(seg1.containPoint(seg2[1]) == Segment<T, 2>::locType::Inter||
-               seg2.containPoint(seg1[1]) == Segment<T, 2>::locType::Inter||
-               cmp.compare(seg1[1], seg2[1]) == 0)
-               return Segment<T, 2>::intsType::Overlap;
+            if (seg1.containPoint(seg2[1]) == Segment<T, 2>::locType::Inter ||
+                seg2.containPoint(seg1[1]) == Segment<T, 2>::locType::Inter ||
+                cmp.compare(seg1[1], seg2[1]) == 0)
+                return Segment<T, 2>::intsType::Overlap;
             result.push_back(seg1[0]);
             return Segment<T, 2>::intsType::EndPoint;
         }
         if (cmp.compare(seg1[0], seg2[1]) == 0)
         {
-            if(seg1.containPoint(seg2[0]) == Segment<T, 2>::locType::Inter||
-               seg2.containPoint(seg1[1]) == Segment<T, 2>::locType::Inter||
-               cmp.compare(seg1[1], seg2[0]) == 0)
-               return Segment<T, 2>::intsType::Overlap;
+            if (seg1.containPoint(seg2[0]) == Segment<T, 2>::locType::Inter ||
+                seg2.containPoint(seg1[1]) == Segment<T, 2>::locType::Inter ||
+                cmp.compare(seg1[1], seg2[0]) == 0)
+                return Segment<T, 2>::intsType::Overlap;
             result.push_back(seg1[0]);
             return Segment<T, 2>::intsType::EndPoint;
         }
         if (cmp.compare(seg1[1], seg2[0]) == 0)
         {
-            if(seg1.containPoint(seg2[1]) == Segment<T, 2>::locType::Inter||
-               seg2.containPoint(seg1[0]) == Segment<T, 2>::locType::Inter||
-               cmp.compare(seg1[0], seg2[1]) == 0)
-               return Segment<T, 2>::intsType::Overlap;
+            if (seg1.containPoint(seg2[1]) == Segment<T, 2>::locType::Inter ||
+                seg2.containPoint(seg1[0]) == Segment<T, 2>::locType::Inter ||
+                cmp.compare(seg1[0], seg2[1]) == 0)
+                return Segment<T, 2>::intsType::Overlap;
             result.push_back(seg1[1]);
             return Segment<T, 2>::intsType::EndPoint;
         }
         if (cmp.compare(seg1[1], seg2[1]) == 0)
         {
-            if(seg1.containPoint(seg2[0]) == Segment<T, 2>::locType::Inter||
-               seg2.containPoint(seg1[0]) == Segment<T, 2>::locType::Inter||
-               cmp.compare(seg1[0], seg2[0]) == 0)
-               return Segment<T, 2>::intsType::Overlap;
+            if (seg1.containPoint(seg2[0]) == Segment<T, 2>::locType::Inter ||
+                seg2.containPoint(seg1[0]) == Segment<T, 2>::locType::Inter ||
+                cmp.compare(seg1[0], seg2[0]) == 0)
+                return Segment<T, 2>::intsType::Overlap;
             result.push_back(seg1[1]);
             return Segment<T, 2>::intsType::EndPoint;
         }
@@ -333,11 +355,11 @@ namespace YSB
         A[1] = p3 - p4;
         b = p3 - p1;
         Real det = cross(A[0], A[1]);
-        Real sc = norm(A[0]);
+        Real sc[2] = {norm(A[0]), norm(A[1])};
 
-        if (std::abs(det / sc) < tol)
+        if (std::abs(det / sc[0]) < tol)
         { // parallel segments
-            Real r = cross(A[0], b) / sc;
+            Real r = cross(A[0], b) / sc[0];
             if (std::abs(r) > tol)
                 return Segment<T, 2>::intsType::None;
             return solveForOverlie(p1, p2, p3, p4, result, tol, seg1.majorDim());
@@ -348,12 +370,24 @@ namespace YSB
         x[0] = cross(b, A[1]) / det;
         x[1] = cross(A[0], b) / det;
 
-        if (x[0] > -tol / sc && x[0] < 1 + tol / sc && x[1] > -tol / sc && x[1] < 1 + tol / sc)
+        if (std::abs(x[0]) <= tol / sc[0])
+            result.emplace_back(p1);
+        else if (std::abs(x[0] - 1) <= tol / sc[0])
+            result.emplace_back(p2);
+        else if (std::abs(x[1]) <= tol / sc[1])
+            result.emplace_back(p3);
+        else if (std::abs(x[1] - 1) <= tol / sc[1])
+            result.emplace_back(p4);
+        else if (x[0] > tol / sc[0] && x[0] < 1 - tol / sc[0] && x[1] > tol / sc[1] && x[1] < 1 - tol / sc[1])
         {
             result.emplace_back(p1 + (p2 - p1) * x[0]);
+
             return Segment<T, 2>::intsType::One;
         }
-        return Segment<T, 2>::intsType::None;
+        else
+            return Segment<T, 2>::intsType::None;
+
+        return Segment<T, 2>::intsType::EndPoint;
     }
 
     template <class T, int Dim>
