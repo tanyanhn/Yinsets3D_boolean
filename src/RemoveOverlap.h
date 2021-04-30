@@ -11,52 +11,72 @@ namespace YSB
     template <class T>
     struct RemoveOverlap
     {
-        //  std::vector<std::pair<std::vector<Segment<T, 3>>, std::vector<int>>> resultA, resultB;
-        //  std::vector<Triangle<T, 3>> vecTriA, vecTriB;
-        //  std::vector<std::vector<int>> TriangulateA, TriangulateB;
 
-        void operator()(std::map<int, std::vector<int>> &TriangulateA,
-                        std::map<int, std::vector<int>> &TriangulateB,
-                        std::vector<Triangle<T, 3>> &vecTriA,
-                        std::vector<Triangle<T, 3>> &vecTriB,
-                        std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultA,
-                        std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultB,
-                        Real tol = TOL)
+        void operator()(
+            // std::map<int, std::vector<int>> &TriangulateA,
+            // std::map<int, std::vector<int>> &TriangulateB,
+            std::vector<std::vector<int>> &TriangulateA,
+            std::vector<std::vector<int>> &TriangulateB,
+            std::vector<Triangle<T, 3>> &vecTriA,
+            std::vector<Triangle<T, 3>> &vecTriB,
+            // std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultA,
+            // std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultB,
+            std::vector<std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultA,
+            std::vector<std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultB,
+            Real tol = TOL)
         {
             this->TriangulateRemove(TriangulateA, TriangulateB, vecTriA, vecTriB, resultA, resultB, tol);
         }
 
-        void TriangulateRemove(std::map<int, std::vector<int>> &TriangulateA,
-                               std::map<int, std::vector<int>> &TriangulateB,
-                               std::vector<Triangle<T, 3>> &vecTriA,
-                               std::vector<Triangle<T, 3>> &vecTriB,
-                               std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultA,
-                               std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultB,
-                               Real tol);
+        void TriangulateRemove(
+            // std::map<int, std::vector<int>> &TriangulateA,
+            // std::map<int, std::vector<int>> &TriangulateB,
+            std::vector<std::vector<int>> &TriangulateA,
+            std::vector<std::vector<int>> &TriangulateB,
+            std::vector<Triangle<T, 3>> &vecTriA,
+            std::vector<Triangle<T, 3>> &vecTriB,
+            // std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultA,
+            // std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultB,
+            std::vector<std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultA,
+            std::vector<std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultB,
+            Real tol);
         // void RemoveTriangle(std::vector<Triangle<T, 3>> &vecTri, const int id);
     };
 
     template <class T>
-    inline void RemoveOverlap<T>::TriangulateRemove(std::map<int, std::vector<int>> &TriangulateA,
-                                                    std::map<int, std::vector<int>> &TriangulateB,
-                                                    std::vector<Triangle<T, 3>> &vecTriA,
-                                                    std::vector<Triangle<T, 3>> &vecTriB,
-                                                    std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultA,
-                                                    std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultB,
-                                                    Real tol)
+    inline void RemoveOverlap<T>::TriangulateRemove(
+        // std::map<int, std::vector<int>> &TriangulateA,
+        // std::map<int, std::vector<int>> &TriangulateB,
+        std::vector<std::vector<int>> &TriangulateA,
+        std::vector<std::vector<int>> &TriangulateB,
+        std::vector<Triangle<T, 3>> &vecTriA,
+        std::vector<Triangle<T, 3>> &vecTriB,
+        // std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultA,
+        // std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultB,
+        std::vector<std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultA,
+        std::vector<std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultB,
+        Real tol)
     {
         std::vector<Triangle<T, 3>> *vecTriarr[2] = {&vecTriA, &vecTriB};
-        for (auto &&it : resultA)
+        // for (auto &&it : resultA)
+        for (auto i = 0; i < resultA.size(); ++i)
         {
+            auto it = make_pair(i, resultA[i]);
             int iA = it.first;
-            int numOverlap = it.second.second.size();
+            int numOverlap =
+                // it.second.second.size()
+                resultA[i].second.size();
             for (int iOverlap = 0; iOverlap < numOverlap; ++iOverlap)
             {
                 auto &TriangulateAiA = TriangulateA[iA];
                 int numsmalltriA = TriangulateAiA.size(), numsmalltriB;
-                int iB = it.second.second[iOverlap].second;
+                int iB =
+                    // it.second.second[iOverlap].second
+                    resultA[i].second[iOverlap].second;
                 std::vector<int> tmp[2];
-                int ivecB = it.second.second[iOverlap].first;
+                int ivecB =
+                    // it.second.second[iOverlap].first
+                    resultA[i].second[iOverlap].first;
                 if (ivecB == 1)
                 {
                     tmp[ivecB - 1] = TriangulateA[iB];

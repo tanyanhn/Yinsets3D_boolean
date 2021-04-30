@@ -24,15 +24,18 @@ namespace YSB
     template <class T>
     struct Triangulation
     {
-        std::map<int, std::vector<int>> TriangulateA, TriangulateB;
-        //    std::vector<std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> resultA, resultB;
+        // std::map<int, std::vector<int>> TriangulateA, TriangulateB;
+        std::vector<std::vector<int>> TriangulateA, TriangulateB;
         std::vector<Triangle<T, 3>> vecTriA, vecTriB;
 
         void operator()(
             const std::vector<Triangle<T, 3>> &inputA,
             const std::vector<Triangle<T, 3>> &inputB,
-            std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultA,
-            std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultB,
+            // std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultA,
+            // std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultB,
+            std::vector<std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultA,
+            std::vector<std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultB,
+
             Real tol = TOL)
         {
             this->tryEveryDiagonal(inputA, inputB, resultA, resultB, tol);
@@ -41,8 +44,11 @@ namespace YSB
         void tryEveryDiagonal(
             const std::vector<Triangle<T, 3>> &inputA,
             const std::vector<Triangle<T, 3>> &inputB,
-            std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultA,
-            std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultB,
+            // std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultA,
+            // std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultB,
+            std::vector<std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultA,
+            std::vector<std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultB,
+
             Real tol = TOL)
         {
             PointCompare pCmp(tol);
@@ -55,9 +61,10 @@ namespace YSB
                 near(pCmp);
             std::set<std::pair<int, int>> done;
 
-            for (auto &&itRs : resultA)
+            // for (auto &&itRs : resultA)
+            for (auto i = 0; i < resultA.size(); ++i)
             {
-                int k = itRs.first;
+                auto itRs = make_pair(i, resultA[i]);
                 //iterationA++;
                 int idYinset = 1;
                 int mDim = inputA[itRs.first].majorDim();
@@ -70,20 +77,30 @@ namespace YSB
                 std::set<Point<T, 3>, PointCompare> &allP = mapallP[idInput];
                 std::set<Segment<T, 3>, SegmentCompare> &allSeg = mapallSeg[idInput];
                 near.clear();
+                TriangulateA.resize(itRs.first + 1);
                 // if(itRs.first == 104)
                 // {
                 //     int a = 1;
                 // }
-                this->clipSegment(itRs.second, allP, allSeg, near, pCmp, segCmp, tol);
-                this->addSegment(idInput, itRs.second.second, allP, allSeg, near, segCmp, mDim, tol);
+                this->clipSegment(
+                    // itRs.second
+                    resultA[i], allP, allSeg, near, pCmp, segCmp, tol);
+                this->addSegment(
+                    idInput,
+                    //  itRs.second.second
+                    resultA[i].second, allP, allSeg, near, segCmp, mDim, tol);
                 this->generatorTriangle(inputA[itRs.first], idInput, allSeg, near, normVec,
                                         vecTriA, TriangulateA, pCmp, segCmp, tol);
-                this->addSegmentToOverlap(itRs.second.second, done, allSeg,
-                                          inputA, inputB, resultA, resultB, tol);
+                this->addSegmentToOverlap(
+                    // itRs.second.second
+                    resultA[i].second, done, allSeg,
+                    inputA, inputB, resultA, resultB, tol);
             }
 
-            for (auto &&itRs : resultB)
+            // for (auto &&itRs : resultB)
+            for (auto i = 0; i < resultB.size(); ++i)
             {
+                auto itRs = make_pair(i, resultB[i]);
                 //iterationB++;
                 int idYinset = 2;
                 int mDim = inputB[itRs.first].majorDim();
@@ -96,16 +113,21 @@ namespace YSB
                 std::set<Point<T, 3>, PointCompare> &allP = mapallP[idInput];
                 std::set<Segment<T, 3>, SegmentCompare> &allSeg = mapallSeg[idInput];
                 near.clear();
-                // if(iterationB == 75)
-                // {
-                //     int b = iterationB;
-                // }
-                this->clipSegment(itRs.second, allP, allSeg, near, pCmp, segCmp, tol);
-                this->addSegment(idInput, itRs.second.second, allP, allSeg, near, segCmp, mDim, tol);
+                TriangulateB.resize(itRs.first + 1);
+
+                this->clipSegment(
+                    // itRs.second
+                    resultB[i], allP, allSeg, near, pCmp, segCmp, tol);
+                this->addSegment(
+                    idInput,
+                    // itRs.second.second
+                    resultB[i].second, allP, allSeg, near, segCmp, mDim, tol);
                 this->generatorTriangle(inputB[itRs.first], idInput, allSeg, near, normVec,
                                         vecTriB, TriangulateB, pCmp, segCmp, tol);
-                this->addSegmentToOverlap(itRs.second.second, done, allSeg,
-                                          inputA, inputB, resultA, resultB, tol);
+                this->addSegmentToOverlap(
+                    // itRs.second.second
+                    resultB[i].second, done, allSeg,
+                    inputA, inputB, resultA, resultB, tol);
             }
 
             this->updateEdgeNeighbor(tol);
@@ -199,8 +221,10 @@ namespace YSB
             const std::set<Segment<T, 3>, SegmentCompare> &allSeg,
             const std::vector<Triangle<T, 3>> &inputA,
             const std::vector<Triangle<T, 3>> &inputB,
-            std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultA,
-            std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultB,
+            // std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultA,
+            // std::map<int, std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultB,
+            std::vector<std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultA,
+            std::vector<std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> &resultB,
             Real tol = TOL)
         {
             for (auto &&idOverlapInput : allOverlap)
@@ -209,13 +233,15 @@ namespace YSB
                 {
                     if (idOverlapInput.first == 1)
                     {
-                        auto it = resultA.find(idOverlapInput.second);
+                        // auto it = resultA.find(idOverlapInput.second);
+                        auto it = resultA.begin() + idOverlapInput.second;
                         assert(it != resultA.end() && "Triangulation::dealOverlap.");
                         this->dealOverlap(inputA.at(idOverlapInput.second), allSeg, it, tol);
                     }
                     else if (idOverlapInput.first == 2)
                     {
-                        auto it = resultB.find(idOverlapInput.second);
+                        // auto it = resultB.find(idOverlapInput.second);
+                        auto it = resultB.begin() + idOverlapInput.second;
                         assert(it != resultB.end() && "Triangulation::dealOverlap.");
                         this->dealOverlap(inputB.at(idOverlapInput.second), allSeg, it, tol);
                     }
@@ -226,9 +252,12 @@ namespace YSB
         void dealOverlap(
             const Triangle<T, 3> tri,
             const std::set<Segment<T, 3>, SegmentCompare> &allSeg,
-            typename std::map<int,
-                              std::pair<std::vector<Segment<T, 3>>,
-                                        std::vector<std::pair<int, int>>>>::iterator &
+            // typename std::map<int,
+            //                   std::pair<std::vector<Segment<T, 3>>,
+            //                             std::vector<std::pair<int, int>>>>::iterator &
+            //     itRs,
+            typename std::vector<std::pair<std::vector<Segment<T, 3>>,
+                                           std::vector<std::pair<int, int>>>>::iterator &
                 itRs,
             Real tol = TOL)
         {
@@ -236,7 +265,8 @@ namespace YSB
             {
                 if (tri.locate(seg[0]) != Triangle<T, 3>::locType::Outer &&
                     tri.locate(seg[1]) != Triangle<T, 3>::locType::Outer)
-                    ((itRs->second).first).push_back(seg);
+                    // ((itRs->second).first).push_back(seg);
+                    itRs->first.push_back(seg);
             }
         }
 
@@ -248,7 +278,8 @@ namespace YSB
                            std::set<Segment<T, 3>, SegmentCompare>, PointCompare> &near,
             const Vec<T, 3> normVec,
             std::vector<Triangle<T, 3>> &vecTri,
-            std::map<int, std::vector<int>> &Triangulate,
+            // std::map<int, std::vector<int>> &Triangulate,
+            std::vector<std::vector<int>> &Triangulate,
             const PointCompare &pCmp,
             const SegmentCompare &segCmp,
             Real tol = TOL)
