@@ -1,5 +1,6 @@
 
- CPPFLAGS = -g -std=c++17
+CPPFLAGS = -g -std=c++17 
+#  CPPFLAGS = -g -std=c++17 -lboost_timer -D_unix 
 # CPPFLAGS = -std=c++17
 
 .PHONY: clean clear test run all doxygen

@@ -4,6 +4,10 @@
 #include <iostream>
 #include <random>
 
+#ifdef _unix
+#define _UsBoost
+#endif // _linux
+
 namespace YSB
 {
     using Real = double;
