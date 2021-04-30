@@ -3,7 +3,6 @@
 
 #include "Triangle.h"
 #include "SegmentCompare.h"
-#include <random>
 #include <map>
 
 namespace YSB
@@ -76,10 +75,6 @@ namespace YSB
         {
             for (auto i_tri = 0; i_tri < vecTriangle.size(); ++i_tri)
             {
-                std::random_device rd;  //Will be used to obtain a seed for the random number engine
-                std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
-                std::uniform_real_distribution<> realdistrib(0, 1);
-
                 Triangle<T, 3> tri3D = vecTriangle[i_tri];
                 int mDim = tri3D.majorDim();
                 Vec<T, 3> outerVec(0.0);

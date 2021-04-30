@@ -67,6 +67,8 @@ namespace YSB
                 if (!vecF[i].IfRemoved())
                     All.insert(i);
             }
+            if (All.empty())
+                return;
 
             connectF.push_back((*All.begin()));
             All.erase(All.begin());
@@ -105,25 +107,23 @@ namespace YSB
                             markF[nearTri.inF().second] = 0;
                         }
                     }
-
-                    
                 }
 
                 if (connectF.empty())
+                {
+                    std::vector<std::pair<int, int>> id;
+                    for (auto &&i : pastF)
                     {
-                        std::vector<std::pair<int, int>> id;
-                        for (auto &&i : pastF)
-                        {
-                            id.insert(id.end(), vecF[i].tris().begin(), vecF[i].tris().end());
-                        }
-                        vecGCS.emplace_back(id, vecTriA, vecTriB, tol);
-
-                        if (All.empty())
-                            break;
-
-                        connectF.push_back((*All.begin()));
-                        All.erase(All.begin());
+                        id.insert(id.end(), vecF[i].tris().begin(), vecF[i].tris().end());
                     }
+                    vecGCS.emplace_back(id, vecTriA, vecTriB, tol);
+
+                    if (All.empty())
+                        break;
+
+                    connectF.push_back((*All.begin()));
+                    All.erase(All.begin());
+                }
             }
         }
     };
