@@ -11,9 +11,11 @@ namespace YSB
     {
         using intsType = typename Triangle<T, 3>::intsType;
 
-        std::map<int, std::pair<std::vector<Segment<T, 3>>,
-                                std::vector<std::pair<int, int>>>>
-            resultA, resultB;
+        // std::map<int, std::pair<std::vector<Segment<T, 3>>,
+        //                         std::vector<std::pair<int, int>>>>
+        //     resultA, resultB;
+        std::vector<std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> resultA;
+        std::vector<std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> resultB;
 
         void operator()(const std::vector<Triangle<T, 3>> &inputA, const std::vector<Triangle<T, 3>> &inputB, Real tol = TOL);
     };
@@ -23,6 +25,8 @@ namespace YSB
     {
         int numA = inputA.size(),
             numB = inputB.size();
+        resultA.resize(numA);
+        resultB.resize(numB);
         // resultA.reserve(numA);
         // resultB.reserve(numB);
 
@@ -54,7 +58,7 @@ namespace YSB
                 {
                     iA = idA;
                     iB = idB;
-                    
+
                     type = inputA[iA].intersect(inputA[iB], result, tol);
                 }
                 else if (inYinsetA == 1 && inYinsetB == 2)

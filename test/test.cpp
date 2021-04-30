@@ -4,6 +4,7 @@
 #include <vector>
 #include <map>
 #include <algorithm>
+#include <stdio.h>
 #include "../src/Triangle.h"
 using namespace std;
 using namespace YSB;
@@ -142,27 +143,72 @@ int main()
     //     cout << "v0[i] : " << v0[i] << ", v1[i] : " << v1[i] << endl;
     // }
 
-    map<pair<int, int>, double> m;
+    // map<pair<int, int>, double> m;
 
-    for (int i = 0; i < 10; ++i)
-    {
-        pair<int, int> id({i, 2 * i});
-        m[id] = i;
-    }
+    // for (int i = 0; i < 10; ++i)
+    // {
+    //     pair<int, int> id({i, 2 * i});
+    //     m[id] = i;
+    // }
 
-    for (auto it = m.begin(); it != m.end(); ++it)
-    {
-        if (int(it->second) % 2 == 1)
-            m.erase(it);
-    }
+    // for (auto it = m.begin(); it != m.end(); ++it)
+    // {
+    //     if (int(it->second) % 2 == 1)
+    //         m.erase(it);
+    // }
 
-    int i = 0;
-    for (auto &&it : m)
-    {
-        pair<int, int> id({i, 2 * i});
-        cout << "id : " << id.first << " : " << it.second << endl;
-        ++i;
-    }
+    // int i = 0;
+    // for (auto &&it : m)
+    // {
+    //     pair<int, int> id({i, 2 * i});
+    //     cout << "id : " << id.first << " : " << it.second << endl;
+    //     ++i;
+    // }
+
+    // int row, column;
+    // cin >> row;
+
+    // vector<vector<Triangle<Real, 3>>> a(row); //row决定最里面层容器大小，vector<int>(column)决定外层容器的类型和大小
+    // for (int k = 0; k < row; k++)
+    //     a[k].reserve(1); //row*row矩阵
+    //使用空间
+    // for (int j = 0; j < row; j++)
+    //     for (int k = 0; k < row; k++)
+    //         a[j].push_back(rand() % 100);
+    // int c = 1;
+    // for (auto &&v : a)
+    // {
+    //     c++;
+    //     for (int k = 0; k < row; k++)
+    //     {
+    //         Real r[3] = {1.0 * k * c, 1.0 * k, 1.0 * k};
+    //         vector<Point<Real, 3>> p(3, Point<Real, 3>(r));
+    //         v.emplace_back(p.data());
+    //     }
+    // }
+
+    // for (int j = 0; j < 2; j++)
+    // {
+    //     cout << endl
+    //          << endl
+    //          << "\n";
+    //     for (int k = 0; k < row; k++)
+    //     {
+    //         cout << a[j][k].vert(0)[0] << "     ";
+    //     }
+    // }
+
+    vector<int> v;
+    for (auto i = 0; i < 10; ++i)
+        v.push_back(i);
+
+    int k = 11;
+
+    auto &&it = make_pair(k, v[2]);
+
+    it.second = 13;
+    for (auto i = 0; i < 10; ++i)
+        cout << v[i] << "  ";
 
     return 0;
 }

@@ -16,11 +16,11 @@ TEST_CASE("monkey&&monkey", "[mm]")
     // string s1("D://github//Yinsets3D_boolean//dataset//teddy&cow//teddy.obj"),
     //     s2("D://github//Yinsets3D_boolean//dataset//teddy&cow//cow.obj");
     string name1 = "teddy",
-           name2 = "monkey",
+           name2 = "cow",
            inpre = "../dataset/",
            oupre = "../res/",
            post = ".obj",
-           mid = "teddy&monkey",
+           mid = "teddy&cow",
            mid2 = "rabbit",
            m = "meet/",
            j = "join/",

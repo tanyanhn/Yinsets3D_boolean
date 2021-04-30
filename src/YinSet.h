@@ -72,9 +72,10 @@ namespace YSB
             intersectOp(inputA, inputB, tol);
             for (auto &&tri : intersectOp.resultA)
             {
-                for (auto &&seg : tri.second.first)
+                // for (auto &&seg : tri.second.first)
+                for (auto &&seg : tri.first)
                 {
-                    if (seg.neighborhood().size() >= 2)
+                    if (seg.neighborhood().size() < 2)
                     {
                         std::cout << "Contain face not close.";
                         abort();
@@ -89,9 +90,6 @@ namespace YSB
             std::vector<Triangle<T, 3>> inputA, inputB;
             collapse(inputA, 1, tol);
             intersectOp(inputA, inputB, tol);
-
-            ensureFace(intersectOp.resultA);
-            ensureFace(intersectOp.resultB);
 
             // Triangulation
             Triangulation<T> triangulateOp;
@@ -217,6 +215,105 @@ namespace YSB
             auto comp3 = comp1.meet(comp2);
             return comp3.complement();
         }
+
+        // void buildHasse(Real tol)
+        // {
+        //     // step 1 : construct the inclusion matrix
+        //     const int numFace = vecFace.size();
+        //     Tensor<int, 2> mat(Vec<int, 2>{numCurves, numCurves});
+        //     mat = 0;
+        //     std::vector<Vec<Real, 2>> somePoints(numCurves);
+        //     std::vector<Interval<2>> boxes(numCurves);
+        //     std::vector<bool> boundedness(numCurves);
+        //     std::vector<std::vector<int>> candidates(numCurves);
+        //     for (int i = 0; i < numCurves; ++i)
+        //     {
+        //         const auto &polys = segmentedCurves[i].getPolys();
+        //         const auto &knots = segmentedCurves[i].getKnots();
+        //         somePoints[i] = polys[0]((knots[0] + knots[1]) / 2);
+        //         boxes[i] = boundingBox(segmentedCurves[i]);
+        //         boundedness[i] = ::isBounded(segmentedCurves[i], tol);
+        //     }
+        //     for (int i = 0; i < numCurves - 1; ++i)
+        //     {
+        //         for (int j = i + 1; j < numCurves; ++j)
+        //         {
+        //             if (boxes[i].contain(boxes[j], tol))
+        //                 candidates[i].push_back(j);
+        //             if (boxes[j].contain(boxes[i], tol))
+        //                 candidates[j].push_back(i);
+        //         }
+        //     }
+        //     //
+        //     PointsLocater locater(tol);
+        //     for (int i = 0; i < numCurves; ++i)
+        //     {
+        //         std::vector<Vec<Real, 2>> queries;
+        //         for (int k : candidates[i])
+        //             queries.push_back(somePoints[k]);
+        //         auto loc = locater(collapseToSeg(segmentedCurves[i]), queries, boundedness[i]);
+        //         for (std::size_t j = 0; j < candidates[i].size(); ++j)
+        //         {
+        //             assert(loc[j] != 0);
+        //             if (boundedness[i] == (loc[j] == 1))
+        //             {
+        //                 mat(i, candidates[i][j]) = 1;
+        //                 mat(candidates[i][j], i) = -1;
+        //             }
+        //         }
+        //     }
+        //     // step 2 : obtain the Hasse diagram from the inclusion matrix
+        //     diagram.resize(numCurves + 1);
+        //     diagram[numCurves].depth = -2;
+        //     diagram[numCurves].parent = -1;
+        //     std::vector<int> numAnc(numCurves); // number of ancestors
+        //     std::vector<int> parent(numCurves);
+        //     for (int i = 0; i < numCurves; ++i)
+        //     {
+        //         numAnc[i] = std::count(&mat(0, i), &mat(0, i + 1), 1);
+        //         if (numAnc[i] == 0)
+        //         {
+        //             parent[i] = numCurves;
+        //             diagram[numCurves].depth = (boundedness[i]) ? (-1) : (0);
+        //         }
+        //     }
+        //     assert(diagram[numCurves].depth != -2);
+        //     // topological sort
+        //     int numRemain = numCurves;
+        //     int numPositive = 0;
+        //     while (numRemain--)
+        //     {
+        //         int j = std::find(numAnc.cbegin(), numAnc.cend(), 0) - numAnc.cbegin();
+        //         numAnc[j] = -1; // so that j will never be selected again
+        //         diagram[j].parent = parent[j];
+        //         diagram[j].depth = diagram[parent[j]].depth + 1;
+        //         if (diagram[j].depth % 2 == 0)
+        //             ++numPositive;
+        //         diagram[parent[j]].children.push_back(j);
+        //         // handle the children
+        //         for (int k = 0; k < numCurves; ++k)
+        //         {
+        //             if (mat(j, k) == 1)
+        //             {
+        //                 parent[k] = j;
+        //                 --numAnc[k];
+        //             }
+        //         }
+        //     }
+        //     // step 3 : calculate the Betti nubmers.
+        //     if (diagram[numCurves].depth == -1)
+        //     {
+        //         // this Yin set is bounded.
+        //         bettiNumbers[0] = numPositive;
+        //         bettiNumbers[1] = numCurves - numPositive;
+        //     }
+        //     else
+        //     {
+        //         // this Yin set is unbounded.
+        //         bettiNumbers[0] = numPositive + 1;
+        //         bettiNumbers[1] = numCurves - numPositive;
+        //     }
+        // }
 
         // void BuildHasse(Real tol = TOL) const;
     };
