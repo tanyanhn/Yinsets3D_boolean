@@ -57,8 +57,8 @@ namespace YSB
                    const std::vector<Triangle<T, 3>> &vecTriA,
                    const std::vector<Triangle<T, 3>> &vecTriB, Real tol = TOL)
         {
-            std::set<int> All;
-            std::vector<int> pastF, connectF;
+            std::set<int> All, pastF;
+            std::vector<int> connectF;
             FindNearTriangle<T> FNToperator;
             int size = vecF.size();
             std::vector<int> markF(size, 1);
@@ -72,10 +72,10 @@ namespace YSB
 
             connectF.push_back((*All.begin()));
             All.erase(All.begin());
+            pastF.insert(connectF.back());
             while (!All.empty() || !connectF.empty())
             {
                 const SurfacePatch<T> &SFP = vecF[connectF.back()];
-                pastF.push_back(connectF.back());
                 markF[connectF.back()] = 0;
                 connectF.pop_back();
 
@@ -103,8 +103,13 @@ namespace YSB
                         if (markF[nearTri.inF().second] == 1)
                         {
                             connectF.push_back(nearTri.inF().second);
+                            pastF.insert(connectF.back());
                             All.erase(nearTri.inF().second);
                             markF[nearTri.inF().second] = 0;
+                        }
+                        else
+                        {
+                            assert(pastF.find(nearTri.inF().second) != pastF.end() && "Past not closed.");
                         }
                     }
                 }
@@ -117,11 +122,13 @@ namespace YSB
                         id.insert(id.end(), vecF[i].tris().begin(), vecF[i].tris().end());
                     }
                     vecGCS.emplace_back(id, vecTriA, vecTriB, tol);
+                    pastF.clear();
 
                     if (All.empty())
                         break;
 
                     connectF.push_back((*All.begin()));
+                    pastF.insert(connectF.back());
                     All.erase(All.begin());
                 }
             }

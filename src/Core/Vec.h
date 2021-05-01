@@ -1,5 +1,5 @@
-#ifndef VEC_H
-#define VEC_H
+#ifndef VECN_H
+#define VECN_H
 
 #include <utility>
 #include <initializer_list>
@@ -29,20 +29,20 @@ namespace YSB
       Dim = _Dim
     };
 
-    Vec(const T &t = T())
+    explicit Vec(const T &t = T())
     {
       for (int i = 0; i < Dim; coord[i++] = t)
         ;
     }
 
-    Vec(std::initializer_list<T> l)
+    explicit Vec(std::initializer_list<T> l)
     {
       auto j = l.begin();
       for (int d = 0; d < Dim; ++d)
         coord[d] = *j++;
     }
 
-    Vec(const T *const l)
+    explicit Vec(const T *const l)
     {
       for (int d = 0; d < Dim; ++d)
       {
@@ -59,6 +59,14 @@ namespace YSB
     {
       for (int d = 0; d < Dim; d++)
         coord[d] = static_cast<T>(rhs[d]);
+    }
+
+    template <class T2>
+    Vec<T, Dim> &operator=(const Vec<T2, Dim> &rhs)
+    {
+      for (auto d = 0; d < Dim; d++)
+        coord[d] = rhs.coord[d];
+      return *this;
     }
 
     static Vec<T, Dim> unit(int D)
@@ -112,7 +120,7 @@ namespace YSB
 #undef RIGHT_BROADCAST
 
     // Projection for intersect in 3D space.
-    Vec<T, Dim - 1> project(int d)
+    Vec<T, Dim - 1> project(int d) const
     {
       assert(d < Dim && Dim > 1 && "Project dimension is bigger than Point's Dim");
       Real rs[Dim - 1];
@@ -132,6 +140,22 @@ namespace YSB
       return Vec<T, Dim - 1>(rs);
     }
 
+    int majorDim(int k = 1) const
+    {
+      int md = 0;
+      Vec<T, Dim> v = abs(*this);
+      Real Lar = v[0];
+      for (auto d = 1; d < Dim; ++d)
+      {
+        if (k * Lar < k * v[d])
+        {
+          md = d;
+          Lar = v[d];
+        }
+      }
+      return md;
+    }
+
     ///
     /**
      Formatting.
@@ -145,9 +169,6 @@ namespace YSB
       return os;
     }
   };
-
-  template <class T, int Dim>
-  using tVec = Vec<T, Dim>;
 
   //==================================================
 
@@ -213,7 +234,7 @@ namespace YSB
     return res;
   }
 
-  inline Real norm(Real x, int nt)
+  inline Real norm(Real x)
   {
     return std::abs(x);
   }

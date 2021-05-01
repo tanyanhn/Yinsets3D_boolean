@@ -1,5 +1,5 @@
-#ifndef VEC_H
-#define VEC_H
+#ifndef VECN_H
+#define VECN_H
 
 #include <utility>
 #include <initializer_list>

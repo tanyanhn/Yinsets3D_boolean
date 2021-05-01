@@ -12,12 +12,35 @@ namespace YSB
     struct Locate
     {
         int operator()(const std::vector<Triangle<T, 3>> &yinset, const Point<T, 3> &p, Real tol = TOL);
+        std::vector<int> operator()(const std::vector<Triangle<T, 3>> &yinset,
+                                    const std::vector<Point<T, 3>> &p, bool bound, Real tol = TOL);
         int operator()(const std::vector<Triangle<T, 3>> &yinset, std::vector<Triangle<T, 3>> &vecTri, const SurfacePatch<T> &faces, Real tol = TOL);
         void operator()(const std::vector<Triangle<T, 3>> &inputA, const std::vector<Triangle<T, 3>> &inputB,
                         int ifboundA, int ifboundB,
                         std::vector<Triangle<T, 3>> &vecTriA, std::vector<Triangle<T, 3>> &vecTriB,
                         std::vector<SurfacePatch<T>> &vecSPA, std::vector<SurfacePatch<T>> &vecSPB, Real tol = TOL);
     };
+
+    template <class T>
+    inline std::vector<int> Locate<T>::operator()(
+        const std::vector<Triangle<T, 3>> &yinset,
+        const std::vector<Point<T, 3>> &ps, bool bound, Real tol)
+    {
+        std::vector<int> rs;
+        for (auto &&p : ps)
+        {
+            int k = this->operator()(yinset, p, tol);
+            if (k == -2)
+            {
+                if (bound == true)
+                    k = -1;
+                else
+                    k = 1;
+            }
+            rs.push_back(k);
+        }
+        return rs;
+    }
 
     template <class T>
     inline T RandomGenerate()
@@ -130,8 +153,8 @@ namespace YSB
         for (auto &&iSP : vecSPA)
         {
             int k = this->operator()(inputB, vecTriA, iSP, tol);
-            if(ifboundA == 0 && k == -2)
-            k = 1;
+            if (ifboundA == 0 && k == -2)
+                k = 1;
             if (k < 0)
             {
                 iSP.removed = true;
@@ -150,8 +173,8 @@ namespace YSB
         for (auto &&iSP : vecSPB)
         {
             int k = this->operator()(inputA, vecTriB, iSP, tol);
-            if(ifboundB == 0 && k == -2)
-            k = 1;
+            if (ifboundB == 0 && k == -2)
+                k = 1;
             if (k < 0)
             {
                 iSP.removed = true;
