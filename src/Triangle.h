@@ -6,6 +6,7 @@
 #include "PointCompare.h"
 #include <set>
 #include "SegmentCompare.h"
+#include "Core/Interval.h"
 //Test git
 
 namespace YSB
@@ -565,6 +566,30 @@ namespace YSB
         }
 
         return Overlap;
+    }
+
+    template <class T, int Dim>
+    Interval<Dim> boundingBox(const Triangle<T, Dim> &c)
+    {
+        std::vector<Triangle<T, Dim>> vc{c};
+        return boundingBox(vc);
+    }
+
+    template <class T, int Dim>
+    Interval<Dim> boundingBox(const std::vector<Triangle<T, Dim>> &vc)
+    {
+        Vec<Real, Dim> lower(std::numeric_limits<Real>::max());
+        Vec<Real, Dim> upper = -lower;
+        Point<Real, Dim> zero(0.0);
+        for (const auto &c : vc)
+        {
+            for (std::size_t i = 0; i < 3; ++i)
+            {
+                lower = min(lower, c.vert(i) - zero);
+                upper = max(upper, c.vert(i) - zero);
+            }
+        }
+        return Interval<Dim>(lower, upper);
     }
 } // namespace YSB
 

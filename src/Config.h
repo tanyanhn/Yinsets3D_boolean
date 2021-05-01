@@ -1,5 +1,5 @@
-#ifndef CONFIG_H
-#define CONFIG_H
+#ifndef CONFIGN_H
+#define CONFIGN_H
 
 #include <iostream>
 #include <random>

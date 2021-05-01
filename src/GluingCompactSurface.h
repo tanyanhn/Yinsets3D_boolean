@@ -9,8 +9,8 @@ namespace YSB
 {
     enum FacType
     {
-        Inner = 0,
-        Outer = 1,
+        Outer = 0,
+        Inner = 1,
     };
 
     template <class T>
@@ -61,6 +61,7 @@ namespace YSB
                 for (auto ie = 0; ie < 3; ++ie)
                 {
                     tri.ed(ie).IntersectionSeg() = 0;
+                    tri.ed(ie).neighborhood().clear();
                     // auto it = segs.insert({tri.ed(ie), std::vector<int>(idYinset, tri.id())});
                     // if (!it.second)
                     //     (it.first)->second.emplace_back({idYinset, tri.id()});
@@ -125,10 +126,10 @@ namespace YSB
                 }
 
                 if (vecTriangle[lowest.second].locate(lowest.first, tol) == Triangle<T, 3>::locType::Inter)
-                    return type = dot(outerVec, vecTriangle[lowest.second].normVec()) > 0 ? FacType::Inner : FacType::Outer;
+                    return type = dot(outerVec, vecTriangle[lowest.second].normVec()) < 0 ? FacType::Inner : FacType::Outer;
 
                 if (vecTriangle[highest.second].locate(highest.first, tol) == Triangle<T, 3>::locType::Inter)
-                    return type = dot(outerVec, vecTriangle[highest.second].normVec()) < 0 ? FacType::Inner : FacType::Outer;
+                    return type = dot(outerVec, vecTriangle[highest.second].normVec()) > 0 ? FacType::Inner : FacType::Outer;
             }
 
             assert(false && "calType() have trouble.");

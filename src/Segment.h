@@ -287,13 +287,16 @@ namespace YSB
         const Segment<T, Dim> &seg1, const Segment<T, Dim> &seg2,
         Real tol = TOL)
     {
-        int mDim1 = seg1.majorDim(1),
-            mDim2 = seg2.majorDim(1), mDim;
-        for (int d = 0; d < Dim; ++d)
-        {
-            if (d != mDim1 && d != mDim2)
-                mDim = d;
-        }
+        // int mDim1 = seg1.majorDim(1),
+        //     mDim2 = seg2.majorDim(1), mDim;
+
+        // for (int d = 0; d < Dim; ++d)
+        // {
+        //     if (d != mDim1 && d != mDim2)
+        //         mDim = d;
+        // }
+        int mDim = cross(seg1[1] - seg1[0], seg2[1] - seg2[0]).majorDim(1);
+
         auto proSeg1 = seg1.project(mDim),
              proSeg2 = seg2.project(mDim);
 
