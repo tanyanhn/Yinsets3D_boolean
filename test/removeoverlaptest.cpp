@@ -16,17 +16,23 @@ TEST_CASE("Prepaste", "[pp1]")
                    tripoints7[] = {tp3, tp1, tp2}, tripoints8[] = {tp3, tp2, tp4},
                    tripoints9[] = {tp3, tp4, tp6};
     Triangle<Real, 3> tri1(tripoints1), tri2(tripoints2), tri3(tripoints3),
-                      tri4(tripoints4), tri5(tripoints5), tri6(tripoints6), 
-                      tri7(tripoints7), tri8(tripoints8), tri9(tripoints9);
+        tri4(tripoints4), tri5(tripoints5), tri6(tripoints6),
+        tri7(tripoints7), tri8(tripoints8), tri9(tripoints9);
     vector<Triangle<Real, 3>> triA{tri1, tri2, tri3, tri4, tri5, tri6}, triB{tri7, tri8, tri9};
-    std::map<int, std::pair<std::vector<Segment<Real, 3>>, std::vector<std::pair<int, int>>>> resultA, resultB;
+    std::vector<std::pair<std::vector<Segment<Real, 3>>,
+                          std::vector<std::pair<int, int>>>>
+        resultA, resultB;
+    resultA.resize(triA.size());
+    resultB.resize(triB.size());
     resultA[2].second.push_back({2, 0});
     resultA[5].second.push_back({2, 1});
     resultB[0].second.push_back({1, 2});
     resultB[1].second.push_back({1, 5});
-  
-    std::map<int, std::vector<int>> TriangulateA, TriangulateB;
 
+    std::vector<std::vector<int>> TriangulateA, TriangulateB;
+
+    TriangulateA.resize(triA.size());
+    TriangulateB.resize(triB.size());
 
     for (int i = 0; i < triA.size(); i++)
     {
@@ -71,13 +77,13 @@ TEST_CASE("Prepaste", "[pp1]")
         }
     }
 
-    cout<<resultB.size();
-    cout<<resultA.size();
+    cout << resultB.size();
+    cout << resultA.size();
     RemoveOverlap<Real> rp;
     rp(TriangulateA, TriangulateB, triA, triB, resultA, resultB);
-    REQUIRE(triB[0].IfRemoved()==true);
+    REQUIRE(triB[0].IfRemoved() == true);
     //REQUIRE(triB[1].ed(2).neighborhood().size()==1);
-    REQUIRE(triB[1].IfRemoved()==true);
-    REQUIRE(triA[2].IfRemoved()==false); 
-    REQUIRE(triA[5].IfRemoved()==false); 
+    REQUIRE(triB[1].IfRemoved() == true);
+    REQUIRE(triA[2].IfRemoved() == false);
+    REQUIRE(triA[5].IfRemoved() == false);
 }

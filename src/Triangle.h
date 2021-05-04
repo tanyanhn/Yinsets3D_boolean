@@ -375,8 +375,11 @@ namespace YSB
             return 0;
         }
 
-        intsType intersect(const Triangle<T, Dim> &tri2, std::vector<Segment<T, Dim>> &result, Real tol = TOL) const
+        intsType intersect(
+            const Triangle<T, Dim> &tri2,
+            std::vector<Segment<T, Dim>> &result, Real tol = TOL) const
         {
+
             if (pla == nullptr)
                 new_pla();
             if (tri2.pla == nullptr)
@@ -386,6 +389,19 @@ namespace YSB
 
             if (intsT == intsType::Overlap)
             {
+                // SegmentCompare Segcmp(tol);
+                // for (auto ie1 = 0; ie1 < 3; ++ie1)
+                // {
+                //     for (auto ie2 = 0; ie2 < 3; ++ie2)
+                //     {
+                //         if (Segcmp.compare(this->ed(ie1), tri2.ed(ie2)) == 0)
+                //         {
+                //             result.push_back(this->ed(ie1));
+                //             return intsType::IntsSeg;
+                //         }
+                //     }
+                // }
+
                 int mDim = majorDim();
                 auto projTri1 = this->project(mDim),
                      projTri2 = tri2.project(mDim);
@@ -410,6 +426,19 @@ namespace YSB
             }
             else if (intsT == Maybe)
             {
+                SegmentCompare Segcmp(tol);
+                for (auto ie1 = 0; ie1 < 3; ++ie1)
+                {
+                    for (auto ie2 = 0; ie2 < 3; ++ie2)
+                    {
+                        if (Segcmp.compare(this->ed(ie1), tri2.ed(ie2)) == 0)
+                        {
+                            result.push_back(this->ed(ie1));
+                            return intsType::IntsSeg;
+                        }
+                    }
+                }
+
                 Line<T, Dim> l = this->pla->intersect(*tri2.pla);
                 std::vector<Point<T, Dim>> pts;
 

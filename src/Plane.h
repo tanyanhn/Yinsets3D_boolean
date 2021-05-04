@@ -120,85 +120,118 @@ namespace YSB
         d_1 = a_1 * fixpoint[0] + b_1 * fixpoint[1] + c_1 * fixpoint[2];
         d_2 = a_2 * pl2.fixpoint[0] + b_2 * pl2.fixpoint[1] + c_2 * pl2.fixpoint[2];
 
-        if (std::abs(a) > tol)
+        if (std::abs(a) > std::abs(b) && std::abs(a) > std::abs(c))
         { // a != 0
             //  Let fixpoint[x] = 0
             x = 0;
             // Solving equations b_1 y + c_1 z = d_1              (3)
             //                                        b_2 y + c_2 z = d_2              (4),
             // c_2 * (1) - c_1 * (2) get k y = l
-            
-            if (std::abs(c_1) > tol)
+
+            Real co[4] = {std::abs(c_1),
+                          std::abs(c_2),
+                          std::abs(b_1),
+                          std::abs(b_2)};
+
+            int s = 0;
+            Real bi = co[0];
+            for (int i = 1; i < 4; ++i)
+            {
+                if (bi < co[i])
+                {
+                    s = i;
+                    bi = co[i];
+                }
+            }
+
+            if (s == 0)
             {
                 Real k = c_2 * b_1 - c_1 * b_2;
                 Real l = c_2 * d_1 - c_1 * d_2;
-            
+
                 y = l / k;
                 z = (d_1 - b_1 * y) / c_1;
             }
-            else if (std::abs(c_2) > tol)
+            else if (s == 1)
             {
                 Real k = c_2 * b_1 - c_1 * b_2;
                 Real l = c_2 * d_1 - c_1 * d_2;
-            
+
                 y = l / k;
                 z = (d_2 - b_2 * y) / c_2;
             }
-            else if (std::abs(b_1) > tol)
+            else if (s == 2)
             {
                 Real k = c_2 * b_1 - c_1 * b_2;
                 Real l = d_2 * b_1 - d_1 * b_2;
-            
+
                 z = l / k;
-                z = (d_1 - c_1 * z) / b_1;
+                y = (d_1 - c_1 * z) / b_1;
             }
-            else if (std::abs(b_2) > tol)
+            else if (s == 3)
             {
                 Real k = c_2 * b_1 - c_1 * b_2;
                 Real l = d_2 * b_1 - d_1 * b_2;
-            
+
                 z = l / k;
                 y = (d_2 - c_2 * z) / b_2;
             }
             else
                 assert(false && "Plane::intersect");
         }
-        else if (std::abs(b) > tol)
+        else if (std::abs(b) > std::abs(c))
         {
             //  Let fixpoint[y] = 0
             y = 0;
             // Solving equations a_1 x + c_1 z = d_1              (3)
             //                                        a_2 x + c_2 z = d_2              (4),
             // c_2 * (1) - c_1 * (2) get k x = l
-            if (std::abs(c_1) > tol)
+
+            Real co[4] = {std::abs(c_1),
+                          std::abs(c_2),
+                          std::abs(a_1),
+                          std::abs(a_2)};
+
+            int s = 0;
+            Real bi = co[0];
+            for (int i = 1; i < 4; ++i)
+            {
+                if (bi < co[i])
+                {
+                    s = i;
+                    bi = co[i];
+                }
+            }
+
+            if (s == 0)
             {
                 Real k = c_2 * a_1 - c_1 * a_2;
                 Real l = c_2 * d_1 - c_1 * d_2;
-            
+
                 x = l / k;
                 z = (d_1 - a_1 * x) / c_1;
             }
-            else if (std::abs(c_2) > tol)
+            else if (s == 1)
             {
                 Real k = c_2 * a_1 - c_1 * a_2;
                 Real l = c_2 * d_1 - c_1 * d_2;
-            
+
                 x = l / k;
                 z = (d_2 - a_2 * x) / c_2;
             }
-            else if (std::abs(a_1) > tol)
+            else if (s == 2)
             {
                 Real k = a_2 * c_1 - a_1 * c_2;
                 Real l = a_2 * d_1 - a_1 * d_2;
-            
+
                 z = l / k;
                 x = (d_1 - c_1 * z) / a_1;
             }
-            else if (std::abs(a_2) > tol)
+            else if (s == 3)
             {
                 Real k = a_2 * c_1 - a_1 * c_2;
                 Real l = a_2 * d_1 - a_1 * d_2;
-            
+
                 z = l / k;
                 x = (d_2 - c_2 * z) / a_2;
             }
@@ -212,35 +245,51 @@ namespace YSB
             // Solving equations a_1 x + b_1 y= d_1              (3)
             //                                        a_2 x + b_2 y = d_2              (4),
             // b_2 * (1) - b_1 * (2) get k x = l
-            if (std::abs(a_1) > tol)
+            Real co[4] = {std::abs(a_1),
+                          std::abs(a_2),
+                          std::abs(b_1),
+                          std::abs(b_2)};
+
+            int s = 0;
+            Real bi = co[0];
+            for (int i = 1; i < 4; ++i)
+            {
+                if (bi < co[i])
+                {
+                    s = i;
+                    bi = co[i];
+                }
+            }
+
+            if (s == 0)
             {
                 Real k = a_2 * b_1 - a_1 * b_2;
                 Real l = a_2 * d_1 - a_1 * d_2;
-            
+
                 y = l / k;
                 x = (d_1 - b_1 * y) / a_1;
             }
-            else if (std::abs(a_2) > tol)
+            else if (s == 1)
             {
                 Real k = a_2 * b_1 - a_1 * b_2;
                 Real l = a_2 * d_1 - a_1 * d_2;
-            
+
                 y = l / k;
                 x = (d_2 - b_2 * y) / a_2;
             }
-            else if (std::abs(b_1) > tol)
+            else if (s == 2)
             {
                 Real k = b_2 * a_1 - b_1 * a_2;
                 Real l = b_2 * d_1 - b_1 * d_2;
-            
+
                 x = l / k;
                 y = (d_1 - a_1 * x) / b_1;
             }
-            else if (std::abs(b_2) > tol)
+            else if (s == 3)
             {
                 Real k = b_2 * a_1 - b_1 * a_2;
                 Real l = b_2 * d_1 - b_1 * d_2;
-            
+
                 x = l / k;
                 y = (d_2 - a_2 * x) / b_2;
             }

@@ -13,6 +13,7 @@
 #include "Core/Interval.h"
 #include <sstream>
 #include <iomanip>
+#include <fstream>
 #ifdef _UsBoost
 #include <boost/timer/timer.hpp>
 #endif // _UsBoost
@@ -39,9 +40,11 @@ namespace YSB
         explicit YinSet(const std::vector<GluingCompactSurface<T>> &vf, Real tol = TOL)
             : vecFace(vf)
         {
-            ensureFace(tol);
+            // ensureFace(tol);
             buildHasse(tol);
         }
+
+        explicit YinSet(const std::string &s);
 
         /// Return if the Yin set is bounded, based on the Hasse diagram.
         int isBounded() const { return diagram.back().depth == -1; }
@@ -91,7 +94,7 @@ namespace YSB
         std::vector<GluingCompactSurface<T>> &gcss() { return vecFace; }
         const std::vector<GluingCompactSurface<T>> &gcss() const { return vecFace; }
 
-        void collapse(std::vector<Triangle<T, 3>> &rs, int idYinset, Real tol = TOL)
+        void collapse(std::vector<Triangle<T, 3>> &rs, int idYinset, Real tol = TOL) const
         {
             SegmentCompare segcmp(tol);
 
@@ -140,12 +143,22 @@ namespace YSB
             }
         }
 
-        YinSet<T> complement(const int usingRFB = 0, Real tol = TOL)
+        YinSet<T> complement(const int usingRFB = 0, Real tol = TOL) const
         {
 
             TriangleIntersection<T> intersectOp;
             std::vector<Triangle<T, 3>> inputA, inputB;
-            collapse(inputA, 1, tol);
+
+            {
+#ifdef _UsBoost
+                boost::timer::auto_cpu_timer t;
+                std::cout << std::endl
+                          << "complement::collapse cpu time : ";
+#endif // _UsBoost
+
+                collapse(inputA, 1, tol);
+            }
+
             {
 #ifdef _UsBoost
                 boost::timer::auto_cpu_timer t;
@@ -202,13 +215,20 @@ namespace YSB
             // std::map<std::pair<int, int>,
             //          std::vector<std::pair<int, int>>> *pCoClipFaces = &prePastOp.coClipFaces;
 
-            // if (usingRFB == 1)
-            // {
-            //     ReFactoryBoundary<T> reFactoryBoundaryOp;
-            //     reFactoryBoundaryOp(triangulateOp.vecTriA, triangulateOp.vecTriB,
-            //                         prePastOp.vecSPA, prePastOp.vecSPB,
-            //                         prePastOp.ClipFaces, prePastOp.coClipFaces, tol);
-            // }
+            if (usingRFB == 1)
+            {
+                ReFactoryBoundary<T> reFactoryBoundaryOp;
+                {
+#ifdef _UsBoost
+                    boost::timer::auto_cpu_timer t;
+                    std::cout << std::endl
+                              << "complement::reFactoryBoundary cpu time : ";
+#endif // _UsBoost
+                    reFactoryBoundaryOp(triangulateOp.vecTriA, triangulateOp.vecTriB,
+                                        prePastOp.vecSPA, prePastOp.vecSPB,
+                                        prePastOp.ClipFaces, prePastOp.coClipFaces, tol);
+                }
+            }
 
             // Locate SurfacePatch.
 
@@ -240,7 +260,7 @@ namespace YSB
             }
         }
 
-        YinSet<T> meet(YinSet<T> &y2, const int usingRFB = 0, Real tol = TOL)
+        YinSet<T> meet(const YinSet<T> &y2, const int usingRFB = 0, Real tol = TOL) const
         {
             //Intersection Triangle.
             TriangleIntersection<T> intersectOp;
@@ -317,18 +337,20 @@ namespace YSB
             // std::map<std::pair<int, int>,
             //          std::vector<std::pair<int, int>>> *pCoClipFaces = &prePastOp.coClipFaces;
 
-            // if (usingRFB == 1)
-            // {
-            //     ReFactoryBoundary<T> reFactoryBoundaryOp;
-            // {
-            //     boost::timer::auto_cpu_timer t;
-            //     std::cout << std::endl
-            //               << "meet::reFactoryBoundary cpu time : ";
-            //     reFactoryBoundaryOp(triangulateOp.vecTriA, triangulateOp.vecTriB,
-            //                         prePastOp.vecSPA, prePastOp.vecSPB,
-            //                         prePastOp.ClipFaces, prePastOp.coClipFaces, tol);
-            // }
-            // }
+            if (usingRFB == 1)
+            {
+                ReFactoryBoundary<T> reFactoryBoundaryOp;
+                {
+#ifdef _UsBoost
+                    boost::timer::auto_cpu_timer t;
+                    std::cout << std::endl
+                              << "meet::reFactoryBoundary cpu time : ";
+#endif // _UsBoost
+                    reFactoryBoundaryOp(triangulateOp.vecTriA, triangulateOp.vecTriB,
+                                        prePastOp.vecSPA, prePastOp.vecSPB,
+                                        prePastOp.ClipFaces, prePastOp.coClipFaces, tol);
+                }
+            }
 
             // Locate SurfacePatch.
             Locate<T> locateOp;
@@ -372,12 +394,12 @@ namespace YSB
             }
         }
 
-        YinSet<T> join(YinSet<T> &y2, const int usingRFB = 0, Real tol = TOL)
+        YinSet<T> join(YinSet<T> &y2, const int usingRFB = 0, Real tol = TOL) const
         {
-            auto comp1 = complement();
-            auto comp2 = y2.complement();
-            auto comp3 = comp1.meet(comp2);
-            return comp3.complement();
+            auto comp1 = complement(usingRFB);
+            auto comp2 = y2.complement(usingRFB);
+            auto comp3 = comp1.meet(comp2, usingRFB);
+            return comp3.complement(usingRFB);
         }
 
         void buildHasse(Real tol)
@@ -479,8 +501,19 @@ namespace YSB
             }
         }
 
-        // void BuildHasse(Real tol = TOL) const;
+        void objOutput(std::string s, std::string folder)
+        {
+            exportdata_inner(s, *this, folder);
+        }
     };
+
+    YinSet<Real> objInput(const std::string &s);
+    void exportdata_inner(std::string s, YinSet<Real> &y, std::string folder);
+
+    template <>
+    inline YinSet<Real>::YinSet(const std::string &s)
+        : YinSet<Real>(objInput(s)) {}
+
 } // namespace YSB
 
 #endif // !YINSET_H

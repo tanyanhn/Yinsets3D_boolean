@@ -39,8 +39,8 @@ TEST_CASE("Triangle Intersection2", "[tin2]")
     TriangleIntersection<Real> tin;
     tin(triA, triB);
     REQUIRE(tin.resultA[0].second.size() == 1);
-    REQUIRE(tin.resultA[0].first.size() == 8);
-    REQUIRE(tin.resultB[0].first.size() == 5);
+    REQUIRE(tin.resultA[0].first.size() == 7);
+    REQUIRE(tin.resultB[0].first.size() == 4);
     REQUIRE(tin.resultB[0].second.size() == 1);
     REQUIRE(tin.resultB[1].first.size() == 6);
     REQUIRE(tin.resultB[2].first.size() == 7);

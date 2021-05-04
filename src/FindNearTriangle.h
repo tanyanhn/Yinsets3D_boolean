@@ -33,10 +33,11 @@ namespace YSB
             for (int idNeighTri = 0; idNeighTri < triangles.size(); ++idNeighTri)
             {
                 Triangle<T, 3> neighborTri = triangles[idNeighTri];
-                Segment<T, 3> neighEdge = neighborTri.ed(neighborTri.edgeVec(edge, tol));
+                Segment<T, 3> neighEdge = neighborTri.ed(neighborTri.edgeVec(edge, tol)),
+                              Edge = Tri.ed(Tri.edgeVec(edge, tol));
 
                 PointCompare cmp(tol);
-                if (cmp.compare(edge[0], neighEdge[1]) == 0)
+                if (cmp.compare(Edge[0], neighEdge[1]) == 0)
                 {
                     auto normneightri = normalize(cross(neighborTri.vert(1) - neighborTri.vert(0),
                                                         neighborTri.vert(2) - neighborTri.vert(1)));

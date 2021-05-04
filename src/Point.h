@@ -6,6 +6,7 @@
 
 namespace YSB
 {
+    class PointCompare;
 
     template <class T, int Dim>
     class Point
