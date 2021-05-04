@@ -2,7 +2,8 @@
 #define TRIANGLEINTERSECTION_H
 
 #include "Triangle.h"
-#include "map"
+#include <map>
+#include "TriangleCompare.h"
 
 namespace YSB
 {
@@ -11,9 +12,6 @@ namespace YSB
     {
         using intsType = typename Triangle<T, 3>::intsType;
 
-        // std::map<int, std::pair<std::vector<Segment<T, 3>>,
-        //                         std::vector<std::pair<int, int>>>>
-        //     resultA, resultB;
         std::vector<std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> resultA;
         std::vector<std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>> resultB;
 
@@ -27,116 +25,200 @@ namespace YSB
             numB = inputB.size();
         resultA.resize(numA);
         resultB.resize(numB);
-        // resultA.reserve(numA);
-        // resultB.reserve(numB);
+        const std::vector<Triangle<T, 3>> *inputArr[2] = {&inputA, &inputB};
+        std::vector<std::pair<std::vector<Segment<T, 3>>,
+                              std::vector<std::pair<int, int>>>>
+            *resultArr[2] = {&resultA, &resultB};
+        PointCompare pCmp(tol);
+        TriangleCompare triCmp(tol);
+        std::map<Point<T, 3>,
+                 std::vector<std::pair<int, int>>, PointCompare>
+            mt(pCmp), ml(pCmp);
+        std::set<std::pair<int, int>> interTris;
+        std::set<Point<T, 3>, PointCompare> allP(pCmp);
+        Point<T, 3> min, max;
 
-        // for (int iA = 0; iA < numA; ++iA)
-        // {
-        //     resultA.emplace_back(std::vector<Segment<T, 3>>{inputA[iA].ed(0), inputA[iA].ed(1), inputA[iA].ed(2)}, std::vector<int>());
-        // }
-        // for (int iB = 0; iB < numB; ++iB)
-        // {
-        //     resultB.emplace_back(std::vector<Segment<T, 3>>{inputB[iB].ed(0), inputB[iB].ed(1), inputB[iB].ed(2)}, std::vector<int>());
-        // }
+        for (int idA = 0; idA < numA; ++idA)
+        {
+            if (pCmp.compare(inputA[idA].vert(0), inputA[idA].vert(1)) == 1)
+            {
+                min = inputA[idA].vert(0);
+                max = inputA[idA].vert(1);
+            }
+            else
+            {
+                min = inputA[idA].vert(1);
+                max = inputA[idA].vert(0);
+            }
+            min = (pCmp.compare(min, inputA[idA].vert(2)) == 1)
+                      ? (min)
+                      : inputA[idA].vert(2);
+            max = (pCmp.compare(max, inputA[idA].vert(2)) == -1)
+                      ? (max)
+                      : inputA[idA].vert(2);
+
+            allP.insert(min);
+            allP.insert(max);
+
+            auto it = mt.find(max);
+            if (it == mt.end())
+                mt.insert({max, std::vector<std::pair<int, int>>(1, {1, idA})});
+            else
+                it->second.push_back({1, idA});
+
+            it = ml.find(min);
+            if (it == ml.end())
+                ml.insert({min, std::vector<std::pair<int, int>>(1, {1, idA})});
+            else
+                it->second.push_back({1, idA});
+        }
+
+        for (int idB = 0; idB < numB; ++idB)
+        {
+            if (pCmp.compare(inputB[idB].vert(0), inputB[idB].vert(1)) == 1)
+            {
+                min = inputB[idB].vert(0);
+                max = inputB[idB].vert(1);
+            }
+            else
+            {
+                min = inputB[idB].vert(1);
+                max = inputB[idB].vert(0);
+            }
+            min = (pCmp.compare(min, inputB[idB].vert(2)) == 1)
+                      ? (min)
+                      : inputB[idB].vert(2);
+            max = (pCmp.compare(max, inputB[idB].vert(2)) == -1)
+                      ? (max)
+                      : inputB[idB].vert(2);
+
+            allP.insert(min);
+            allP.insert(max);
+
+            auto it = mt.find(max);
+            if (it == mt.end())
+                mt.insert({max, std::vector<std::pair<int, int>>(1, {2, idB})});
+            else
+                it->second.push_back({2, idB});
+
+            it = ml.find(min);
+            if (it == ml.end())
+                ml.insert({min, std::vector<std::pair<int, int>>(1, {2, idB})});
+            else
+                it->second.push_back({2, idB});
+        }
 
         std::vector<Segment<T, 3>> result;
         intsType type;
 
-        for (int idA = 0; idA < numA + numB; ++idA)
+        for (auto &&p : allP)
         {
-            for (int idB = idA + 1; idB < numA + numB; ++idB)
+            auto &maxP = mt[p];
+            for (auto &&idTri : maxP)
+                interTris.erase(idTri);
+
+            auto &minP = ml[p];
+            for (auto &&idTri1 : minP)
             {
-                // if(idA==103&&idB==104)
-                // {
-                //     int a= idA;
-                // }
-                int iA, iB;
-                result.clear();
-                int inYinsetA = idA < numA ? (1) : (2),
-                    inYinsetB = idB < numA ? (1) : (2);
-                if (inYinsetA == 1 && inYinsetB == 1)
+                for (auto &&idTri2 : interTris)
                 {
-                    iA = idA;
-                    iB = idB;
-
-                    type = inputA[iA].intersect(inputA[iB], result, tol);
-                }
-                else if (inYinsetA == 1 && inYinsetB == 2)
-                {
-                    iA = idA;
-                    iB = idB - numA;
-                    type = inputA[iA].intersect(inputB[iB], result, tol);
-                }
-                else if (inYinsetA == 2 && inYinsetB == 2)
-                {
-                    iA = idA - numA;
-                    iB = idB - numA;
-                    type = inputB[iA].intersect(inputB[iB], result, tol);
-                }
-                else
-                {
-                    assert(false && "TriangleIntersection::iA,iB.");
-                }
-
-                if (type == intsType::Never)
-                {
-                    continue;
-                }
-                else if (type == intsType::IntsPoint)
-                {
-                }
-                else if (type == intsType::IntsSeg)
-                {
-                }
-                else if (type == intsType::Overlap)
-                {
+                    int iA = idTri1.second,
+                        iB = idTri2.second;
+                    result.clear();
+                    int inYinsetA = idTri1.first,
+                        inYinsetB = idTri2.first;
                     if (inYinsetA == 1 && inYinsetB == 1)
                     {
-                        resultA[iA].second.push_back({1, iB});
-                        resultA[iB].second.push_back({1, iA});
+                        type = inputA[iA].intersect(inputA[iB], result, tol);
                     }
                     else if (inYinsetA == 1 && inYinsetB == 2)
                     {
-                        resultA[iA].second.push_back({2, iB});
-                        resultB[iB].second.push_back({1, iA});
+                        type = inputA[iA].intersect(inputB[iB], result, tol);
+                    }
+                    else if (inYinsetA == 2 && inYinsetB == 1)
+                    {
+                        type = inputB[iA].intersect(inputA[iB], result, tol);
                     }
                     else if (inYinsetA == 2 && inYinsetB == 2)
                     {
-                        resultB[iA].second.push_back({2, iB});
-                        resultB[iB].second.push_back({2, iA});
+                        type = inputB[iA].intersect(inputB[iB], result, tol);
                     }
                     else
                     {
                         assert(false && "TriangleIntersection::iA,iB.");
                     }
+
+                    if (type == intsType::Never)
+                    {
+                        continue;
+                    }
+                    else if (type == intsType::IntsPoint)
+                    {
+                    }
+                    else if (type == intsType::IntsSeg)
+                    {
+                    }
+                    else if (type == intsType::Overlap)
+                    {
+                        if (inYinsetA == 1 && inYinsetB == 1)
+                        {
+                            resultA[iA].second.push_back({1, iB});
+                            resultA[iB].second.push_back({1, iA});
+                        }
+                        else if (inYinsetA == 1 && inYinsetB == 2)
+                        {
+                            resultA[iA].second.push_back({2, iB});
+                            resultB[iB].second.push_back({1, iA});
+                        }
+                        else if (inYinsetA == 2 && inYinsetB == 1)
+                        {
+                            resultB[iA].second.push_back({1, iB});
+                            resultA[iB].second.push_back({2, iA});
+                        }
+                        else if (inYinsetA == 2 && inYinsetB == 2)
+                        {
+                            resultB[iA].second.push_back({2, iB});
+                            resultB[iB].second.push_back({2, iA});
+                        }
+                        else
+                        {
+                            assert(false && "TriangleIntersection::iA,iB.");
+                        }
+                    }
+
+                    for (auto &&iSeg : result)
+                    {
+                        iSeg.neighborhood().push_back(std::make_pair(inYinsetA, iA));
+                        iSeg.neighborhood().push_back(std::make_pair(inYinsetB, iB));
+
+                        if (inYinsetA == 1 && inYinsetB == 1)
+                        {
+                            resultA[iA].first.push_back(iSeg);
+                            resultA[iB].first.push_back(iSeg);
+                        }
+                        else if (inYinsetA == 1 && inYinsetB == 2)
+                        {
+                            resultA[iA].first.push_back(iSeg);
+                            resultB[iB].first.push_back(iSeg);
+                        }
+                        else if (inYinsetA == 2 && inYinsetB == 1)
+                        {
+                            resultB[iA].first.push_back(iSeg);
+                            resultA[iB].first.push_back(iSeg);
+                        }
+                        else if (inYinsetA == 2 && inYinsetB == 2)
+                        {
+                            resultB[iA].first.push_back(iSeg);
+                            resultB[iB].first.push_back(iSeg);
+                        }
+                        else
+                        {
+                            assert(false && "TriangleIntersection::iA,iB.");
+                        }
+                    }
                 }
 
-                for (auto &&iSeg : result)
-                {
-                    iSeg.neighborhood().push_back(std::make_pair(inYinsetA, iA));
-                    iSeg.neighborhood().push_back(std::make_pair(inYinsetB, iB));
-                    //   iSeg.IntersectionSeg() = 1;
-
-                    if (inYinsetA == 1 && inYinsetB == 1)
-                    {
-                        resultA[iA].first.push_back(iSeg);
-                        resultA[iB].first.push_back(iSeg);
-                    }
-                    else if (inYinsetA == 1 && inYinsetB == 2)
-                    {
-                        resultA[iA].first.push_back(iSeg);
-                        resultB[iB].first.push_back(iSeg);
-                    }
-                    else if (inYinsetA == 2 && inYinsetB == 2)
-                    {
-                        resultB[iA].first.push_back(iSeg);
-                        resultB[iB].first.push_back(iSeg);
-                    }
-                    else
-                    {
-                        assert(false && "TriangleIntersection::iA,iB.");
-                    }
-                }
+                interTris.insert(idTri1);
             }
         }
     }

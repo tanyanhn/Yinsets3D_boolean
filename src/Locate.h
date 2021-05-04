@@ -152,42 +152,48 @@ namespace YSB
     {
         for (auto &&iSP : vecSPA)
         {
-            int k = this->operator()(inputB, vecTriA, iSP, tol);
-            if (ifboundA == 0 && k == -2)
-                k = 1;
-            if (k < 0)
+            if (iSP.removed == false)
             {
-                iSP.removed = true;
-                for (auto &&it : iSP.tris())
+                int k = this->operator()(inputB, vecTriA, iSP, tol);
+                if (ifboundB == 0 && k == -2)
+                    k = 1;
+                if (k < 0)
                 {
-                    RemoveTriangle(vecTriA, vecTriB, vecTriA, it.second, TOL);
+                    iSP.removed = true;
+                    for (auto &&it : iSP.tris())
+                    {
+                        RemoveTriangle(vecTriA, vecTriB, vecTriA, it.second, TOL);
+                    }
                 }
+                else if (k == 1)
+                    ;
+                else if (k == 0)
+                    // assert(false && "Locate SurfacePatch have wrong.")
+                    ;
             }
-            else if (k == 1)
-                ;
-            else if (k == 0)
-                // assert(false && "Locate SurfacePatch have wrong.")
-                ;
         }
 
         for (auto &&iSP : vecSPB)
         {
-            int k = this->operator()(inputA, vecTriB, iSP, tol);
-            if (ifboundB == 0 && k == -2)
-                k = 1;
-            if (k < 0)
+            if (iSP.removed == false)
             {
-                iSP.removed = true;
-                for (auto &&it : iSP.tris())
+                int k = this->operator()(inputA, vecTriB, iSP, tol);
+                if (ifboundA == 0 && k == -2)
+                    k = 1;
+                if (k < 0)
                 {
-                    RemoveTriangle(vecTriA, vecTriB, vecTriB, it.second, TOL);
+                    iSP.removed = true;
+                    for (auto &&it : iSP.tris())
+                    {
+                        RemoveTriangle(vecTriA, vecTriB, vecTriB, it.second, TOL);
+                    }
                 }
+                else if (k == 1)
+                    ;
+                else if (k == 0)
+                    // assert(false && "Locate SurfacePatch have wrong.")
+                    ;
             }
-            else if (k == 1)
-                ;
-            else if (k == 0)
-                // assert(false && "Locate SurfacePatch have wrong.")
-                ;
         }
     }
 }

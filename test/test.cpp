@@ -198,17 +198,43 @@ int main()
     //     }
     // }
 
-    vector<int> v;
-    for (auto i = 0; i < 10; ++i)
-        v.push_back(i);
+    // map<int, int> v;
+    // for (auto i = 0; i < 10; ++i)
+    //     v[i] = i * i;
 
-    int k = 11;
+    // for (auto it = v.begin(); it != v.end(); ++it)
+    // {
+    //     if (it->first == 3)
+    //     {
+    //         v.erase(it);
+    //         v.insert({3, 21});
+    //     }
+    //     if (it->first == 4)
+    //     {
+    //         v.erase(it);
+    //         v.insert({4, 22});
+    //     }
+    // }
 
-    auto &&it = make_pair(k, v[2]);
+    // for (auto &&it : v)
+    // {
+    //     if (it.first == 5)
+    //     {
+    //         v.erase(5);
+    //     }
 
-    it.second = 13;
-    for (auto i = 0; i < 10; ++i)
-        cout << v[i] << "  ";
+    //     cout << it.second << "  ";
+    // }
+
+    // map<int, vector<int>> m;
+    // for (auto i = 0; i < 10; ++i)
+    //     m[i].push_back(i * i);
+
+    // cout << endl
+    //      << m[1].size() << endl;
+
+    cout << ((0) ? (-1) : 1) << endl;
+    cout << ((1) ? (-1) : 1) << endl;
 
     return 0;
 }

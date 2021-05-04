@@ -3,6 +3,7 @@
 
 #include "SurfacePatch.h"
 #include "RemoveOverlap.h"
+#include "FindNearTriangle.h"
 
 namespace YSB
 {
@@ -16,7 +17,7 @@ namespace YSB
             std::vector<Triangle<T, 3>> &vecTriB,
             std::vector<SurfacePatch<T>> &vecSPA,
             std::vector<SurfacePatch<T>> &vecSPB,
-            std::map<std::pair<int, int>, std::vector<std::pair<int, int>>> &ClipFaces,
+            std::map<std::pair<int, int>, std::set<std::pair<int, int>>> &ClipFaces,
             std::map<std::pair<int, int>, std::vector<std::pair<int, int>>> &coClipFaces,
             Real tol = TOL)
         {
@@ -28,22 +29,15 @@ namespace YSB
             std::vector<Triangle<T, 3>> &vecTriB,
             std::vector<SurfacePatch<T>> &vecSPA,
             std::vector<SurfacePatch<T>> &vecSPB,
-            std::map<std::pair<int, int>, std::vector<std::pair<int, int>>> &ClipFaces,
+            std::map<std::pair<int, int>, std::set<std::pair<int, int>>> &ClipFaces,
             std::map<std::pair<int, int>, std::vector<std::pair<int, int>>> &coClipFaces,
             Real tol = TOL)
         {
             SegmentCompare segCmp(tol);
+            FindNearTriangle<T> FNTOp;
             std::vector<Triangle<T, 3>> *vecTriar[2] = {&vecTriA, &vecTriB};
             std::vector<SurfacePatch<T>> *vecSPar[2] = {&vecSPA, &vecSPB};
-            //                                         *newvecSPar[2] = {&newvecSPA, &newvecSPB};
-            // std::vector<Triangle<T, 3>> &vecTri = *(vecTriar[(idYinset - 1)]);
-            // std::vector<SurfacePatch<T>> &vecSP = *(vecSPar[(idYinset - 1)]),
-            //                              &newvecSP = *(newvecSPar[(idYinset - 1)]);
             std::set<std::pair<int, int>> All;
-            // std::map<Segment<T, 3>, std::set<std::pair<int, int>>, SegmentCompare> mapSeg(segCmp);
-            // std::set<typename std::map<Segment<T, 3>,
-            //                            std::set<std::pair<int, int>>, SegmentCompare>::iterator>
-            //     markSeg;
             std::map<std::pair<std::pair<int, int>, std::pair<int, int>>, std::pair<int, int>> comb;
 
             for (auto &&itCF : ClipFaces)
@@ -55,23 +49,23 @@ namespace YSB
             {
                 std::pair<int, int> idVecGCS = *All.begin();
                 All.erase(idVecGCS);
-                const std::vector<std::pair<int, int>> &vecIdVecSP = ClipFaces.at(idVecGCS);
+                const std::set<std::pair<int, int>> &vecIdVecSP = ClipFaces.at(idVecGCS);
 
                 for (auto &&idVecSP : vecIdVecSP)
                 {
                     auto &boundary = (*(vecSPar[idVecSP.first - 1]))[idVecSP.second].bound();
-                    for (auto &&it : boundary)
+                    int idYinSet = idVecSP.first;
+                    for (auto it = boundary.begin(); it != boundary.end(); ++it)
                     {
-                        Segment<T, 3> &seg = it->first;
-                        if (it.second.size() > 1)
+                        Segment<T, 3> seg(it->first);
+                        if (it->second.size() > 1)
                         {
                             std::vector<Triangle<T, 3>> triangles;
                             std::vector<std::pair<int, int>> Neighbor;
-                            for (auto idTri : it.second)
+                            for (auto idTri : it->second)
                             {
                                 triangles.push_back((*(vecTriar[idTri.first - 1]))[idTri.second]);
-                                auto eit = find(seg.neighborhood().begin(), seg.neighborhood().end(),
-                                                (*(vecTriar[idTri.first - 1]))[idTri.second]);
+                                auto eit = std::remove(seg.neighborhood().begin(), seg.neighborhood().end(), idTri);
                                 seg.neighborhood().erase(eit, seg.neighborhood().end());
                             }
 
@@ -80,33 +74,36 @@ namespace YSB
                             int t0 = 0, t1 = 0;
                             while (triangles.size() > 1)
                             {
-                                t1 = FNTOp(triangles[t0], it.first, triangles, tol);
-                                if (t0 == FNTOp(triangles[t1], it.first, triangles, tol))
+                                t1 = FNTOp(triangles[t0], it->first, triangles, tol);
+                                if (t0 == FNTOp(triangles[t1], it->first, triangles, tol))
                                 {
-                                    int ie0 = triangles[t0].edgeVec(it.first),
-                                        ie1 = triangles[t1].edgeVec(it.first);
+                                    int ie0 = triangles[t0].edgeVec(it->first),
+                                        ie1 = triangles[t1].edgeVec(it->first);
                                     Neighbor.clear();
-                                    Neighbor.push_back({idVecSP.first, triangles[t0].id()});
-                                    Neighbor.push_back({idVecSP.first, triangles[t1].id()});
-                                    (*(vecTriar[idVecSP.first - 1]))[triangles[t0].id()].ed(ie0).neighborhood() = Neighbor;
-                                    (*(vecTriar[idVecSP.first - 1]))[triangles[t1].id()].ed(ie1).neighborhood() = Neighbor;
-                                    (*(vecTriar[idVecSP.first - 1]))[triangles[t0].id()].ed(ie0).IntersectionSeg() = 0;
-                                    (*(vecTriar[idVecSP.first - 1]))[triangles[t1].id()].ed(ie1).IntersectionSeg() = 0;
-                                    triangles.erase(std::advance(triangles.begin(), t0));
-                                    triangles.erase(std::advance(triangles.begin(), t1));
+                                    Neighbor.push_back({idYinSet, triangles[t0].id()});
+                                    Neighbor.push_back({idYinSet, triangles[t1].id()});
+                                    (*(vecTriar[idYinSet - 1]))[triangles[t0].id()].ed(ie0).neighborhood() = Neighbor;
+                                    (*(vecTriar[idYinSet - 1]))[triangles[t1].id()].ed(ie1).neighborhood() = Neighbor;
+                                    (*(vecTriar[idYinSet - 1]))[triangles[t0].id()].ed(ie0).IntersectionSeg() = 0;
+                                    (*(vecTriar[idYinSet - 1]))[triangles[t1].id()].ed(ie1).IntersectionSeg() = 0;
+                                    triangles.erase(std::next(triangles.begin(), t0));
+                                    triangles.erase(std::next(triangles.begin(), t1));
                                 }
                                 else
                                     t0 = t1;
                             }
 
                             // deal the last is not pasted triangle.neighbor and boundary or erase the boundary.
-                            it.second.clear();
+                            it->second.clear();
                             if (triangles.size() == 1)
                             {
-                                it.second.push_back({idVecSP.first, triangles[0].id()});
-                                seg.neighborhood().push_back({idVecSP.first, triangles[0].id()});
-                                int ie = triangles[0].edgeVec(it.first);
-                                (*(vecTriar[idVecSP.first - 1]))[triangles[0].id()].ed(ie) = seg;
+                                it->second.push_back({idYinSet, triangles[0].id()});
+                                seg.neighborhood().push_back({idYinSet, triangles[0].id()});
+                                // int ie = triangles[0].edgeVec(it->first, tol);
+                                // (*(vecTriar[idVecSP.first - 1]))[triangles[0].id()].ed(ie) = seg;
+                                // auto se = it->second;
+                                // (*(vecSPar[idVecSP.first - 1]))[idVecSP.second].bound().erase(it);
+                                // (*(vecSPar[idVecSP.first - 1]))[idVecSP.second].bound().insert({seg, se});
                             }
 
                             // Get the boundary also contained by which SP and GCS.
@@ -130,8 +127,10 @@ namespace YSB
                                 auto it = (*(vecSPar[itSP.first - 1]))[itSP.second].bound().find(seg);
                                 assert(it != (*(vecSPar[itSP.first - 1]))[itSP.second].bound().end());
                                 auto se = it->second;
+                                auto newseg = it->first;
+                                newseg.neighborhood() = idOtherTris;
                                 (*(vecSPar[itSP.first - 1]))[itSP.second].bound().erase(it);
-                                (*(vecSPar[itSP.first - 1]))[itSP.second].bound().insert({seg, se});
+                                (*(vecSPar[itSP.first - 1]))[itSP.second].bound().insert({newseg, se});
                             }
 
                             // while only one GCS contain the seg. erase the intersection
@@ -140,51 +139,64 @@ namespace YSB
                             {
                                 All.insert(*(idOtherGCSs.begin()));
 
-                                it.first = seg;
-                                it.second = seg.neighborhood();
                                 std::vector<Triangle<T, 3>> triangles;
                                 std::vector<std::pair<int, int>> Neighbor;
-                                for (auto idTri : it.second)
+                                for (auto idTri : idOtherTris)
                                 {
                                     triangles.push_back((*(vecTriar[idTri.first - 1]))[idTri.second]);
                                 }
+                                int idOtherYinSet = idOtherGCSs.begin()->first;
 
                                 // Past by good pair.
                                 int t0 = 0, t1 = 0;
                                 while (triangles.size() > 1)
                                 {
-                                    t1 = FNTOp(triangles[t0], it.first, triangles, tol);
-                                    if (t0 == FNTOp(triangles[t1], it.first, triangles, tol))
+                                    t1 = FNTOp(triangles[t0], it->first, triangles, tol);
+                                    if (t0 == FNTOp(triangles[t1], it->first, triangles, tol))
                                     {
-                                        int ie0 = triangles[t0].edgeVec(it.first),
-                                            ie1 = triangles[t1].edgeVec(it.first);
+                                        int ie0 = triangles[t0].edgeVec(it->first),
+                                            ie1 = triangles[t1].edgeVec(it->first);
                                         Neighbor.clear();
-                                        Neighbor.push_back({idVecSP.first, triangles[t0].id()});
-                                        Neighbor.push_back({idVecSP.first, triangles[t1].id()});
-                                        (*(vecTriar[idVecSP.first - 1]))[triangles[t0].id()].ed(ie0).neighborhood() = Neighbor;
-                                        (*(vecTriar[idVecSP.first - 1]))[triangles[t1].id()].ed(ie1).neighborhood() = Neighbor;
-                                        (*(vecTriar[idVecSP.first - 1]))[triangles[t0].id()].ed(ie0).IntersectionSeg() = 0;
-                                        (*(vecTriar[idVecSP.first - 1]))[triangles[t1].id()].ed(ie1).IntersectionSeg() = 0;
+                                        Neighbor.push_back({idOtherYinSet, triangles[t0].id()});
+                                        Neighbor.push_back({idOtherYinSet, triangles[t1].id()});
+                                        (*(vecTriar[idOtherYinSet - 1]))[triangles[t0].id()].ed(ie0).neighborhood() = Neighbor;
+                                        (*(vecTriar[idOtherYinSet - 1]))[triangles[t1].id()].ed(ie1).neighborhood() = Neighbor;
+                                        (*(vecTriar[idOtherYinSet - 1]))[triangles[t0].id()].ed(ie0).IntersectionSeg() = 0;
+                                        (*(vecTriar[idOtherYinSet - 1]))[triangles[t1].id()].ed(ie1).IntersectionSeg() = 0;
                                         // Past SP in the GCS get new SP cross seg by good pair.
                                         auto idSP = std::make_pair(triangles[t0].inF(), triangles[t1].inF());
-                                        auto itcomp = comb.find(idSP);
-                                        if (itcomp == comb.end())
+                                        if (idSP.first == idSP.second)
                                         {
-                                            comb.insert({idSP, make_pair(idSP.first.first, vecSPar[idSP.first.first]->size())});
-                                            vecSPar[idSP.first.first].emplace_back(
-                                                (*(vecSPar[idSP.first.first - 1]))[idSP.first.second],
-                                                (*(vecSPar[idSP.second.first - 1]))[idSP.second.second]);
-                                            (*(vecSPar[idSP.first.first - 1]))[idSP.first.second].IfRemoved() = true;
-                                            (*(vecSPar[idSP.second.first - 1]))[idSP.second.second].IfRemoved() = true;
+                                            comb.insert({idSP, idSP.first});
+                                        }
+                                        else
+                                        {
+                                            auto itcomp = comb.find(idSP);
+                                            if (itcomp == comb.end())
+                                            {
+                                                auto iface = std::make_pair(idSP.first.first, vecSPar[idSP.first.first - 1]->size());
+                                                comb.insert({idSP, iface});
+                                                vecSPar[idSP.first.first - 1]->emplace_back(
+                                                    (*(vecSPar[idSP.first.first - 1]))[idSP.first.second],
+                                                    (*(vecSPar[idSP.second.first - 1]))[idSP.second.second]);
 
-                                            coClipFaces[comb[idSP]].push_back(*(idOtherGCSs.begin()));
-                                            auto eit = find(ClipFaces[*(idOtherGCSs.begin())].begin(),
-                                                            ClipFaces[*(idOtherGCSs.begin())].end(), idSP.first);
-                                            ClipFaces[*(idOtherGCSs.begin())].erase(eit, ClipFaces[*(idOtherGCSs.begin())].end());
-                                            eit = find(ClipFaces[*(idOtherGCSs.begin())].begin(),
-                                                       ClipFaces[*(idOtherGCSs.begin())].end(), idSP.second);
-                                            ClipFaces[*(idOtherGCSs.begin())].erase(eit, ClipFaces[*(idOtherGCSs.begin())].end());
-                                            ClipFaces[*(idOtherGCSs.begin())].push_back(comb[idSP]);
+                                                for (auto &&itTri : (*(vecSPar[idSP.first.first - 1]))[idSP.first.second].tris())
+                                                    (*(vecTriar[itTri.first - 1]))[itTri.second].inF() = iface;
+                                                for (auto &&itTri : (*(vecSPar[idSP.second.first - 1]))[idSP.second.second].tris())
+                                                    (*(vecTriar[itTri.first - 1]))[itTri.second].inF() = iface;
+
+                                                (*(vecSPar[idSP.first.first - 1]))[idSP.first.second].IfRemoved() = true;
+                                                (*(vecSPar[idSP.second.first - 1]))[idSP.second.second].IfRemoved() = true;
+
+                                                coClipFaces[comb[idSP]].push_back(*(idOtherGCSs.begin()));
+                                                auto eit = find(ClipFaces[*(idOtherGCSs.begin())].begin(),
+                                                                ClipFaces[*(idOtherGCSs.begin())].end(), idSP.first);
+                                                ClipFaces[*(idOtherGCSs.begin())].erase(eit, ClipFaces[*(idOtherGCSs.begin())].end());
+                                                eit = find(ClipFaces[*(idOtherGCSs.begin())].begin(),
+                                                           ClipFaces[*(idOtherGCSs.begin())].end(), idSP.second);
+                                                ClipFaces[*(idOtherGCSs.begin())].erase(eit, ClipFaces[*(idOtherGCSs.begin())].end());
+                                                ClipFaces[*(idOtherGCSs.begin())].insert(comb[idSP]);
+                                            }
                                         }
 
                                         // if ((*(vecSPar[idSP.first.first - 1]))[comb[idSP]].bound()[seg].size() == 2)
@@ -196,7 +208,7 @@ namespace YSB
                                         //     Segment<T, 3> newseg(seg);
 
                                         // erase seg from new SP.boundary.
-                                        (*(vecSPar[idSP.first.first - 1]))[comb[idSP]].bound().erase(seg);
+                                        (*(vecSPar[idSP.first.first - 1]))[comb[idSP].second].bound().erase(seg);
 
                                         //     for (auto pai = remainder.begin(); pai != remainder.end(); ++pai)
                                         //     {
@@ -213,8 +225,8 @@ namespace YSB
                                         //     }
                                         // }
 
-                                        triangles.erase(std::advance(triangles.begin(), t0));
-                                        triangles.erase(std::advance(triangles.begin(), t1));
+                                        triangles.erase(std::next(triangles.begin(), t0));
+                                        triangles.erase(std::next(triangles.begin(), t1));
                                     }
                                     else
                                         t0 = t1;
@@ -223,8 +235,9 @@ namespace YSB
                         }
                     }
 
-                    for (auto it = boundary.begin(); it != boundary.end(); ++it)
+                    for (auto it = boundary.begin(), next = it; it != boundary.end(); it = next)
                     {
+                        next = std::next(it);
                         if ((it->second).size() == 0)
                             boundary.erase(it);
                     }

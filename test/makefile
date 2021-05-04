@@ -1,13 +1,15 @@
 
-# CPPFLAGS = -g -std=c++17 
-CPPFLAGS = -g -std=c++17 -lboost_timer -D_unix 
+CPPFLAGS = -g -std=c++17 
+# CPPFLAGS = -g -std=c++17 -lboost_timer -D_unix 
 # CPPFLAGS = -std=c++17
+
+TESTFLAGS =
 
 .PHONY: clean clear test run all doxygen
 
 all : plane triangle findneartriangle triintersect prepaste \
 	 paste removeoverlap GCS triangulation Yinset \
-	 locate
+	 locate SplitGCS
 
 locatetest.exe : catchmain.o locatetest.cpp 
 	g++ -o $@ catchmain.o locatetest.cpp $(CPPFLAGS)
@@ -45,8 +47,13 @@ Yinsettest.exe : catchmain.o Yinsettest.cpp
 test1.exe : catchmain.o test1.cpp
 	g++ -o $@ catchmain.o test1.cpp $(CPPFLAGS)
 
+SplitGCS.exe : catchmain.o reFacBoundarytest.cpp
+	g++ -o $@ catchmain.o reFacBoundarytest.cpp $(CPPFLAGS)
+
 catchmain.o : catchmain.cpp
 
+SplitGCS : SplitGCS.exe
+	./SplitGCS.exe $(TESTFLAGS)
 
 plane : platest.exe
 	./platest.exe

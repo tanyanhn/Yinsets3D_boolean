@@ -14,7 +14,7 @@ namespace YSB
     struct PrePast
     {
         std::vector<SurfacePatch<T>> vecSPA, vecSPB;
-        std::map<std::pair<int, int>, std::vector<std::pair<int, int>>> ClipFaces;
+        std::map<std::pair<int, int>, std::set<std::pair<int, int>>> ClipFaces;
         std::map<std::pair<int, int>, std::vector<std::pair<int, int>>> coClipFaces;
         //std::vector<GluingCompactSurface<T>> vecGCS;
 
@@ -60,19 +60,19 @@ namespace YSB
                     All.insert(i);
                 }
             }
-            if(!All.empty())
+            if (!All.empty())
             {
                 F.push_back((*All.begin()));
                 All.erase(All.begin());
             }
-            
+
             while (!All.empty() || !F.empty())
             {
                 Triangle<T, 3> &tri = vecTri[F.back()];
                 vecF.emplace_back(idYinset, F.back());
                 markF[tri.id()] = 0;
                 F.pop_back();
-                ClipFaces[tri.inF()].push_back({idYinset, vecSP.size()});
+                ClipFaces[tri.inF()].insert({idYinset, vecSP.size()});
                 coClipFaces[{idYinset, vecSP.size()}].push_back(tri.inF());
                 tri.inF() = std::make_pair(idYinset, vecSP.size());
 
@@ -82,7 +82,7 @@ namespace YSB
                     if (e.IntersectionSeg() == 0)
                     {
                         std::pair<int, int> nearTri;
-                        
+
                         assert(e.neighborhood().size() == 2 && "Not a closed surface");
                         nearTri = (e.neighborhood()[0].second != tri.id()) ? e.neighborhood()[0] : e.neighborhood()[1];
                         //     nearTri = FNToperator(tri, e, vecTri, std::vector<Triangle<T, 3>>(), tol);
