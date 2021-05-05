@@ -13,13 +13,15 @@ namespace YSB
     template <class T>
     class YinSet;
 
-    YinSet<Real> objInput(const std::string &s)
+    YinSet<Real> objInput(const std::string &s, Real tol = TOL)
     {
         std::ifstream infile(s);
+        PointCompare pCmp(tol);
         if (infile.is_open())
         {
             std::vector<Triangle<Real, 3>> vectri;
             std::vector<Point<Real, 3>> vecp;
+            std::vector<GluingCompactSurface<Real>> vecgcs;
             std::string ss, s1, s2, s3, s4;
             while (!infile.eof())
             {
@@ -77,14 +79,32 @@ namespace YSB
                         b--;
                         c--;
                         Point<Real, 3> tp[3] = {vecp[a], vecp[b], vecp[c]};
+                        // if (pCmp.compare(tp[0], tp[1]) != 0 &&
+                        //     pCmp.compare(tp[1], tp[2]) != 0 &&
+                        //     pCmp.compare(tp[2], tp[0]) != 0)
+                        // {
                         Triangle<Real, 3> tri(tp);
                         vectri.push_back(tri);
+                        // }
+                    }
+
+                    if (ss[0] == 'o')
+                    {
+                        if (!vectri.empty())
+                        {
+                            vecgcs.emplace_back(vectri);
+                            vectri.clear();
+                        }
                     }
                 }
+                if (!vectri.empty())
+                {
+                    vecgcs.emplace_back(vectri);
+                    vectri.clear();
+                }
+
+                YinSet<Real> y(vecgcs, 0);
                 infile.close();
-                GluingCompactSurface<Real> gcs(vectri);
-                std::vector<GluingCompactSurface<Real>> vecgcs = {gcs};
-                YinSet<Real> y(vecgcs);
                 return y;
             }
         }

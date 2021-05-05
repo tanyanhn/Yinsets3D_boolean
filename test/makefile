@@ -9,7 +9,11 @@ TESTFLAGS =
 
 all : plane triangle findneartriangle triintersect prepaste \
 	 paste removeoverlap GCS triangulation Yinset \
-	 locate SplitGCS
+	 locate SplitGCS YSmeet
+	 
+	 
+YSmeet.exe : catchmain.o YSmeet.cpp 
+	g++ -o $@ catchmain.o YSmeet.cpp $(CPPFLAGS)
 
 locatetest.exe : catchmain.o locatetest.cpp 
 	g++ -o $@ catchmain.o locatetest.cpp $(CPPFLAGS)
@@ -51,6 +55,9 @@ SplitGCS.exe : catchmain.o reFacBoundarytest.cpp
 	g++ -o $@ catchmain.o reFacBoundarytest.cpp $(CPPFLAGS)
 
 catchmain.o : catchmain.cpp
+
+YSmeet : YSmeet.exe
+	./YSmeet.exe $(TESTFLAGS)
 
 SplitGCS : SplitGCS.exe
 	./SplitGCS.exe $(TESTFLAGS)
