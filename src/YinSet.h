@@ -46,7 +46,7 @@ namespace YSB
             buildHasse(tol);
         }
         // import data from obj file.
-        explicit YinSet(const std::string &s);
+        explicit YinSet(const std::string &s, int Clip = 0, Real tol = TOL);
 
         // Boolean operator.
         // usingRFB determine whether Clip connect boundary to GluingCompactSurfaces.
@@ -90,14 +90,21 @@ namespace YSB
         {
             exportdata_inner(s, *this, folder);
         }
+
+        void ClipGCS(Real tol = TOL, const int usingRFB = 1);
     };
 
-    YinSet<Real> objInput(const std::string &s);
+    YinSet<Real> objInput(const std::string &s, Real tol);
     void exportdata_inner(std::string s, YinSet<Real> &y, std::string folder);
 
     template <>
-    inline YinSet<Real>::YinSet(const std::string &s)
-        : YinSet<Real>(objInput(s)) {}
+    inline YinSet<Real>::YinSet(const std::string &s, int Clip, Real tol)
+        : YinSet<Real>(objInput(s, tol))
+    {
+        if (Clip == 1)
+            ClipGCS(tol);
+        buildHasse(tol);
+    }
 
     /// Return a tabular version of the Hasse diagram.
     template <class T>
@@ -184,6 +191,102 @@ namespace YSB
                 abort();
             }
             i++;
+        }
+    }
+
+    template <class T>
+    inline void YinSet<T>::ClipGCS(Real tol, const int usingRFB)
+    {
+        TriangleIntersection<T> intersectOp;
+        std::vector<Triangle<T, 3>> inputA, inputB;
+
+        {
+#ifdef _UsBoost
+            boost::timer::auto_cpu_timer t;
+            std::cout << std::endl
+                      << "ClipGCS::collapse cpu time : ";
+#endif // _UsBoost
+
+            collapse(inputA, 1, tol);
+        }
+
+        {
+#ifdef _UsBoost
+            boost::timer::auto_cpu_timer t;
+            std::cout << std::endl
+                      << "ClipGCS::TriangleIntersection cpu time : ";
+#endif // _UsBoost
+
+            intersectOp(inputA, inputB, tol);
+        }
+
+        // Triangulation
+        Triangulation<T> triangulateOp;
+        {
+#ifdef _UsBoost
+            boost::timer::auto_cpu_timer t;
+            std::cout << std::endl
+                      << "ClipGCS::Triangulation cpu time : ";
+#endif // _UsBoost
+
+            triangulateOp(inputA, inputB,
+                          intersectOp.resultA, intersectOp.resultB, tol);
+        }
+
+        // PrePast
+        PrePast<T> prePastOp;
+        {
+#ifdef _UsBoost
+            boost::timer::auto_cpu_timer t;
+            std::cout << std::endl
+                      << "ClipGCS::prePast cpu time : ";
+#endif // _UsBoost
+
+            prePastOp(triangulateOp.vecTriA, tol);
+        }
+
+        if (usingRFB == 1)
+        {
+            ReFactoryBoundary<T> reFactoryBoundaryOp;
+            {
+#ifdef _UsBoost
+                boost::timer::auto_cpu_timer t;
+                std::cout << std::endl
+                          << "ClipGCS::reFactoryBoundary cpu time : ";
+#endif // _UsBoost
+                reFactoryBoundaryOp(triangulateOp.vecTriA, triangulateOp.vecTriB,
+                                    prePastOp.vecSPA, prePastOp.vecSPB,
+                                    prePastOp.ClipFaces, prePastOp.coClipFaces, tol);
+            }
+        }
+
+        // Locate SurfacePatch.
+
+        // Past SurfacePatch to GluingCompactSurface.
+        Past<T> pastOp;
+        std::vector<SurfacePatch<T>> vecF;
+        {
+#ifdef _UsBoost
+            boost::timer::auto_cpu_timer t;
+            std::cout << std::endl
+                      << "ClipGCS::Past cpu time : ";
+#endif // _UsBoost
+
+            pastOp.combine(prePastOp.vecSPA, prePastOp.vecSPB,
+                           triangulateOp.vecTriA, triangulateOp.vecTriB,
+                           vecF);
+            pastOp(vecF, triangulateOp.vecTriA, triangulateOp.vecTriB, tol);
+        }
+
+        // Yinset Constructor
+        {
+#ifdef _UsBoost
+            boost::timer::auto_cpu_timer t;
+            std::cout << std::endl
+                      << "ClipGCS::YinSet() cpu time : ";
+#endif // _UsBoost
+
+            vecFace = pastOp.vecGCS;
         }
     }
 

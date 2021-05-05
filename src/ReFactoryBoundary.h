@@ -53,10 +53,14 @@ namespace YSB
 
                 for (auto &&idVecSP : vecIdVecSP)
                 {
-                    auto &boundary = (*(vecSPar[idVecSP.first - 1]))[idVecSP.second].bound();
+                    // auto &&boundary = (*(vecSPar[idVecSP.first - 1]))[idVecSP.second].bound();
                     int idYinSet = idVecSP.first;
-                    for (auto it = boundary.begin(); it != boundary.end(); ++it)
+                    int bsize = (*(vecSPar[idVecSP.first - 1]))[idVecSP.second].bound().size();
+                    for (int i = 0; i < bsize; ++i)
                     {
+                        auto it = std::next(
+                            (*(vecSPar[idVecSP.first - 1]))[idVecSP.second].bound().begin(),
+                            i);
                         Segment<T, 3> seg(it->first);
                         if (it->second.size() > 1)
                         {
@@ -74,8 +78,8 @@ namespace YSB
                             int t0 = 0, t1 = 0;
                             while (triangles.size() > 1)
                             {
-                                t1 = FNTOp(triangles[t0], it->first, triangles, tol);
-                                if (t0 == FNTOp(triangles[t1], it->first, triangles, tol))
+                                t1 = FNTOp(triangles[t0], seg, triangles, tol);
+                                if (t0 == FNTOp(triangles[t1], seg, triangles, tol))
                                 {
                                     int ie0 = triangles[t0].edgeVec(it->first),
                                         ie1 = triangles[t1].edgeVec(it->first);
@@ -151,11 +155,11 @@ namespace YSB
                                 int t0 = 0, t1 = 0;
                                 while (triangles.size() > 1)
                                 {
-                                    t1 = FNTOp(triangles[t0], it->first, triangles, tol);
-                                    if (t0 == FNTOp(triangles[t1], it->first, triangles, tol))
+                                    t1 = FNTOp(triangles[t0], seg, triangles, tol);
+                                    if (t0 == FNTOp(triangles[t1], seg, triangles, tol))
                                     {
-                                        int ie0 = triangles[t0].edgeVec(it->first),
-                                            ie1 = triangles[t1].edgeVec(it->first);
+                                        int ie0 = triangles[t0].edgeVec(seg),
+                                            ie1 = triangles[t1].edgeVec(seg);
                                         Neighbor.clear();
                                         Neighbor.push_back({idOtherYinSet, triangles[t0].id()});
                                         Neighbor.push_back({idOtherYinSet, triangles[t1].id()});
@@ -176,9 +180,10 @@ namespace YSB
                                             {
                                                 auto iface = std::make_pair(idSP.first.first, vecSPar[idSP.first.first - 1]->size());
                                                 comb.insert({idSP, iface});
-                                                vecSPar[idSP.first.first - 1]->emplace_back(
+                                                SurfacePatch<T> newSP(
                                                     (*(vecSPar[idSP.first.first - 1]))[idSP.first.second],
                                                     (*(vecSPar[idSP.second.first - 1]))[idSP.second.second]);
+                                                (*vecSPar[idSP.first.first - 1]).push_back(newSP);
 
                                                 for (auto &&itTri : (*(vecSPar[idSP.first.first - 1]))[idSP.first.second].tris())
                                                     (*(vecTriar[itTri.first - 1]))[itTri.second].inF() = iface;
@@ -235,11 +240,14 @@ namespace YSB
                         }
                     }
 
-                    for (auto it = boundary.begin(), next = it; it != boundary.end(); it = next)
+                    for (
+                        auto it = (*(vecSPar[idVecSP.first - 1]))[idVecSP.second].bound().begin(), next = it;
+                        it != (*(vecSPar[idVecSP.first - 1]))[idVecSP.second].bound().end();
+                        it = next)
                     {
                         next = std::next(it);
                         if ((it->second).size() == 0)
-                            boundary.erase(it);
+                            (*(vecSPar[idVecSP.first - 1]))[idVecSP.second].bound().erase(it);
                     }
                 }
             }

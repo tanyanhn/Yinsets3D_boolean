@@ -22,14 +22,16 @@ namespace YSB
             printf("create path failed! error code : %d %s \n", isCreate, path);
 
         auto &&vecgcs = y.gcss();
+        int presize = 0;
+        std::ofstream outfile(folder + "/" + s + ".obj");
         for (int i = 0; i < vecgcs.size(); i++)
         {
-            std::ofstream outfile(folder + "/" + s + std::to_string(i) + ".obj");
+            outfile << "o  vecgcs." << std::to_string(i) << "\n";
+            std::vector<Triangle<Real, 3>> vectri;
+            std::set<Point<Real, 3>, PointCompare> setp;
             if (outfile.is_open())
             {
-                std::vector<Triangle<Real, 3>> vectri;
                 vecgcs[i].collapse(vectri, 1, 1);
-                std::set<Point<Real, 3>, PointCompare> setp;
                 for (int i = 0; i < vectri.size(); i++)
                 {
                     setp.insert(vectri[i].vert(0));
@@ -46,16 +48,18 @@ namespace YSB
                     int index[3];
                     auto itp0 = setp.find(vectri[i].vert(0));
                     assert(itp0 != setp.end() && "point find error");
-                    index[0] = distance(setp.begin(), itp0);
+                    index[0] = distance(setp.begin(), itp0) + presize;
                     auto itp1 = setp.find(vectri[i].vert(1));
                     assert(itp1 != setp.end() && "point find error");
-                    index[1] = distance(setp.begin(), itp1);
+                    index[1] = distance(setp.begin(), itp1) + presize;
                     auto itp2 = setp.find(vectri[i].vert(2));
                     assert(itp2 != setp.end() && "point find error");
-                    index[2] = distance(setp.begin(), itp2);
+                    index[2] = distance(setp.begin(), itp2) + presize;
                     outfile << "f"
                             << " " << ++index[0] << " " << ++index[1] << " " << ++index[2] << std::endl;
                 }
+
+                presize += setp.size();
             }
         }
     }
