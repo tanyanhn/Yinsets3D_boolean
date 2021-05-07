@@ -12,7 +12,7 @@
 namespace YSB
 {
 
-    void exportdata_inner(std::string s, YinSet<Real> &y, std::string folder)
+    void exportdata_inner(std::string s, YinSet<Real> &y, std::string folder, int prec)
     {
         const char *path = folder.c_str();
         int isCreate = mkdir(path, S_IRUSR | S_IWUSR | S_IXUSR | S_IRWXG | S_IRWXO);
@@ -24,6 +24,8 @@ namespace YSB
         auto &&vecgcs = y.gcss();
         int presize = 0;
         std::ofstream outfile(folder + "/" + s + ".obj");
+        outfile.setf(std::ios::fixed, std::ios::floatfield);
+        outfile.precision(prec);
         for (int i = 0; i < vecgcs.size(); i++)
         {
             outfile << "o  vecgcs." << std::to_string(i) << "\n";

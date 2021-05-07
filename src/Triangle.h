@@ -189,6 +189,25 @@ namespace YSB
             }
             return id;
         }
+        template <class T1>
+        std::pair<int, int> minmax(T1 cmp) const
+        {
+            int min, max;
+            if (cmp.compare(vertex[0], vertex[1]) == 1)
+            {
+                min = 0;
+                max = 1;
+            }
+            else
+            {
+                min = 1;
+                max = 0;
+            }
+            min = (cmp.compare(vertex[min], vertex[2]) == 1) ? min : 2;
+            max = (cmp.compare(vertex[max], vertex[2]) == -1) ? max : 2;
+
+            return {min, max};
+        }
 
         Real perimeter() const
         {
@@ -215,17 +234,49 @@ namespace YSB
             return pla->majorDim(k);
         }
 
+        template <class T1, int D>
+        struct projectimpl
+        {
+            Triangle<T, D - 1> operator()(const Triangle<T1, D> &tri, int d)
+            {
+                if (d == -1)
+                {
+                    d = tri.majorDim();
+                }
+                Point<T, Dim - 1> v[3];
+                v[0] = tri.vert(0).project(d);
+                v[1] = tri.vert(1).project(d);
+                v[2] = tri.vert(2).project(d);
+                return Triangle<T, Dim - 1>(v);
+            }
+        };
+
+        template <class T1>
+        struct projectimpl<T1, 2>
+        {
+            Triangle<T, 1> operator()(const Triangle<T1, 2> &tri, int d)
+            {
+                Point<T, 1> v[3];
+                v[0] = tri.vert(0).project(d);
+                v[1] = tri.vert(1).project(d);
+                v[2] = tri.vert(2).project(d);
+                return Triangle<T, 1>(v);
+            }
+        };
+
         Triangle<T, Dim - 1> project(int d = -1) const
         {
-            if (d == -1)
-            {
-                d = majorDim();
-            }
-            Point<T, Dim - 1> v[3];
-            v[0] = vertex[0].project(d);
-            v[1] = vertex[1].project(d);
-            v[2] = vertex[2].project(d);
-            return Triangle<T, Dim - 1>(v);
+            // if (d == -1)
+            // {
+            //     d = majorDim();
+            // }
+            // Point<T, Dim - 1> v[3];
+            // v[0] = vertex[0].project(d);
+            // v[1] = vertex[1].project(d);
+            // v[2] = vertex[2].project(d);
+            // return Triangle<T, Dim - 1>(v);
+            projectimpl<T, Dim> impl;
+            return impl(*this, d);
         }
 
         // Calculating barycentric coordinates

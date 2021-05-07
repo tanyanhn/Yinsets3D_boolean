@@ -9,9 +9,10 @@ namespace YSB
     {
     protected:
         Real tol;
+        int orientation = 0;
 
     public:
-        explicit TriangleCompare(Real t = TOL);
+        explicit TriangleCompare(Real t = TOL, int ori = 0);
         ~TriangleCompare() = default;
 
         // Used for Point compare.
@@ -29,8 +30,8 @@ namespace YSB
             Point<T2, Dim> r[3];
             for (int i = 0; i < 3; ++i)
             {
-                l[i] = lhs.vertex[i];
-                r[i] = rhs.vertex[i];
+                l[i] = lhs.vert(i);
+                r[i] = rhs.vert(i);
             }
 
             if (cmp(l[0], l[1]))
@@ -56,13 +57,29 @@ namespace YSB
                     rs = cmp.compare(l[0], r[0]);
                 }
             }
+
+            if (orientation == 1 && rs == 0)
+            {
+                int d = 0;
+                for (int i = 0; i < 3; ++i)
+                {
+                    if (cmp.compare(lhs.vert(0), rhs.vert(i)) == 0)
+                        d = i;
+                }
+                d += 1;
+                if (d == 3)
+                    d = 0;
+
+                rs = cmp.compare(lhs.vert(1), rhs.vert(d));
+            }
             return rs;
         }
     };
 
-    inline TriangleCompare::TriangleCompare(Real t)
+    inline TriangleCompare::TriangleCompare(Real t, int ori)
     {
         tol = t;
+        orientation = ori;
     }
 } // namespace YSB
 

@@ -17,6 +17,9 @@
 #ifdef _UsBoost
 #include <boost/timer/timer.hpp>
 #endif // _UsBoost
+#ifdef _bottleneck_
+#include <boost/timer/timer.hpp>
+#endif // _bottleneck_
 
 namespace YSB
 {
@@ -43,7 +46,8 @@ namespace YSB
             : vecFace(vf)
         {
             // ensureFace(tol);
-            buildHasse(tol);
+            if (vecFace.size() > 0)
+                buildHasse(tol);
         }
         // import data from obj file.
         explicit YinSet(const std::string &s, int Clip = 0, Real tol = TOL);
@@ -86,9 +90,9 @@ namespace YSB
         // calculate HasseMap between GluingCompactSurface.
         void buildHasse(Real tol);
 
-        void objOutput(std::string s, std::string folder = "./")
+        void objOutput(std::string s, std::string folder = "./", int prec = 5)
         {
-            exportdata_inner(s, *this, folder);
+            exportdata_inner(s, *this, folder, 5);
         }
 
         void ClipGCS(Real tol = TOL, const int usingRFB = 1);
@@ -101,9 +105,13 @@ namespace YSB
     inline YinSet<Real>::YinSet(const std::string &s, int Clip, Real tol)
         : YinSet<Real>(objInput(s, tol))
     {
-        if (Clip == 1)
-            ClipGCS(tol);
-        buildHasse(tol);
+        if (vecFace.size() > 0)
+        {
+            ensureFace(tol);
+            if (Clip == 1)
+                ClipGCS(tol);
+            buildHasse(tol);
+        }
     }
 
     /// Return a tabular version of the Hasse diagram.
@@ -162,36 +170,72 @@ namespace YSB
         TriangleIntersection<T> intersectOp;
         std::vector<Triangle<T, 3>> inputA, inputB;
         collapse(inputA, 1, tol);
-        intersectOp(inputA, inputB, tol);
-        SegmentCompare cmp(tol);
-        int i = 0;
-        for (auto &&tri : intersectOp.resultA)
-        {
-            int ie[] = {1, 1, 1};
-            // for (auto &&seg : tri.second.first)
-            for (auto &&seg : tri.first)
-            {
-                for (auto i = 0; i < 3; ++i)
-                {
-                    if (cmp.compare(seg, inputA[i].ed(i)) == 0)
-                    {
-                        ie[i] = 0;
-                    }
-                }
-                if (seg.neighborhood().size() < 2)
-                {
-                    std::cout << "Contain face not close.";
-                    abort();
-                }
-            }
+        int size = inputA.size();
+        // intersectOp(inputA, inputB, tol);
+        SegmentCompare segCmp(tol);
+        TriangleCompare triCmp(tol, 1);
+        std::map<Segment<T, 3>,
+                 std::set<int>,
+                 SegmentCompare>
+            allSegI(segCmp);
+        std::map<Segment<T, 3>,
+                 std::set<Triangle<T, 3>, TriangleCompare>,
+                 SegmentCompare>
+            allSegT(segCmp);
 
-            if (ie[0] || ie[1] || ie[2])
+        for (auto i = 0; i < size; ++i)
+        {
+            auto tri = inputA[i];
+            for (int ie = 0; ie < 3; ++ie)
             {
-                std::cout << "Contain face not close.";
-                abort();
+                auto itI = allSegI.insert({tri.ed(ie), std::set<int>()});
+                itI.first->second.insert(i);
+
+                auto itT = allSegT.insert({tri.ed(ie),
+                                           std::set<Triangle<T, 3>, TriangleCompare>(triCmp)});
+                itT.first->second.insert(tri);
             }
-            i++;
         }
+
+        for (auto &&itI : allSegI)
+        {
+            auto itT = allSegT.find(itI.first);
+            assert(itT != allSegT.end() && "itl not in allSegT.");
+            assert(itI.second.size() == itT->second.size() && "itI, itT second size not equal.");
+            assert(itT->second.size() >= 2 && "edge not contained in more than one Triangle.");
+            assert(itI.second.size() >= 2 && "edge not contained in more than one Triangle.");
+        }
+
+        // assert(false && "ensureFace pass.");
+
+        // int i = 0;
+        // for (auto &&tri : intersectOp.resultA)
+        // {
+        //     int ie[] = {1, 1, 1};
+        //     // for (auto &&seg : tri.second.first)
+        //     for (auto &&seg : tri.first)
+        //     {
+        //         for (auto i = 0; i < 3; ++i)
+        //         {
+        //             if (cmp.compare(seg, inputA[i].ed(i)) == 0)
+        //             {
+        //                 ie[i] = 0;
+        //             }
+        //         }
+        //         if (seg.neighborhood().size() < 2)
+        //         {
+        //             std::cout << "Contain face not close.";
+        //             abort();
+        //         }
+        //     }
+
+        //     if (ie[0] || ie[1] || ie[2])
+        //     {
+        //         std::cout << "Contain face not close.";
+        //         abort();
+        //     }
+        //     i++;
+        // }
     }
 
     template <class T>
@@ -216,6 +260,12 @@ namespace YSB
             std::cout << std::endl
                       << "ClipGCS::TriangleIntersection cpu time : ";
 #endif // _UsBoost
+
+#ifdef _bottleneck_
+            boost::timer::auto_cpu_timer t;
+            std::cout << std::endl
+                      << "ClipGCS::TriangleIntersection cpu time : ";
+#endif //  _bottleneck_
 
             intersectOp(inputA, inputB, tol);
         }
@@ -313,6 +363,12 @@ namespace YSB
             std::cout << std::endl
                       << "complement::TriangleIntersection cpu time : ";
 #endif // _UsBoost
+
+#ifdef _bottleneck_
+            boost::timer::auto_cpu_timer t;
+            std::cout << std::endl
+                      << "complement::TriangleIntersection cpu time : ";
+#endif //  _bottleneck_
 
             intersectOp(inputA, inputB, tol);
         }
@@ -423,6 +479,12 @@ namespace YSB
             std::cout << std::endl
                       << "meet::intersect cpu time : ";
 #endif // _UsBoost
+
+#ifdef _bottleneck_
+            boost::timer::auto_cpu_timer t;
+            std::cout << std::endl
+                      << "meet::TriangleIntersection cpu time : ";
+#endif //  _bottleneck_
 
             intersectOp(inputA, inputB, tol);
         }
