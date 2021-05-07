@@ -8,10 +8,19 @@
 #define _UsBoost
 #endif // _linux
 
+#ifdef _intersectTest
+#define _bottleneck_
+#endif // _intersectTest
+
 namespace YSB
 {
     using Real = double;
+#ifdef _precise10
+    const Real TOL = 10e-10;
+#else
     const Real TOL = 10e-5;
+#endif // _precise10
+
     const int spaceDim = 3;
     const Real GreatValue = 10e10;
 #ifndef M_PI

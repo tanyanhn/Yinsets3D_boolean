@@ -1,7 +1,11 @@
 
-CPPFLAGS = -g -std=c++17 
+# CPPFLAGS = -g -std=c++17 -fopenmp
 # CPPFLAGS = -g -std=c++17 -lboost_timer -D_unix 
+CPPFLAGS = -g -std=c++17 -lboost_timer -D_intersectTest 
+YSCPPFLAGS = -g -std=c++17 -lboost_timer -D_intersectTest  -D_precise10
 # CPPFLAGS = -std=c++17
+
+# CPPFLAGS += -fopenmp -D_OMP_
 
 TESTFLAGS =
 
@@ -9,11 +13,15 @@ TESTFLAGS =
 
 all : plane triangle findneartriangle triintersect prepaste \
 	 paste removeoverlap GCS triangulation Yinset \
-	 locate SplitGCS YSmeet
+	 locate SplitGCS YS
 	 
+ YS : YSmeet YSjoin SplitGCS
+	
+YSjoin.exe : catchmain.o YSjoin.cpp 
+	g++ -o $@ catchmain.o YSjoin.cpp $(YSCPPFLAGS)
 	 
 YSmeet.exe : catchmain.o YSmeet.cpp 
-	g++ -o $@ catchmain.o YSmeet.cpp $(CPPFLAGS)
+	g++ -o $@ catchmain.o YSmeet.cpp $(YSCPPFLAGS) 
 
 locatetest.exe : catchmain.o locatetest.cpp 
 	g++ -o $@ catchmain.o locatetest.cpp $(CPPFLAGS)
@@ -55,6 +63,9 @@ SplitGCS.exe : catchmain.o reFacBoundarytest.cpp
 	g++ -o $@ catchmain.o reFacBoundarytest.cpp $(CPPFLAGS)
 
 catchmain.o : catchmain.cpp
+
+YSjoin : YSjoin.exe
+	./YSjoin.exe $(TESTFLAGS)
 
 YSmeet : YSmeet.exe
 	./YSmeet.exe $(TESTFLAGS)
