@@ -90,7 +90,7 @@ namespace YSB
         // calculate HasseMap between GluingCompactSurface.
         void buildHasse(Real tol);
 
-        void objOutput(std::string s, std::string folder = "./", int prec = -std::log10(TOL))
+        void objOutput(std::string s, std::string folder = "./", int prec = 6)
         {
             exportdata_inner(s, *this, folder, prec);
         }
