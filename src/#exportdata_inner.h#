@@ -23,7 +23,7 @@ namespace YSB
 
         auto &&vecgcs = y.gcss();
         int presize = 0;
-        PointCompare pCmp(TOL / 1000);
+        PointCompare pCmp(TOL/1000);
         std::ofstream outfile(folder + "/" + s + ".obj");
         outfile.setf(std::ios::fixed, std::ios::floatfield);
         outfile.precision(prec);

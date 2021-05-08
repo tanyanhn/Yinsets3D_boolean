@@ -11,9 +11,11 @@ TESTFLAGS =
 
 .PHONY: clean clear test run all doxygen
 
-all : plane triangle findneartriangle triintersect prepaste \
+all : YS simple
+
+simple : plane triangle findneartriangle triintersect prepaste \
 	 paste removeoverlap GCS triangulation Yinset \
-	 locate SplitGCS YS
+	 locate SplitGCS
 	 
  YS : YSmeet YSjoin SplitGCS
 	
