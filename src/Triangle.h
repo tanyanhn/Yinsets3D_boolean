@@ -266,15 +266,6 @@ namespace YSB
 
         Triangle<T, Dim - 1> project(int d = -1) const
         {
-            // if (d == -1)
-            // {
-            //     d = majorDim();
-            // }
-            // Point<T, Dim - 1> v[3];
-            // v[0] = vertex[0].project(d);
-            // v[1] = vertex[1].project(d);
-            // v[2] = vertex[2].project(d);
-            // return Triangle<T, Dim - 1>(v);
             projectimpl<T, Dim> impl;
             return impl(*this, d);
         }
@@ -440,19 +431,6 @@ namespace YSB
 
             if (intsT == intsType::Overlap)
             {
-                // SegmentCompare Segcmp(tol);
-                // for (auto ie1 = 0; ie1 < 3; ++ie1)
-                // {
-                //     for (auto ie2 = 0; ie2 < 3; ++ie2)
-                //     {
-                //         if (Segcmp.compare(this->ed(ie1), tri2.ed(ie2)) == 0)
-                //         {
-                //             result.push_back(this->ed(ie1));
-                //             return intsType::IntsSeg;
-                //         }
-                //     }
-                // }
-
                 int mDim = majorDim();
                 auto projTri1 = this->project(mDim),
                      projTri2 = tri2.project(mDim);

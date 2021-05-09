@@ -42,11 +42,11 @@ namespace YSB
     public:
         YinSet(){};
 
-        explicit YinSet(const std::vector<GluingCompactSurface<T>> &vf, Real tol = TOL)
+        explicit YinSet(const std::vector<GluingCompactSurface<T>> &vf, int m = 1, Real tol = TOL)
             : vecFace(vf)
         {
-            // ensureFace(tol);
-            if (vecFace.size() > 0)
+            // ensureFace(tol, 1);
+            if (vecFace.size() > 0 && m != 0)
                 buildHasse(tol);
         }
         // import data from obj file.
@@ -85,7 +85,7 @@ namespace YSB
         void collapse(std::vector<Triangle<T, 3>> &rs, int idYinset, Real tol = TOL) const;
 
         // Ensure YinSet boundary is right.
-        void ensureFace(Real tol = TOL);
+        void ensureFace(Real tol = TOL, int m = 0);
 
         // calculate HasseMap between GluingCompactSurface.
         void buildHasse(Real tol);
@@ -107,8 +107,9 @@ namespace YSB
     {
         if (vecFace.size() > 0)
         {
-            ensureFace(tol);
-            if (Clip == 1)
+            if (Clip == 2)
+                ensureFace(tol, 1);
+            else if (Clip == 1)
                 ClipGCS(tol);
             buildHasse(tol);
         }
@@ -165,13 +166,11 @@ namespace YSB
     }
 
     template <class T>
-    inline void YinSet<T>::ensureFace(Real tol)
+    inline void YinSet<T>::ensureFace(Real tol, int m)
     {
-        TriangleIntersection<T> intersectOp;
-        std::vector<Triangle<T, 3>> inputA, inputB;
+        std::vector<Triangle<T, 3>> inputA;
         collapse(inputA, 1, tol);
         int size = inputA.size();
-        // intersectOp(inputA, inputB, tol);
         SegmentCompare segCmp(tol);
         TriangleCompare triCmp(tol, 1);
         std::map<Segment<T, 3>,
@@ -186,16 +185,70 @@ namespace YSB
         for (auto i = 0; i < size; ++i)
         {
             auto tri = inputA[i];
+            tri.id() = i;
             for (int ie = 0; ie < 3; ++ie)
             {
-                auto itI = allSegI.insert({tri.ed(ie), std::set<int>()});
-                itI.first->second.insert(i);
-
                 auto itT = allSegT.insert({tri.ed(ie),
                                            std::set<Triangle<T, 3>, TriangleCompare>(triCmp)});
-                itT.first->second.insert(tri);
+                auto rT = itT.first->second.insert(tri);
+
+                if (rT.second != false)
+                {
+                    auto itI = allSegI.insert({tri.ed(ie), std::set<int>()});
+                    auto rI = itI.first->second.insert(i);
+                }
             }
         }
+
+        if (m == 1)
+        {
+            std::map<Segment<T, 3>,
+                     std::set<int>,
+                     SegmentCompare>
+                segs(allSegI);
+            while (!segs.empty())
+            {
+                auto i = segs.begin();
+                auto itI = allSegI.find(i->first);
+                if (itI->second.size() == 1)
+                {
+                    int id = *(itI->second.begin());
+                    auto tri = inputA[id];
+                    typename std::map<Segment<T, 3>,
+                                      std::set<int>,
+                                      SegmentCompare>::iterator iteI[3];
+                    typename std::map<Segment<T, 3>,
+                                      std::set<Triangle<T, 3>, TriangleCompare>,
+                                      SegmentCompare>::iterator iteT[3];
+                    for (int ie = 0; ie < 3; ++ie)
+                    {
+                        auto edge = tri.ed(ie);
+
+                        iteI[ie] = allSegI.find(edge);
+                        itI = segs.find(edge);
+                        if (iteI[ie]->second.size() == 1)
+                        {
+                            allSegI.erase(iteI[ie]);
+                        }
+                        else
+                        {
+                            iteI[ie]->second.erase(id);
+                            segs.insert({edge, std::set<int>()});
+                        }
+
+                        iteT[ie] = allSegT.find(edge);
+                        if (iteT[ie]->second.size() == 1)
+                            allSegT.erase(iteT[ie]);
+                        else
+                            iteT[ie]->second.erase(tri);
+                    }
+                }
+                segs.erase(i);
+            }
+        }
+
+        std::set<Triangle<T, 3>, TriangleCompare> allTris(triCmp);
+        std::vector<Triangle<T, 3>> gcs;
 
         for (auto &&itI : allSegI)
         {
@@ -204,38 +257,36 @@ namespace YSB
             assert(itI.second.size() == itT->second.size() && "itI, itT second size not equal.");
             assert(itT->second.size() >= 2 && "edge not contained in more than one Triangle.");
             assert(itI.second.size() >= 2 && "edge not contained in more than one Triangle.");
+
+            allTris.insert(itT->second.begin(), itT->second.end());
         }
 
-        // assert(false && "ensureFace pass.");
+        for (auto &&tri : allTris)
+        {
+            int id = tri.id();
+            for (int ie = 0; ie < 3; ++ie)
+            {
+                auto edge = tri.ed(ie);
+                auto it = allSegI.find(edge);
+                assert(it != allSegI.end() && "edge in allSegI.");
+                auto itId = it->second.find(id);
+                assert(itId != it->second.end() && "tri.id in allSegI[edge].");
 
-        // int i = 0;
-        // for (auto &&tri : intersectOp.resultA)
-        // {
-        //     int ie[] = {1, 1, 1};
-        //     // for (auto &&seg : tri.second.first)
-        //     for (auto &&seg : tri.first)
-        //     {
-        //         for (auto i = 0; i < 3; ++i)
-        //         {
-        //             if (cmp.compare(seg, inputA[i].ed(i)) == 0)
-        //             {
-        //                 ie[i] = 0;
-        //             }
-        //         }
-        //         if (seg.neighborhood().size() < 2)
-        //         {
-        //             std::cout << "Contain face not close.";
-        //             abort();
-        //         }
-        //     }
+                auto itT = allSegT.find(edge);
+                assert(itT != allSegT.end() && "edge in allSegT.");
+                auto itTId = itT->second.find(tri);
+                assert(itTId != itT->second.end() && "tri in allSegT[edge].");
+            }
+        }
 
-        //     if (ie[0] || ie[1] || ie[2])
-        //     {
-        //         std::cout << "Contain face not close.";
-        //         abort();
-        //     }
-        //     i++;
-        // }
+        gcs.insert(gcs.end(), allTris.begin(), allTris.end());
+        vecFace.clear();
+        vecFace.resize(1);
+        std::swap(vecFace[0].tris(), gcs);
+
+        ClipGCS(tol);
+
+        // assert(false && "ensureFace Pass.");
     }
 
     template <class T>
@@ -452,7 +503,7 @@ namespace YSB
                       << "complement::YinSet() cpu time : ";
 #endif // _UsBoost
 
-            return YinSet<T>(pastOp.vecGCS, tol);
+            return YinSet<T>(pastOp.vecGCS, 1, tol);
         }
     }
 
@@ -584,7 +635,7 @@ namespace YSB
                       << "meet::YinSet() cpu time : ";
 #endif // _UsBoost
 
-            return YinSet<T>(pastOp.vecGCS, tol);
+            return YinSet<T>(pastOp.vecGCS, 1, tol);
         }
     }
 

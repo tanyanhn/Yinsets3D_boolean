@@ -177,7 +177,7 @@ namespace YSB
                     infile.close();
                     assert(!vecgcs.empty() && "input file not import rightly.");
 
-                    return YinSet<Real>(vecgcs, 0);
+                    return YinSet<Real>(vecgcs, 0, tol);
                 }
             }
         }

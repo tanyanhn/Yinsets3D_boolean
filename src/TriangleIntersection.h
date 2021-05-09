@@ -39,19 +39,19 @@ namespace YSB
         if (w == 1)
             work1(inputA, inputB, tol);
 
-        if (1)
-        {
-            auto backupA = resultA, backupB = resultB;
-            resultA.clear();
-            resultB.clear();
-            work2(inputA, inputB, tol);
+        // if (1)
+        // {
+        //     auto backupA = resultA, backupB = resultB;
+        //     resultA.clear();
+        //     resultB.clear
+        //     work2(inputA, inputB, tol);
 
-            std::vector<std::pair<std::vector<Segment<T, 3>>,
-                                  std::vector<std::pair<int, int>>>>
-                *resultArr[2] = {&resultA, &resultB},
-                *backupArr[2] = {&backupA, &backupB};
-            assureworksame(resultArr, backupArr);
-        }
+        //     std::vector<std::pair<std::vector<Segment<T, 3>>,
+        //                           std::vector<std::pair<int, int>>>>
+        //         *resultArr[2] = {&resultA, &resultB},
+        //         *backupArr[2] = {&backupA, &backupB};
+        //     assureworksame(resultArr, backupArr);
+        // }
     }
 
     template <class T>

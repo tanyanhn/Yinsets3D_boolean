@@ -22,6 +22,7 @@ namespace YSB
         FacType type;
 
     public:
+        explicit GluingCompactSurface() = default;
         explicit GluingCompactSurface(const std::vector<Triangle<T, 3>> &vt, Real tol = TOL, int t = -1)
             : vecTriangle(vt)
         {
