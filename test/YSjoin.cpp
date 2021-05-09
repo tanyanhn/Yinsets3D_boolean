@@ -108,7 +108,7 @@ TEST_CASE("rabbit meet join 1", "[join]")
 //            s2 = inpre + mid3 + "/" + name2 + post2;
 //     boost::timer::auto_cpu_timer t, totaltime;
 
-//     YinSet<Real> y1(s1, 1), y2(s2, 1);
+//     YinSet<Real> y1(s1, 2), y2(s2, 1);
 //     std::cout << std::endl
 //               << "y1, y2 construct cpu time : ";
 //     t.~auto_cpu_timer();

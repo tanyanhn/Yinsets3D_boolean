@@ -60,17 +60,13 @@ namespace YSB
 
             if (orientation == 1 && rs == 0)
             {
-                int d = 0;
-                for (int i = 0; i < 3; ++i)
-                {
-                    if (cmp.compare(lhs.vert(0), rhs.vert(i)) == 0)
-                        d = i;
-                }
-                d += 1;
-                if (d == 3)
-                    d = 0;
+                Real zl = cross(lhs.vert(1) - lhs.vert(0), lhs.vert(2) - lhs.vert(1))[Dim - 1],
+                     zr = cross(rhs.vert(1) - rhs.vert(0), rhs.vert(2) - rhs.vert(1))[Dim - 1];
 
-                rs = cmp.compare(lhs.vert(1), rhs.vert(d));
+                if (zl * zr > 0)
+                    rs = 0;
+                else
+                    rs = (zl < zr) ? 1 : (-1);
             }
             return rs;
         }
