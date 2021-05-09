@@ -16,7 +16,7 @@ namespace YSB
 {
     using Real = double;
 #ifdef _precise10
-    const Real TOL = 1e-10;
+    const Real TOL = 1e-8;
 #else
     const Real TOL = 1e-5;
 #endif // _precise10
