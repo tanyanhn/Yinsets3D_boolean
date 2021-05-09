@@ -181,6 +181,7 @@ namespace YSB
                 }
             }
         }
+        return YinSet<Real>(std::vector<GluingCompactSurface<Real>>(), 0, tol);
     }
 
 } // namespace YSB
