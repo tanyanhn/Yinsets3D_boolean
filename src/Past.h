@@ -62,6 +62,7 @@ namespace YSB
             FindNearTriangle<T> FNToperator;
             int size = vecF.size();
             std::vector<int> markF(size, 1);
+            int redund = 0;
             for (int i = 0; i < size; ++i)
             {
                 if (!vecF[i].IfRemoved())
@@ -109,6 +110,8 @@ namespace YSB
                         }
                         else
                         {
+                            // redund = 1;
+                            // break;
                             assert(pastF.find(nearTri.inF().second) != pastF.end() && "Past not closed.");
                         }
                     }
@@ -116,12 +119,16 @@ namespace YSB
 
                 if (connectF.empty())
                 {
+                    // if (redund == 0)
+                    // {
                     std::vector<std::pair<int, int>> id;
                     for (auto &&i : pastF)
                     {
                         id.insert(id.end(), vecF[i].tris().begin(), vecF[i].tris().end());
                     }
                     vecGCS.emplace_back(id, vecTriA, vecTriB, tol);
+                    // }
+                    // redund = 0;
                     pastF.clear();
 
                     if (All.empty())
