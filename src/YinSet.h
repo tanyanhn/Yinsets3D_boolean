@@ -195,7 +195,8 @@ namespace YSB
                 if (rT.second != false)
                 {
                     auto itI = allSegI.insert({tri.ed(ie), std::set<int>()});
-                    auto rI = itI.first->second.insert(i);
+                    // auto rI =
+                    itI.first->second.insert(i);
                 }
             }
         }

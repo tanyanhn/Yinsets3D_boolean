@@ -523,6 +523,7 @@ namespace YSB
                 else
                     return intsType::Never;
             }
+            return intsType::Never;
         }
     };
 
