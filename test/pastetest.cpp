@@ -1,7 +1,7 @@
+#include <vector>
 #include "../catch.hpp"
 #include "../src/Past.h"
 #include "../src/PrePast.h"
-#include <vector>
 
 using namespace YSB;
 using namespace std;
@@ -17,10 +17,10 @@ TEST_CASE("Paste", "[pa1]") {
   Triangle<Real, 3> tri1(tripoints1), tri2(tripoints2), tri3(tripoints3),
       tri4(tripoints4), tri5(tripoints5), tri6(tripoints6);
   vector<Triangle<Real, 3>> triA{tri1, tri2, tri3, tri4, tri5, tri6}, triB;
-  for (auto i = 0; i < triA.size(); i++) {
+  for (size_t i = 0; i < triA.size(); i++) {
     for (int k = 0; k < 3; k++) {
       triA[i].ed(k).neighborhood().push_back(make_pair(1, i));
-      for (auto j = 0; j < triA.size(); j++) {
+      for (size_t j = 0; j < triA.size(); j++) {
         if (j != i) {
           for (int h = 0; h < 3; h++) {
             if (norm(triA[j].ed(h)[0] - triA[i].ed(k)[0]) < TOL &&

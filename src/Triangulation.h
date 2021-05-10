@@ -1,51 +1,54 @@
 #ifndef TRIANGULATION_H
 #define TRIANGULATION_H
 
-#include "PointCompare.h"
-#include "SegmentCompare.h"
-#include "Triangle.h"
 #include <map>
 #include <set>
 
+#include "PointCompare.h"
+#include "SegmentCompare.h"
+#include "Triangle.h"
+
 namespace YSB {
-template <class T> struct itCmp : public std::less<T> {
+template <class T>
+struct itCmp : public std::less<T> {
   SegmentCompare cmp;
   explicit itCmp(Real tol = TOL) : cmp(tol) {}
   bool operator()(const T it1, const T it2) const { return cmp(*it1, *it2); }
 };
 // int iterationA = 0, iterationB = 0;
-template <class T> struct Triangulation {
+template <class T>
+struct Triangulation {
   // std::map<int, std::vector<int>> TriangulateA, TriangulateB;
   std::vector<std::vector<int>> TriangulateA, TriangulateB;
   std::vector<Triangle<T, 3>> vecTriA, vecTriB;
 
-  void
-  operator()(const std::vector<Triangle<T, 3>> &inputA,
-             const std::vector<Triangle<T, 3>> &inputB,
-             // std::map<int, std::pair<std::vector<Segment<T, 3>>,
-             // std::vector<std::pair<int, int>>>> &resultA, std::map<int,
-             // std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int,
-             // int>>>> &resultB,
-             std::vector<std::pair<std::vector<Segment<T, 3>>,
-                                   std::vector<std::pair<int, int>>>> &resultA,
-             std::vector<std::pair<std::vector<Segment<T, 3>>,
-                                   std::vector<std::pair<int, int>>>> &resultB,
-
-             Real tol = TOL) {
-    this->tryEveryDiagonal(inputA, inputB, resultA, resultB, tol);
-  }
-
-  void tryEveryDiagonal(
-      const std::vector<Triangle<T, 3>> &inputA,
-      const std::vector<Triangle<T, 3>> &inputB,
+  void operator()(
+      const std::vector<Triangle<T, 3>>& inputA,
+      const std::vector<Triangle<T, 3>>& inputB,
       // std::map<int, std::pair<std::vector<Segment<T, 3>>,
       // std::vector<std::pair<int, int>>>> &resultA, std::map<int,
       // std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int,
       // int>>>> &resultB,
       std::vector<std::pair<std::vector<Segment<T, 3>>,
-                            std::vector<std::pair<int, int>>>> &resultA,
+                            std::vector<std::pair<int, int>>>>& resultA,
       std::vector<std::pair<std::vector<Segment<T, 3>>,
-                            std::vector<std::pair<int, int>>>> &resultB,
+                            std::vector<std::pair<int, int>>>>& resultB,
+
+      Real tol = TOL) {
+    this->tryEveryDiagonal(inputA, inputB, resultA, resultB, tol);
+  }
+
+  void tryEveryDiagonal(
+      const std::vector<Triangle<T, 3>>& inputA,
+      const std::vector<Triangle<T, 3>>& inputB,
+      // std::map<int, std::pair<std::vector<Segment<T, 3>>,
+      // std::vector<std::pair<int, int>>>> &resultA, std::map<int,
+      // std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int,
+      // int>>>> &resultB,
+      std::vector<std::pair<std::vector<Segment<T, 3>>,
+                            std::vector<std::pair<int, int>>>>& resultA,
+      std::vector<std::pair<std::vector<Segment<T, 3>>,
+                            std::vector<std::pair<int, int>>>>& resultB,
       Real tol = TOL) {
     PointCompare pCmp(tol);
     SegmentCompare segCmp(tol);
@@ -56,20 +59,17 @@ template <class T> struct Triangulation {
         near(pCmp);
     std::set<std::pair<int, int>> done;
 
-    // for (auto &&itRs : resultA)
-    for (auto i = 0; i < resultA.size(); ++i) {
+    for (size_t i = 0; i < resultA.size(); ++i) {
       auto itRs = make_pair(i, resultA[i]);
-      // iterationA++;
       int idYinset = 1;
-      int mDim = inputA[itRs.first].majorDim();
       auto normVec = inputA[itRs.first].normVec();
       std::pair<int, int> idInput(idYinset, itRs.first);
       done.insert(idInput);
 
       mapallP[idInput] = std::set<Point<T, 3>, PointCompare>(pCmp);
       mapallSeg[idInput] = std::set<Segment<T, 3>, SegmentCompare>(segCmp);
-      std::set<Point<T, 3>, PointCompare> &allP = mapallP[idInput];
-      std::set<Segment<T, 3>, SegmentCompare> &allSeg = mapallSeg[idInput];
+      std::set<Point<T, 3>, PointCompare>& allP = mapallP[idInput];
+      std::set<Segment<T, 3>, SegmentCompare>& allSeg = mapallSeg[idInput];
       near.clear();
       TriangulateA.resize(itRs.first + 1);
       // if(itRs.first == 104)
@@ -81,8 +81,7 @@ template <class T> struct Triangulation {
           resultA[i], allP, allSeg, near, pCmp, segCmp, tol);
       this->addSegment(idInput,
                        //  itRs.second.second
-                       resultA[i].second, allP, allSeg, near, segCmp, mDim,
-                       tol);
+                       resultA[i].second, allP, allSeg, near, segCmp, tol);
       this->generatorTriangle(inputA[itRs.first], idInput, allSeg, near,
                               normVec, vecTriA, TriangulateA, pCmp, segCmp,
                               tol);
@@ -93,19 +92,18 @@ template <class T> struct Triangulation {
     }
 
     // for (auto &&itRs : resultB)
-    for (auto i = 0; i < resultB.size(); ++i) {
+    for (size_t i = 0; i < resultB.size(); ++i) {
       auto itRs = make_pair(i, resultB[i]);
       // iterationB++;
       int idYinset = 2;
-      int mDim = inputB[itRs.first].majorDim();
       auto normVec = inputB[itRs.first].normVec();
       std::pair<int, int> idInput(idYinset, itRs.first);
       done.insert(idInput);
 
       mapallP[idInput] = std::set<Point<T, 3>, PointCompare>(pCmp);
       mapallSeg[idInput] = std::set<Segment<T, 3>, SegmentCompare>(segCmp);
-      std::set<Point<T, 3>, PointCompare> &allP = mapallP[idInput];
-      std::set<Segment<T, 3>, SegmentCompare> &allSeg = mapallSeg[idInput];
+      std::set<Point<T, 3>, PointCompare>& allP = mapallP[idInput];
+      std::set<Segment<T, 3>, SegmentCompare>& allSeg = mapallSeg[idInput];
       near.clear();
       TriangulateB.resize(itRs.first + 1);
 
@@ -114,8 +112,7 @@ template <class T> struct Triangulation {
           resultB[i], allP, allSeg, near, pCmp, segCmp, tol);
       this->addSegment(idInput,
                        // itRs.second.second
-                       resultB[i].second, allP, allSeg, near, segCmp, mDim,
-                       tol);
+                       resultB[i].second, allP, allSeg, near, segCmp, tol);
       this->generatorTriangle(inputB[itRs.first], idInput, allSeg, near,
                               normVec, vecTriB, TriangulateB, pCmp, segCmp,
                               tol);
@@ -129,23 +126,23 @@ template <class T> struct Triangulation {
   }
 
   void updateEdgeNeighbor(Real tol = TOL) {
-    for (auto &&tri : vecTriA) {
+    for (auto&& tri : vecTriA) {
       for (int ie = 0; ie < 3; ++ie) {
-        auto &edge = tri.ed(ie);
-        auto &oldNeighbor = edge.neighborhood();
+        auto& edge = tri.ed(ie);
+        auto& oldNeighbor = edge.neighborhood();
         std::vector<std::pair<int, int>> newNeighbor;
-        for (auto &&idInput : oldNeighbor) {
+        for (auto&& idInput : oldNeighbor) {
           if (idInput.first == 1) {
-            for (auto &&idNeighborTri : TriangulateA[idInput.second]) {
-              auto &neighborTri = vecTriA[idNeighborTri];
+            for (auto&& idNeighborTri : TriangulateA[idInput.second]) {
+              auto& neighborTri = vecTriA[idNeighborTri];
               if (neighborTri.edgeVec(edge, tol) != -1) {
                 newNeighbor.push_back({idInput.first, idNeighborTri});
               }
             }
           }
           if (idInput.first == 2) {
-            for (auto &&idNeighborTri : TriangulateB[idInput.second]) {
-              auto &neighborTri = vecTriB[idNeighborTri];
+            for (auto&& idNeighborTri : TriangulateB[idInput.second]) {
+              auto& neighborTri = vecTriB[idNeighborTri];
               if (neighborTri.edgeVec(edge, tol) != -1) {
                 newNeighbor.push_back({idInput.first, idNeighborTri});
               }
@@ -159,24 +156,24 @@ template <class T> struct Triangulation {
       }
     }
 
-    for (auto &&tri : vecTriB) {
+    for (auto&& tri : vecTriB) {
       for (int ie = 0; ie < 3; ++ie) {
-        auto &edge = tri.ed(ie);
-        auto &oldNeighbor = edge.neighborhood();
+        auto& edge = tri.ed(ie);
+        auto& oldNeighbor = edge.neighborhood();
         std::vector<std::pair<int, int>> newNeighbor;
 
-        for (auto &&idInput : oldNeighbor) {
+        for (auto&& idInput : oldNeighbor) {
           if (idInput.first == 1) {
-            for (auto &&idNeighborTri : TriangulateA[idInput.second]) {
-              auto &neighborTri = vecTriA[idNeighborTri];
+            for (auto&& idNeighborTri : TriangulateA[idInput.second]) {
+              auto& neighborTri = vecTriA[idNeighborTri];
               if (neighborTri.edgeVec(edge, tol) != -1) {
                 newNeighbor.push_back({idInput.first, idNeighborTri});
               }
             }
           }
           if (idInput.first == 2) {
-            for (auto &&idNeighborTri : TriangulateB[idInput.second]) {
-              auto &neighborTri = vecTriB[idNeighborTri];
+            for (auto&& idNeighborTri : TriangulateB[idInput.second]) {
+              auto& neighborTri = vecTriB[idNeighborTri];
               if (neighborTri.edgeVec(edge, tol) != -1) {
                 newNeighbor.push_back({idInput.first, idNeighborTri});
               }
@@ -192,21 +189,21 @@ template <class T> struct Triangulation {
   }
 
   void addSegmentToOverlap(
-      const std::vector<std::pair<int, int>> &allOverlap,
-      const std::set<std::pair<int, int>> &done,
-      const std::set<Segment<T, 3>, SegmentCompare> &allSeg,
-      const std::vector<Triangle<T, 3>> &inputA,
-      const std::vector<Triangle<T, 3>> &inputB,
+      const std::vector<std::pair<int, int>>& allOverlap,
+      const std::set<std::pair<int, int>>& done,
+      const std::set<Segment<T, 3>, SegmentCompare>& allSeg,
+      const std::vector<Triangle<T, 3>>& inputA,
+      const std::vector<Triangle<T, 3>>& inputB,
       // std::map<int, std::pair<std::vector<Segment<T, 3>>,
       // std::vector<std::pair<int, int>>>> &resultA, std::map<int,
       // std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int,
       // int>>>> &resultB,
       std::vector<std::pair<std::vector<Segment<T, 3>>,
-                            std::vector<std::pair<int, int>>>> &resultA,
+                            std::vector<std::pair<int, int>>>>& resultA,
       std::vector<std::pair<std::vector<Segment<T, 3>>,
-                            std::vector<std::pair<int, int>>>> &resultB,
+                            std::vector<std::pair<int, int>>>>& resultB,
       Real tol = TOL) {
-    for (auto &&idOverlapInput : allOverlap) {
+    for (auto&& idOverlapInput : allOverlap) {
       if (done.find(idOverlapInput) == done.end()) {
         if (idOverlapInput.first == 1) {
           // auto it = resultA.find(idOverlapInput.second);
@@ -223,44 +220,43 @@ template <class T> struct Triangulation {
     }
   }
 
-  void
-  dealOverlap(const Triangle<T, 3> tri,
-              const std::set<Segment<T, 3>, SegmentCompare> &allSeg,
-              // typename std::map<int,
-              //                   std::pair<std::vector<Segment<T, 3>>,
-              //                             std::vector<std::pair<int,
-              //                             int>>>>::iterator &
-              //     itRs,
-              typename std::vector<
-                  std::pair<std::vector<Segment<T, 3>>,
-                            std::vector<std::pair<int, int>>>>::iterator &itRs,
-              Real tol = TOL) {
-    for (auto &&seg : allSeg) {
-      if (tri.locate(seg[0]) != Triangle<T, 3>::locType::Outer &&
-          tri.locate(seg[1]) != Triangle<T, 3>::locType::Outer)
-        // ((itRs->second).first).push_back(seg);
+  void dealOverlap(
+      const Triangle<T, 3> tri,
+      const std::set<Segment<T, 3>, SegmentCompare>& allSeg,
+      typename std::vector<
+          std::pair<std::vector<Segment<T, 3>>,
+                    std::vector<std::pair<int, int>>>>::iterator& itRs,
+      Real tol = TOL) {
+    for (auto&& seg : allSeg) {
+      if (tri.locate(seg[0], tol) != Triangle<T, 3>::locType::Outer &&
+          tri.locate(seg[1], tol) != Triangle<T, 3>::locType::Outer)
         itRs->first.push_back(seg);
     }
   }
 
-  void generatorTriangle(
-      const Triangle<T, 3> &Tri, const std::pair<int, int> &idInput,
-      const std::set<Segment<T, 3>, SegmentCompare> &allSeg,
-      const std::map<Point<T, 3>, std::set<Segment<T, 3>, SegmentCompare>,
-                     PointCompare> &near,
-      const Vec<T, 3> normVec, std::vector<Triangle<T, 3>> &vecTri,
-      // std::map<int, std::vector<int>> &Triangulate,
-      std::vector<std::vector<int>> &Triangulate, const PointCompare &pCmp,
-      const SegmentCompare &segCmp, Real tol = TOL) {
+  void generatorTriangle(const Triangle<T, 3>& Tri,
+                         const std::pair<int, int>& idInput,
+                         const std::set<Segment<T, 3>, SegmentCompare>& allSeg,
+                         const std::map<Point<T, 3>,
+                                        std::set<Segment<T, 3>, SegmentCompare>,
+                                        PointCompare>& near,
+                         const Vec<T, 3> normVec,
+                         std::vector<Triangle<T, 3>>& vecTri,
+                         std::vector<std::vector<int>>& Triangulate,
+                         const PointCompare& pCmp,
+                         const SegmentCompare& segCmp,
+                         Real tol = TOL) {
     // mark every segment need be used for construct new triangle,
     // on Edge will be used 1 time, or 2 times.
     std::map<Segment<T, 3>, std::pair<int, int>, SegmentCompare> markEdge(
         segCmp);
-    for (auto &&seg : allSeg) {
+    for (auto&& seg : allSeg) {
       std::pair<int, int> markValue = {1, 1};
       for (int ie = 0; ie < 3; ++ie) {
-        if (Tri.ed(ie).containPoint(seg[0]) != Segment<T, 3>::locType::Outer &&
-            Tri.ed(ie).containPoint(seg[1]) != Segment<T, 3>::locType::Outer) {
+        if (Tri.ed(ie).containPoint(seg[0], -1, tol) !=
+                Segment<T, 3>::locType::Outer &&
+            Tri.ed(ie).containPoint(seg[1], -1, tol) !=
+                Segment<T, 3>::locType::Outer) {
           if (pCmp.compare(Tri.ed(ie)[0], Tri.ed(ie)[1]) ==
               pCmp.compare(seg[0], seg[1]))
             markValue.second = 0;
@@ -293,7 +289,7 @@ template <class T> struct Triangulation {
       }
 
       Real bestangle = 2 * M_PI;
-      for (auto &&NextSeg : near.at(p1)) {
+      for (auto&& NextSeg : near.at(p1)) {
         SegmentCompare segcmp;
         if (segcmp.compare(NextSeg, itSeg0->first) == 0)
           continue;
@@ -301,9 +297,6 @@ template <class T> struct Triangulation {
                                                         : ((NextSeg)[0]);
 
         auto v0 = p0 - p1, v1 = np - p1;
-
-        // if(norm(cross(v1, v0)) / norm(v1) < tol)
-        // continue;
 
         Real angle = atan2(norm(cross(v1, v0)), dot(v1, v0));
         if (dot(cross(v1, v0), normVec) < 0)
@@ -363,21 +356,22 @@ template <class T> struct Triangulation {
     }
   }
 
-  void
-  clipSegment(const std::pair<std::vector<Segment<T, 3>>,
-                              std::vector<std::pair<int, int>>> &itRs,
-              std::set<Point<T, 3>, PointCompare> &allP,
-              std::set<Segment<T, 3>, SegmentCompare> &allSeg,
-              std::map<Point<T, 3>, std::set<Segment<T, 3>, SegmentCompare>,
-                       PointCompare> &near,
-              const PointCompare &pCmp, const SegmentCompare &segCmp,
-              Real tol = TOL) {
+  void clipSegment(const std::pair<std::vector<Segment<T, 3>>,
+                                   std::vector<std::pair<int, int>>>& itRs,
+                   std::set<Point<T, 3>, PointCompare>& allP,
+                   std::set<Segment<T, 3>, SegmentCompare>& allSeg,
+                   std::map<Point<T, 3>,
+                            std::set<Segment<T, 3>, SegmentCompare>,
+                            PointCompare>& near,
+                   const PointCompare& pCmp,
+                   const SegmentCompare& segCmp,
+                   Real tol = TOL) {
     // std::set<Point<T, 3>, PointCompare> allP(pCmp);
     std::map<Segment<T, 3>, std::set<Point<T, 3>, PointCompare>, SegmentCompare>
         clip(segCmp);
 
     // insert all point and segment.
-    for (auto &&seg : itRs.first) {
+    for (auto&& seg : itRs.first) {
       if (pCmp.compare(seg[0], seg[1]) == 0) {
         allP.insert(seg[0]);
       } else {
@@ -395,7 +389,7 @@ template <class T> struct Triangulation {
     }
 
     // For each segment seg, add point on seg into clip.
-    for (auto &&seg : clip) {
+    for (auto&& seg : clip) {
       for (auto itp = allP.begin(); itp != allP.end(); ++itp) {
         if ((seg.first).containPoint(*itp, seg.first.majorDim(), tol) !=
             Segment<T, 3>::locType::Outer) {
@@ -405,7 +399,7 @@ template <class T> struct Triangulation {
     }
 
     // Cliping long segment into short only intersect on endPoint.
-    for (auto &&seg : clip) {
+    for (auto&& seg : clip) {
       Point<T, 3> p0 = *(seg.second.begin()), p1;
       for (auto itp1 = (++seg.second.begin()); itp1 != seg.second.end();
            ++itp1) {
@@ -417,17 +411,8 @@ template <class T> struct Triangulation {
           allSeg.erase(itSeg);
         }
         auto insertinfo = allSeg.insert(newSeg);
-        // itSeg = insertinfo.first;
         if (insertinfo.second == false)
           assert(false && "insert error.");
-
-        // itCmp<typename std::set<Segment<T, 3>, SegmentCompare>::iterator>
-        // cmp(tol); std::set<typename std::set<Segment<T, 3>,
-        // SegmentCompare>::iterator,
-        //          itCmp<typename std::set<Segment<T, 3>,
-        //          SegmentCompare>::iterator>>
-        //     itSet(cmp);
-        // itSet.insert(itSeg);
 
         auto itNear = near.insert({p0, {newSeg}});
         if (itNear.second == false)
@@ -441,23 +426,23 @@ template <class T> struct Triangulation {
     }
   }
 
-  void addSegment(const std::pair<int, int> &idInput,
-                  const std::vector<std::pair<int, int>> &allOverlap,
-                  const std::set<Point<T, 3>, PointCompare> &allP,
-                  std::set<Segment<T, 3>, SegmentCompare> &allSeg,
-                  std::map<Point<T, 3>, std::set<Segment<T, 3>, SegmentCompare>,
-                           PointCompare> &near,
-                  const SegmentCompare &segCmp, const int mDim,
+  void addSegment(const std::pair<int, int>& idInput,
+                  const std::vector<std::pair<int, int>>& allOverlap,
+                  const std::set<Point<T, 3>, PointCompare>& allP,
+                  std::set<Segment<T, 3>, SegmentCompare>& allSeg,
+                  std::map<Point<T, 3>,
+                           std::set<Segment<T, 3>, SegmentCompare>,
+                           PointCompare>& near,
+                  const SegmentCompare& segCmp,
                   Real tol = TOL) {
     std::vector<std::pair<int, int>> newSegNeighbor(allOverlap);
     newSegNeighbor.push_back(idInput);
 
     for (auto itp0 = allP.begin(); itp0 != --allP.end(); ++itp0) {
       for (auto itp1 = std::next(itp0); itp1 != allP.end(); ++itp1) {
-
         Segment<T, 3> newSeg(*itp0, *itp1, newSegNeighbor);
         int exist = false;
-        for (auto &&Seg : near[*itp0]) {
+        for (auto&& Seg : near[*itp0]) {
           if (segCmp.compare(Seg, newSeg) == 0) {
             exist = true;
             break;
@@ -468,8 +453,8 @@ template <class T> struct Triangulation {
           continue;
 
         bool interInfo = false;
-        for (auto &&seg : allSeg) {
-          auto interType = intersectSegSeg(newSeg, seg);
+        for (auto&& seg : allSeg) {
+          auto interType = intersectSegSeg(newSeg, seg, tol);
           if (interType == Segment<T, 2>::intsType::One ||
               interType == Segment<T, 2>::intsType::Overlap) {
             interInfo = true;
@@ -501,6 +486,6 @@ template <class T> struct Triangulation {
   }
 };
 
-} // namespace YSB
+}  // namespace YSB
 
-#endif // !TRIANGULATION_H
+#endif  // !TRIANGULATION_H

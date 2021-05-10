@@ -1,6 +1,7 @@
+#include <boost/timer/timer.hpp>
+
 #include "../catch.hpp"
 #include "../src/Totalheader.h"
-#include <boost/timer/timer.hpp>
 
 using namespace YSB;
 using namespace std;
@@ -36,7 +37,6 @@ TEST_CASE("rabbit meet join 1", "[join]") {
   REQUIRE(res1.isBounded() == 1);
   REQUIRE(res1.getBettiNumber(0) == 1);
   REQUIRE(res1.getBettiNumber(1) == 0);
-
   // cout << res1.getHasseString() << "\n";
 
   res2.objOutput(name1 + "_" + name2, oupre + name1 + "_" + name2 + "_" + m);
@@ -68,6 +68,7 @@ TEST_CASE("tedday cow meet join", "[join]") {
   string name1 = "teddy", name2 = "cow", name3 = "Rabbit_Lowpoly_4",
          name4 = "innerball", name5 = "innertorus", inpre = "../dataset/",
          oupre = "../res/",
+
          //     inpre = "dataset/",
       // oupre = "res/",
       post = ".obj", mid = "ballconnecttorus_torusbig_meet", mid2 = "complex",

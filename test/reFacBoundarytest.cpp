@@ -1,6 +1,6 @@
+#include <vector>
 #include "../catch.hpp"
 #include "../src/Totalheader.h"
-#include <vector>
 
 using namespace YSB;
 using namespace std;
@@ -26,12 +26,9 @@ TEST_CASE("ball and torus 1", "[rF::bt1]") {
   YinSet<Real> y1(s1), y2(s2);
   auto y3 = y2.complement();
   auto res = y1.meet(y3, 1);
-  // auto res = y2.complement();
+
   res.objOutput(name1 + "_" + name2, oupre + name1 + "_" + name2 + "_" + m);
-  // exportdata(name2, res,
-  //     oupre + name2 + "_" + c);
-  // auto res2 = y1.join(y2);
-  // exportdata("../res/cowteddyjoin", res2);
+
   REQUIRE(res.isBounded() == 1);
   REQUIRE(res.getBettiNumber(0) == 1);
   REQUIRE(res.getBettiNumber(1) == 1);

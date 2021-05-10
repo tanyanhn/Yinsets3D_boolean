@@ -1,6 +1,6 @@
-#include "../src/Triangle.h"
-#include "../catch.hpp"
 #include <vector>
+#include "../catch.hpp"
+#include "../src/Triangle.h"
 
 using namespace YSB;
 
@@ -69,7 +69,7 @@ TEST_CASE("2d Triangle intersect line2", "[2dtil2]") {
   Line<Real, 2> l3(p3, d3);
   std::vector<Point<Real, 2>> re3;
   tri.intersect(l3, re3);
-  for (int i = 0; i < re3.size(); i++)
+  for (size_t i = 0; i < re3.size(); i++)
     std::cout << re3[i] << std::endl;
   std::cout << std::endl;
   REQUIRE(tri.intersect(l3, re3) == 2);
@@ -134,7 +134,7 @@ TEST_CASE("2d triangle intersect1", "[2dti1]") {
   tri1.intersect(tri2, re1);
   tri1.intersect(tri3, re2);
   tri1.intersect(tri4, re3);
-  for (int i = 0; i < re1.size(); i++)
+  for (size_t i = 0; i < re1.size(); i++)
     std::cout << re1[i] << std::endl;
   std::cout << std::endl;
   REQUIRE(re1.size() == 3);
@@ -158,7 +158,7 @@ TEST_CASE("2d triangle intersect2", "[2dti2]") {
   Triangle<Real, 2> tri1(tripoints1), tri2(tripoints2);
   std::vector<Segment<Real, 2>> re1;
   tri1.intersect(tri2, re1);
-  for (int i = 0; i < re1.size(); i++)
+  for (size_t i = 0; i < re1.size(); i++)
     std::cout << re1[i] << std::endl;
   std::cout << std::endl;
   REQUIRE(re1.size() == 3);
@@ -186,13 +186,13 @@ TEST_CASE("3d Triangle intersect triangle  ", "[tit1]") {
   std::vector<Segment<Real, 2>> re5;
   proTri1.intersect(proTri2, re5);
   REQUIRE(re5.size() == 6);
-  for (int i = 0; i < re5.size(); i++)
+  for (size_t i = 0; i < re5.size(); i++)
     std::cout << re5[i] << std::endl;
   std::cout << std::endl;
   std::vector<Segment<Real, 3>> re1, re2, re3, re4;
   REQUIRE(tri1.intersect(tri2, re1) == Triangle<Real, 3>::intsType::Overlap);
   REQUIRE(re1.size() == 6);
-  for (int i = 0; i < re1.size(); i++)
+  for (size_t i = 0; i < re1.size(); i++)
     std::cout << re1[i] << std::endl;
   std::cout << std::endl;
   REQUIRE(tri1.intersect(tri3, re2) == Triangle<Real, 3>::intsType::Never);
@@ -203,7 +203,7 @@ TEST_CASE("3d Triangle intersect triangle  ", "[tit1]") {
   REQUIRE(re3.size() == 1);
   REQUIRE(tri1.intersect(tri5, re4) == Triangle<Real, 3>::intsType::Overlap);
   std::cout << std::endl;
-  for (int i = 0; i < re4.size(); i++)
+  for (size_t i = 0; i < re4.size(); i++)
     std::cout << re4[i] << std::endl;
   REQUIRE(re4.size() == 3);
 }
