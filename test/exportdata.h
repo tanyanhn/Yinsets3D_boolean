@@ -1,39 +1,40 @@
-#include "../src/YinSet.h"
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <cstddef>
 #include <fstream>
 #include <iostream>
 #include <string>
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <vector>
+#include "../src/YinSet.h"
 
 using namespace std;
 using namespace YSB;
 
-void exportdata(string s, YinSet<Real> &y, string folder) {
-  const char *path = folder.c_str();
+inline void exportdata(string s, YinSet<Real>& y, string folder) {
+  const char* path = folder.c_str();
   int isCreate = mkdir(path, S_IRUSR | S_IWUSR | S_IXUSR | S_IRWXG | S_IRWXO);
   if (!isCreate)
     printf("create path:%s\n", path);
   else
     printf("create path failed! error code : %d %s \n", isCreate, path);
 
-  auto &&vecgcs = y.gcss();
-  for (auto i = 0; i < vecgcs.size(); i++) {
+  auto&& vecgcs = y.gcss();
+  for (size_t i = 0; i < vecgcs.size(); i++) {
     ofstream outfile(folder + "/" + s + to_string(i) + ".obj");
     if (outfile.is_open()) {
       vector<Triangle<Real, 3>> vectri;
       vecgcs[i].collapse(vectri, 1, 1);
       set<Point<Real, 3>, PointCompare> setp;
-      for (auto i = 0; i < vectri.size(); i++) {
+      for (std::size_t i = 0; i < vectri.size(); i++) {
         setp.insert(vectri[i].vert(0));
         setp.insert(vectri[i].vert(1));
         setp.insert(vectri[i].vert(2));
       }
-      for (auto &&p : setp) {
+      for (auto&& p : setp) {
         outfile << "v"
                 << " " << p[0] << " " << p[1] << " " << p[2] << endl;
       }
-      for (auto i = 0; i < vectri.size(); i++) {
+      for (size_t i = 0; i < vectri.size(); i++) {
         int index[3];
         auto itp0 = setp.find(vectri[i].vert(0));
         assert(itp0 != setp.end() && "point find error");

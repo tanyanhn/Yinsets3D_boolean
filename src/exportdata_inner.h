@@ -1,48 +1,50 @@
 #ifndef EXPORTDATA_INNER_H
 #define EXPORTDATA_INNER_H
 
-#include "YinSet.h"
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <fstream>
 #include <iostream>
 #include <string>
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <vector>
+#include "YinSet.h"
 
 namespace YSB {
 
-void exportdata_inner(std::string s, YinSet<Real> &y, std::string folder,
-                      int prec) {
-  const char *path = folder.c_str();
+inline void exportdata_inner(std::string s,
+                             YinSet<Real>& y,
+                             std::string folder,
+                             int prec) {
+  const char* path = folder.c_str();
   int isCreate = mkdir(path, S_IRUSR | S_IWUSR | S_IXUSR | S_IRWXG | S_IRWXO);
   if (!isCreate)
     printf("create path:%s\n", path);
   else
     printf("create path failed! error code : %d %s \n", isCreate, path);
 
-  auto &&vecgcs = y.gcss();
+  auto&& vecgcs = y.gcss();
   int presize = 0;
   PointCompare pCmp(TOL / 1000);
   std::ofstream outfile(folder + "/" + s + ".obj");
   outfile.setf(std::ios::fixed, std::ios::floatfield);
   outfile.precision(prec);
-  for (auto j = 0; j < vecgcs.size(); j++) {
+  for (size_t j = 0; j < vecgcs.size(); j++) {
     outfile << "o  vecgcs." << std::to_string(j) << "\n";
     std::vector<Triangle<Real, 3>> vectri;
     std::set<Point<Real, 3>, PointCompare> setp(pCmp);
     std::set<Point<Real, 3>, PointCompare>::iterator wa;
     if (outfile.is_open()) {
       vecgcs[j].collapse(vectri, 1, 1);
-      for (int i = 0; i < vectri.size(); i++) {
+      for (size_t i = 0; i < vectri.size(); i++) {
         setp.insert(vectri[i].vert(0));
         setp.insert(vectri[i].vert(1));
         setp.insert(vectri[i].vert(2));
       }
-      for (auto &&p : setp) {
+      for (auto&& p : setp) {
         outfile << "v"
                 << " " << p[0] << " " << p[1] << " " << p[2] << std::endl;
       }
-      for (auto i = 0; i < vectri.size(); i++) {
+      for (size_t i = 0; i < vectri.size(); i++) {
         int index[3];
         if (j == 1 && i == 1026) {
           wa = std::next(setp.begin(), 1180);
@@ -66,6 +68,6 @@ void exportdata_inner(std::string s, YinSet<Real> &y, std::string folder,
   }
 }
 
-} // namespace YSB
+}  // namespace YSB
 
-#endif // !E
+#endif  // !E

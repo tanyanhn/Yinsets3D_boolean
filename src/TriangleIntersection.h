@@ -1,13 +1,16 @@
 #ifndef TRIANGLEINTERSECTION_H
 #define TRIANGLEINTERSECTION_H
 
-#include "Triangle.h"
-#include "TriangleCompare.h"
-#include <map>
 #include <omp.h>
 
+#include <map>
+
+#include "Triangle.h"
+#include "TriangleCompare.h"
+
 namespace YSB {
-template <class T> struct TriangleIntersection {
+template <class T>
+struct TriangleIntersection {
   using intsType = typename Triangle<T, 3>::intsType;
 
   std::vector<
@@ -18,23 +21,27 @@ template <class T> struct TriangleIntersection {
       resultB;
 
   typedef typename std::vector<
-      std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>>
-      *Resultp;
-  void operator()(const std::vector<Triangle<T, 3>> &inputA,
-                  const std::vector<Triangle<T, 3>> &inputB, Real tol = TOL,
+      std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>>*
+      Resultp;
+  void operator()(const std::vector<Triangle<T, 3>>& inputA,
+                  const std::vector<Triangle<T, 3>>& inputB,
+                  Real tol = TOL,
                   int w = 1);
-  void work1(const std::vector<Triangle<T, 3>> &inputA,
-             const std::vector<Triangle<T, 3>> &inputB, Real tol = TOL);
-  void work2(const std::vector<Triangle<T, 3>> &inputA,
-             const std::vector<Triangle<T, 3>> &inputB, Real tol = TOL);
-  void assureworksame(Resultp *backup, Resultp *result);
+  void work1(const std::vector<Triangle<T, 3>>& inputA,
+             const std::vector<Triangle<T, 3>>& inputB,
+             Real tol = TOL);
+  void work2(const std::vector<Triangle<T, 3>>& inputA,
+             const std::vector<Triangle<T, 3>>& inputB,
+             Real tol = TOL);
+  void assureworksame(Resultp* backup, Resultp* result);
 };
 
 template <class T>
-inline void
-TriangleIntersection<T>::operator()(const std::vector<Triangle<T, 3>> &inputA,
-                                    const std::vector<Triangle<T, 3>> &inputB,
-                                    Real tol, int w) {
+inline void TriangleIntersection<T>::operator()(
+    const std::vector<Triangle<T, 3>>& inputA,
+    const std::vector<Triangle<T, 3>>& inputB,
+    Real tol,
+    int w) {
   if (w == 1)
     work1(inputA, inputB, tol);
 
@@ -54,7 +61,7 @@ TriangleIntersection<T>::operator()(const std::vector<Triangle<T, 3>> &inputA,
 }
 
 template <class T>
-void TriangleIntersection<T>::assureworksame(Resultp *backup, Resultp *result) {
+void TriangleIntersection<T>::assureworksame(Resultp* backup, Resultp* result) {
   SegmentCompare sCmp(TOL);
   std::set<Segment<T, 3>, SegmentCompare> segs(sCmp), Bsegs(sCmp);
   std::set<std::pair<int, int>> laps, Blaps;
@@ -92,16 +99,16 @@ void TriangleIntersection<T>::assureworksame(Resultp *backup, Resultp *result) {
 }
 
 template <class T>
-inline void
-TriangleIntersection<T>::work1(const std::vector<Triangle<T, 3>> &inputA,
-                               const std::vector<Triangle<T, 3>> &inputB,
-                               Real tol) {
+inline void TriangleIntersection<T>::work1(
+    const std::vector<Triangle<T, 3>>& inputA,
+    const std::vector<Triangle<T, 3>>& inputB,
+    Real tol) {
   int numA = inputA.size(), numB = inputB.size();
   resultA.resize(numA);
   resultB.resize(numB);
-  const std::vector<Triangle<T, 3>> *inputArr[2] = {&inputA, &inputB};
+  const std::vector<Triangle<T, 3>>* inputArr[2] = {&inputA, &inputB};
   std::vector<std::pair<std::vector<Segment<T, 3>>,
-                        std::vector<std::pair<int, int>>>> *resultArr[2] = {
+                        std::vector<std::pair<int, int>>>>* resultArr[2] = {
       &resultA, &resultB};
   PointCompare pCmp(tol);
   TriangleCompare triCmp(tol);
@@ -113,7 +120,7 @@ TriangleIntersection<T>::work1(const std::vector<Triangle<T, 3>> &inputA,
   Point<T, 3> min, max;
 
   for (int idYinset = 1; idYinset < 3; ++idYinset) {
-    for (auto idA = 0; idA < (*inputArr[idYinset - 1]).size(); ++idA) {
+    for (size_t idA = 0; idA < (*inputArr[idYinset - 1]).size(); ++idA) {
       auto minmax = (*inputArr[idYinset - 1])[idA].minmax(pCmp);
 
       min = (*inputArr[idYinset - 1])[idA].vert(minmax.first);
@@ -136,14 +143,14 @@ TriangleIntersection<T>::work1(const std::vector<Triangle<T, 3>> &inputA,
     }
   }
 
-  for (auto &&p : allP) {
-    for (auto &&idTri : mt[p]) {
+  for (auto&& p : allP) {
+    for (auto&& idTri : mt[p]) {
       auto eit = std::remove(interTris.begin(), interTris.end(), idTri);
       interTris.erase(eit, interTris.end());
     }
 
     int presize = interTris.size();
-    for (auto &&idTri1 : ml[p]) {
+    for (auto&& idTri1 : ml[p]) {
       interTris.push_back(idTri1);
     }
 
@@ -178,7 +185,7 @@ TriangleIntersection<T>::work1(const std::vector<Triangle<T, 3>> &inputA,
           rs[1]->second.push_back({inYinsetA, iA});
         }
 
-        for (auto &&iSeg : result) {
+        for (auto&& iSeg : result) {
           iSeg.neighborhood().push_back(std::make_pair(inYinsetA, iA));
           iSeg.neighborhood().push_back(std::make_pair(inYinsetB, iB));
 
@@ -191,16 +198,16 @@ TriangleIntersection<T>::work1(const std::vector<Triangle<T, 3>> &inputA,
 }
 
 template <class T>
-inline void
-TriangleIntersection<T>::work2(const std::vector<Triangle<T, 3>> &inputA,
-                               const std::vector<Triangle<T, 3>> &inputB,
-                               Real tol) {
+inline void TriangleIntersection<T>::work2(
+    const std::vector<Triangle<T, 3>>& inputA,
+    const std::vector<Triangle<T, 3>>& inputB,
+    Real tol) {
   int numA = inputA.size(), numB = inputB.size();
   resultA.resize(numA);
   resultB.resize(numB);
-  const std::vector<Triangle<T, 3>> *inputArr[2] = {&inputA, &inputB};
+  const std::vector<Triangle<T, 3>>* inputArr[2] = {&inputA, &inputB};
   std::vector<std::pair<std::vector<Segment<T, 3>>,
-                        std::vector<std::pair<int, int>>>> *resultArr[2] = {
+                        std::vector<std::pair<int, int>>>>* resultArr[2] = {
       &resultA, &resultB};
   PointCompare pCmp(tol / 100);
   TriangleCompare triCmp(tol / 100);
@@ -243,8 +250,8 @@ TriangleIntersection<T>::work2(const std::vector<Triangle<T, 3>> &inputA,
     }
   }
 
-  for (auto &&p : allP) {
-    for (auto &&idTri : mt[p]) {
+  for (auto&& p : allP) {
+    for (auto&& idTri : mt[p]) {
       auto eit = std::remove(interTris.begin(), interTris.end(), idTri);
       interTris.erase(eit, interTris.end());
 
@@ -295,11 +302,11 @@ TriangleIntersection<T>::work2(const std::vector<Triangle<T, 3>> &inputA,
     }
 
     interTrisadd.clear();
-    for (auto &&idTri : ml[p]) {
+    for (auto&& idTri : ml[p]) {
       interTrisadd.push_back(idTri);
     }
 
-    for (auto &&idTri2 : interTrisadd) {
+    for (auto&& idTri2 : interTrisadd) {
       interTris.push_back(idTri2);
 
       auto TriX =
@@ -352,7 +359,7 @@ TriangleIntersection<T>::work2(const std::vector<Triangle<T, 3>> &inputA,
         }
       }
 
-      for (auto &&idTri1 : interTriset) {
+      for (auto&& idTri1 : interTriset) {
         if (idTri1 == idTri2)
           continue;
 
@@ -382,7 +389,7 @@ TriangleIntersection<T>::work2(const std::vector<Triangle<T, 3>> &inputA,
           rs[1]->second.push_back({inYinsetA, iA});
         }
 
-        for (auto &&iSeg : result) {
+        for (auto&& iSeg : result) {
           iSeg.neighborhood().push_back(std::make_pair(inYinsetA, iA));
           iSeg.neighborhood().push_back(std::make_pair(inYinsetB, iB));
 
@@ -393,6 +400,6 @@ TriangleIntersection<T>::work2(const std::vector<Triangle<T, 3>> &inputA,
     }
   }
 }
-} // namespace YSB
+}  // namespace YSB
 
-#endif // !TRIANGLEINTERSECTION_H
+#endif  // !TRIANGLEINTERSECTION_H
