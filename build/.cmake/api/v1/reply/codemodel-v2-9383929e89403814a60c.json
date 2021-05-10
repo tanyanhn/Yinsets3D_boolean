@@ -1,0 +1,200 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1
+					],
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.20"
+					},
+					"projectIndex" : 0,
+					"source" : "."
+				},
+				{
+					"build" : "test",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.20"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "test",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0,
+						1
+					],
+					"name" : "YSB3D",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 1,
+					"id" : "Catch::@36f028580bb02cc8272a",
+					"jsonFile" : "target-Catch-Debug-63822579a206bbd62e2c.json",
+					"name" : "Catch",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "GCStest.exe::@36f028580bb02cc8272a",
+					"jsonFile" : "target-GCStest.exe-Debug-6e9bbe01ca99a3dd5dc4.json",
+					"name" : "GCStest.exe",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "YSjoin.exe::@36f028580bb02cc8272a",
+					"jsonFile" : "target-YSjoin.exe-Debug-1410aec7ea21c3e10e59.json",
+					"name" : "YSjoin.exe",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "YSmeet.exe::@36f028580bb02cc8272a",
+					"jsonFile" : "target-YSmeet.exe-Debug-8f84b0046c31f9b5d3e2.json",
+					"name" : "YSmeet.exe",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "Yinsettest.exe::@36f028580bb02cc8272a",
+					"jsonFile" : "target-Yinsettest.exe-Debug-c6131bf02f98ea57976f.json",
+					"name" : "Yinsettest.exe",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "findneartritest.exe::@36f028580bb02cc8272a",
+					"jsonFile" : "target-findneartritest.exe-Debug-b2d68693b23cbab488af.json",
+					"name" : "findneartritest.exe",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "locatetest.exe::@36f028580bb02cc8272a",
+					"jsonFile" : "target-locatetest.exe-Debug-ba49b982183f1cffab48.json",
+					"name" : "locatetest.exe",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "pastetest.exe::@36f028580bb02cc8272a",
+					"jsonFile" : "target-pastetest.exe-Debug-9123a3aa8fa83a2dca5a.json",
+					"name" : "pastetest.exe",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "planetest.exe::@36f028580bb02cc8272a",
+					"jsonFile" : "target-planetest.exe-Debug-7569d53ea9379f4482d9.json",
+					"name" : "planetest.exe",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "prepastetest.exe::@36f028580bb02cc8272a",
+					"jsonFile" : "target-prepastetest.exe-Debug-ae650be010f33e504ba5.json",
+					"name" : "prepastetest.exe",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "reFacBoundarytest.exe::@36f028580bb02cc8272a",
+					"jsonFile" : "target-reFacBoundarytest.exe-Debug-586d63993178be77d88d.json",
+					"name" : "reFacBoundarytest.exe",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "removeoverlaptest.exe::@36f028580bb02cc8272a",
+					"jsonFile" : "target-removeoverlaptest.exe-Debug-2123ee9abc47cf85d969.json",
+					"name" : "removeoverlaptest.exe",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "triangletest.exe::@36f028580bb02cc8272a",
+					"jsonFile" : "target-triangletest.exe-Debug-101da9c00bfb14719127.json",
+					"name" : "triangletest.exe",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "triangulationtest.exe::@36f028580bb02cc8272a",
+					"jsonFile" : "target-triangulationtest.exe-Debug-1b9cf307cd9e7f08cf9b.json",
+					"name" : "triangulationtest.exe",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "triintersecttest.exe::@36f028580bb02cc8272a",
+					"jsonFile" : "target-triintersecttest.exe-Debug-6cd53a63d96990398f82.json",
+					"name" : "triintersecttest.exe",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/yan/Desktop/svn/teamworkgit/Yinsets3D_boolean/build",
+		"source" : "/home/yan/Desktop/svn/teamworkgit/Yinsets3D_boolean"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 2
+	}
+}
