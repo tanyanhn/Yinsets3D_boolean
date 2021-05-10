@@ -1,18 +1,12 @@
 #ifndef FINDNEARTRIANGLE_H
 #define FINDNEARTRIANGLE_H
 
-// #ifndef M_PI
-// #define M_PI 3.14159265358979323846
-// #endif
-
 #include "Segment.h"
 #include "Triangle.h"
 
 namespace YSB {
 template <class T>
 struct FindNearTriangle {
-  //   std::vector<Triangle<T, 3>> triangleA, triangleB;
-
   std::pair<int, int> operator()(const Triangle<T, 3>& Tri,
                                  const Segment<T, 3>& edge,
                                  const std::vector<Triangle<T, 3>>& triangleA,

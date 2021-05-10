@@ -23,8 +23,8 @@ struct Locate {
                  Real tol = TOL);
   void operator()(const std::vector<Triangle<T, 3>>& inputA,
                   const std::vector<Triangle<T, 3>>& inputB,
-                  int ifboundA,
-                  int ifboundB,
+                  int ifBoundA,
+                  int ifBoundB,
                   std::vector<Triangle<T, 3>>& vecTriA,
                   std::vector<Triangle<T, 3>>& vecTriB,
                   std::vector<SurfacePatch<T>>& vecSPA,
@@ -75,7 +75,7 @@ inline int Locate<T>::operator()(const std::vector<Triangle<T, 3>>& yinset,
   while (1) {
     Vec<T, 3> dir = RandomDirection<T>();
     Line<T, 3> l(p, dir);
-    std::vector<Point<T, 3>> intsp;
+    std::vector<Point<T, 3>> intsP;
     std::vector<int> record;
 
     for (size_t i = 0; i < yinset.size(); i++) {
@@ -85,40 +85,40 @@ inline int Locate<T>::operator()(const std::vector<Triangle<T, 3>>& yinset,
         if (norm(p - tmpres[0]) < tol)
           return 0;
 
-        intsp.push_back(tmpres[0]);
+        intsP.push_back(tmpres[0]);
         record.push_back(i);
       } else if (tri.intersect(l, tmpres) == 2) {
         Segment<T, 3> s(tmpres[0], tmpres[1]);
         if (s.containPoint(p, s.majorDim()) != Segment<T, 3>::locType::Outer)
           return 0;
         else {
-          intsp.push_back(tmpres[0]);
-          intsp.push_back(tmpres[1]);
+          intsP.push_back(tmpres[0]);
+          intsP.push_back(tmpres[1]);
           record.push_back(i);
           record.push_back(i);
         }
       }
     }
 
-    if (intsp.size() == 0)
+    if (intsP.size() == 0)
       return -2;
 
     T min_D = YSB::GreatValue;
-    Point<T, 3> tmpp;
+    Point<T, 3> tmpP;
     int index;
-    for (size_t i = 0; i < intsp.size(); i++) {
-      auto ip = intsp[i];
+    for (size_t i = 0; i < intsP.size(); i++) {
+      auto ip = intsP[i];
       if (norm(ip - p) < min_D) {
-        tmpp = ip;
+        tmpP = ip;
         min_D = norm(ip - p);
         index = i;
       }
     }
 
-    if (yinset[record[index]].locate(tmpp) == Triangle<T, 3>::locType::Inter) {
+    if (yinset[record[index]].locate(tmpP) == Triangle<T, 3>::locType::Inter) {
       auto pla = yinset[record[index]].new_pla();
       Vec<T, 3> norm = pla->normVec;
-      return (dot(norm, tmpp - p) > 0 ? 1 : -1);
+      return (dot(norm, tmpP - p) > 0 ? 1 : -1);
     }
   }
 }
@@ -143,8 +143,8 @@ inline int Locate<T>::operator()(const std::vector<Triangle<T, 3>>& yinset,
 template <class T>
 inline void Locate<T>::operator()(const std::vector<Triangle<T, 3>>& inputA,
                                   const std::vector<Triangle<T, 3>>& inputB,
-                                  int ifboundA,
-                                  int ifboundB,
+                                  int ifBoundA,
+                                  int ifBoundB,
                                   std::vector<Triangle<T, 3>>& vecTriA,
                                   std::vector<Triangle<T, 3>>& vecTriB,
                                   std::vector<SurfacePatch<T>>& vecSPA,
@@ -153,7 +153,7 @@ inline void Locate<T>::operator()(const std::vector<Triangle<T, 3>>& inputA,
   for (auto&& iSP : vecSPA) {
     if (iSP.removed == false) {
       int k = this->operator()(inputB, vecTriA, iSP, tol);
-      if (ifboundB == 0 && k == -2)
+      if (ifBoundB == 0 && k == -2)
         k = 1;
       if (k < 0) {
         iSP.removed = true;
@@ -171,7 +171,7 @@ inline void Locate<T>::operator()(const std::vector<Triangle<T, 3>>& inputA,
   for (auto&& iSP : vecSPB) {
     if (iSP.removed == false) {
       int k = this->operator()(inputA, vecTriB, iSP, tol);
-      if (ifboundA == 0 && k == -2)
+      if (ifBoundA == 0 && k == -2)
         k = 1;
       if (k < 0) {
         iSP.removed = true;

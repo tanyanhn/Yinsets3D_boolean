@@ -1,29 +1,31 @@
 #ifndef OBJINPUT_H
 #define OBJINPUT_H
 
-#include "YinSet.h"
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
 
-namespace YSB {
-template <class T> class YinSet;
+#include "YinSet.h"
 
-YinSet<Real> objInput(const std::string &s, Real tol = TOL) {
+namespace YSB {
+template <class T>
+class YinSet;
+
+inline YinSet<Real> objInput(const std::string& s, Real tol = TOL) {
   std::ifstream infile(s);
   PointCompare pCmp(tol);
   if (infile.is_open()) {
     std::vector<Triangle<Real, 3>> vectri;
-    std::vector<Point<Real, 3>> vecp;
+    std::vector<Point<Real, 3>> vecP;
     std::vector<GluingCompactSurface<Real>> vecgcs;
     std::string ss, s1, s2, s3, s4;
     if (s.back() == 'j') {
       while (!infile.eof()) {
         int vn = 0;
-        int vnum = 0;
-        int fnum = 0;
+        int vNum = 0;
+        int fNum = 0;
 
         while (getline(infile, ss)) {
           std::istringstream in(ss);
@@ -35,12 +37,12 @@ YinSet<Real> objInput(const std::string &s, Real tol = TOL) {
             } else if (ss[1] == 't') {
               ;
             } else {
-              vnum++;
+              vNum++;
               Real p[3];
               p[0] = stod(s2);
               p[1] = stod(s3);
               p[2] = stod(s4);
-              vecp.emplace_back(p);
+              vecP.emplace_back(p);
             }
           }
 
@@ -57,11 +59,11 @@ YinSet<Real> objInput(const std::string &s, Real tol = TOL) {
             for (int k = 0; s4[k] != '/' && s4[k] != 0; k++) {
               c = c * 10 + (s4[k] - 48);
             }
-            fnum++;
+            fNum++;
             a--;
             b--;
             c--;
-            Point<Real, 3> tp[3] = {vecp[a], vecp[b], vecp[c]};
+            Point<Real, 3> tp[3] = {vecP[a], vecP[b], vecP[c]};
             // if (pCmp.compare(tp[0], tp[1]) != 0 &&
             //     pCmp.compare(tp[1], tp[2]) != 0 &&
             //     pCmp.compare(tp[2], tp[0]) != 0)
@@ -89,8 +91,8 @@ YinSet<Real> objInput(const std::string &s, Real tol = TOL) {
     } else if (s.back() == 'y') {
       while (!infile.eof()) {
         // int vn = 0;
-        int vnum = 0;
-        int fnum = 0;
+        int vNum = 0;
+        int fNum = 0;
         int header = 0;
 
         while (getline(infile, ss)) {
@@ -106,12 +108,12 @@ YinSet<Real> objInput(const std::string &s, Real tol = TOL) {
               continue;
             }
           } else if (s4.empty()) {
-            vnum++;
+            vNum++;
             Real p[3];
             p[0] = stod(s1);
             p[1] = stod(s2);
             p[2] = stod(s3);
-            vecp.emplace_back(p);
+            vecP.emplace_back(p);
           } else if (ss[0] == '3') {
             int a = 0, b = 0, c = 0;
             for (int k = 0; s2[k] != '/' && s2[k] != 0; k++) {
@@ -125,8 +127,8 @@ YinSet<Real> objInput(const std::string &s, Real tol = TOL) {
             for (int k = 0; s4[k] != '/' && s4[k] != 0; k++) {
               c = c * 10 + (s4[k] - 48);
             }
-            fnum++;
-            Point<Real, 3> tp[3] = {vecp[a], vecp[b], vecp[c]};
+            fNum++;
+            Point<Real, 3> tp[3] = {vecP[a], vecP[b], vecP[c]};
             if (pCmp.compare(tp[0], tp[1]) != 0 &&
                 pCmp.compare(tp[1], tp[2]) != 0 &&
                 pCmp.compare(tp[2], tp[0]) != 0) {
@@ -149,6 +151,6 @@ YinSet<Real> objInput(const std::string &s, Real tol = TOL) {
   return YinSet<Real>(std::vector<GluingCompactSurface<Real>>(), 0, tol);
 }
 
-} // namespace YSB
+}  // namespace YSB
 
-#endif // !OBJINPUT
+#endif  // !OBJINPUT

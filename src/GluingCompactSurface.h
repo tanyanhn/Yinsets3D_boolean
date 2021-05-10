@@ -50,20 +50,15 @@ class GluingCompactSurface {
       calType(tol);
   }
 
-  void collapse(
-      std::vector<Triangle<T, 3>>& rs,
-      //   std::map<Segment<T, 3>, std::vector<int>, SegmentCompare> segs,
-      int idYinset,
-      int idFace) const {
+  void collapse(std::vector<Triangle<T, 3>>& rs,
+                int idYinset,
+                int idFace) const {
     int size = rs.size();
     for (auto tri : vecTriangle) {
       tri.id() = size;
       for (auto ie = 0; ie < 3; ++ie) {
         tri.ed(ie).IntersectionSeg() = 0;
         tri.ed(ie).neighborhood().clear();
-        // auto it = segs.insert({tri.ed(ie), std::vector<int>(idYinset,
-        // tri.id())}); if (!it.second)
-        //     (it.first)->second.emplace_back({idYinset, tri.id()});
       }
       tri.inF() = {idYinset, idFace};
       rs.push_back(tri);
@@ -151,8 +146,6 @@ class GluingCompactSurface {
   FacType& Type() { return type; }
 
   const FacType& Type() const { return type; }
-
-  //~GluingCompactSurface();
 };
 
 }  // namespace YSB

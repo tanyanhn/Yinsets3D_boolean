@@ -9,16 +9,16 @@
 #include "PointCompare.h"
 #include "Segment.h"
 #include "SegmentCompare.h"
-// Test git
 
 namespace YSB {
 template <class T, int Dim>
 class Triangle;
 
 template <class T>
-inline void RemoveTriangle(std::vector<Triangle<T, 3>> &vecTriA,
-                           std::vector<Triangle<T, 3>> &vecTriB,
-                           std::vector<Triangle<T, 3>> &vecTri, const int id,
+inline void RemoveTriangle(std::vector<Triangle<T, 3>>& vecTriA,
+                           std::vector<Triangle<T, 3>>& vecTriB,
+                           std::vector<Triangle<T, 3>>& vecTri,
+                           const int id,
                            Real tol);
 
 template <class T>
@@ -49,23 +49,24 @@ class Triangle {
 
   friend struct FindNearTriangle<T>;
   friend struct RemoveOverlap<T>;
-  friend void RemoveTriangle<T>(std::vector<Triangle<T, 3>> &vecTriA,
-                                std::vector<Triangle<T, 3>> &vecTriB,
-                                std::vector<Triangle<T, 3>> &vecTri,
-                                const int id, Real tol);
+  friend void RemoveTriangle<T>(std::vector<Triangle<T, 3>>& vecTriA,
+                                std::vector<Triangle<T, 3>>& vecTriB,
+                                std::vector<Triangle<T, 3>>& vecTri,
+                                const int id,
+                                Real tol);
 
  private:
   Point<T, Dim> vertex[3];
   Segment<T, Dim> edge[3];
   std::pair<int, int> inFace = {-1, -1};
-  mutable Plane<T> *pla;
+  mutable Plane<T>* pla;
   mutable int identity = -1;
   bool removed = false;
 
  public:
   // Constructor
   Triangle() : pla(nullptr) {}
-  explicit Triangle(const Point<T, Dim> *vecP) : pla(nullptr) {
+  explicit Triangle(const Point<T, Dim>* vecP) : pla(nullptr) {
     vertex[0] = vecP[0];
     vertex[1] = vecP[1];
     vertex[2] = vecP[2];
@@ -73,7 +74,7 @@ class Triangle {
     edge[1] = Segment<T, Dim>(vertex[1], vertex[2]);
     edge[2] = Segment<T, Dim>(vertex[2], vertex[0]);
   }
-  explicit Triangle(const Segment<T, Dim> *vecSeg) : pla(nullptr) {
+  explicit Triangle(const Segment<T, Dim>* vecSeg) : pla(nullptr) {
     vertex[0] = vecSeg[0][0];
     vertex[1] = vecSeg[1][0];
     vertex[2] = vecSeg[2][0];
@@ -81,7 +82,7 @@ class Triangle {
     edge[1] = vecSeg[1];
     edge[2] = vecSeg[2];
   }
-  Triangle &operator=(const Triangle<T, Dim> &rhs) {
+  Triangle& operator=(const Triangle<T, Dim>& rhs) {
     vertex[0] = rhs.vertex[0];
     vertex[1] = rhs.vertex[1];
     vertex[2] = rhs.vertex[2];
@@ -93,13 +94,14 @@ class Triangle {
     pla = nullptr;
     return *this;
   }
-  Triangle(const Triangle<T, Dim> &rhs) { *this = rhs; }
+  Triangle(const Triangle<T, Dim>& rhs) { *this = rhs; }
   ~Triangle() {
-    if (pla != nullptr) delete pla;
+    if (pla != nullptr)
+      delete pla;
   };
 
   // Compare
-  bool equal(const Triangle<T, Dim> &rhs, Real tol = TOL) const {
+  bool equal(const Triangle<T, Dim>& rhs, Real tol = TOL) const {
     PointCompare cmp(tol);
     if (cmp.compare(vertex[0], rhs.vertex[0]) == 0 ||
         cmp.compare(vertex[0], rhs.vertex[1]) == 0 ||
@@ -118,17 +120,17 @@ class Triangle {
   }
 
   // Accessors
-  Point<T, Dim> &vert(int i) { return vertex[i]; }
-  const Point<T, Dim> &vert(int i) const { return vertex[i]; }
+  Point<T, Dim>& vert(int i) { return vertex[i]; }
+  const Point<T, Dim>& vert(int i) const { return vertex[i]; }
 
-  Segment<T, Dim> &ed(int i) { return edge[i]; }
-  const Segment<T, Dim> &ed(int i) const { return edge[i]; }
+  Segment<T, Dim>& ed(int i) { return edge[i]; }
+  const Segment<T, Dim>& ed(int i) const { return edge[i]; }
 
-  int &id(int i = 0) { return identity += i; }
-  const int &id(int i = 0) const { return identity += i; }
+  int& id(int i = 0) { return identity += i; }
+  const int& id(int i = 0) const { return identity += i; }
 
-  std::pair<int, int> &inF() { return inFace; }
-  const std::pair<int, int> &inF() const { return inFace; }
+  std::pair<int, int>& inF() { return inFace; }
+  const std::pair<int, int>& inF() const { return inFace; }
 
   bool IfRemoved() const { return removed; }
 
@@ -145,8 +147,9 @@ class Triangle {
   }
 
   // Update pointer pla.
-  Plane<T> *new_pla() const {
-    if (pla != nullptr) delete pla;
+  Plane<T>* new_pla() const {
+    if (pla != nullptr)
+      delete pla;
     pla = new Plane<T>(vertex[0],
                        cross(vertex[1] - vertex[0], vertex[2] - vertex[0]));
     pla->normVec = normalize(pla->normVec) * perimeter();
@@ -155,16 +158,18 @@ class Triangle {
 
   // Return norm vector
   auto normVec() const -> decltype(pla->normVec) {
-    if (pla == nullptr) new_pla();
+    if (pla == nullptr)
+      new_pla();
     return pla->normVec;
   }
 
   // Find edge direction in Triangle.
-  int edgeVec(const Segment<T, Dim> &seg, Real tol = TOL) const {
+  int edgeVec(const Segment<T, Dim>& seg, Real tol = TOL) const {
     SegmentCompare cmp(tol);
     int id = -1;
     for (int i = 0; i < Dim; ++i) {
-      if (cmp.compare(edge[i], seg) == 0) id = i;
+      if (cmp.compare(edge[i], seg) == 0)
+        id = i;
     }
     return id;
   }
@@ -189,9 +194,11 @@ class Triangle {
            norm(vertex[2] - vertex[0]);
   }
 
-  bool isParallel(const Triangle<T, Dim> &tri2, Real tol = TOL) const {
-    if (pla == nullptr) new_pla();
-    if (tri2->pla == nullptr) tri2->new_pla();
+  bool isParallel(const Triangle<T, Dim>& tri2, Real tol = TOL) const {
+    if (pla == nullptr)
+      new_pla();
+    if (tri2->pla == nullptr)
+      tri2->new_pla();
 
     auto v1 = pla->normVec, v2 = tri2->pla->normVec;
     Real dist = norm(cross(v1, v2)) / norm(v1);
@@ -199,14 +206,15 @@ class Triangle {
   }
 
   int majorDim(int k = 1) const {
-    if (pla == nullptr) new_pla();
+    if (pla == nullptr)
+      new_pla();
 
     return pla->majorDim(k);
   }
 
   template <class T1, int D>
   struct projectimpl {
-    Triangle<T, D - 1> operator()(const Triangle<T1, D> &tri, int d) {
+    Triangle<T, D - 1> operator()(const Triangle<T1, D>& tri, int d) {
       if (d == -1) {
         d = tri.majorDim();
       }
@@ -220,7 +228,7 @@ class Triangle {
 
   template <class T1>
   struct projectimpl<T1, 2> {
-    Triangle<T, 1> operator()(const Triangle<T1, 2> &tri, int d) {
+    Triangle<T, 1> operator()(const Triangle<T1, 2>& tri, int d) {
       Point<T, 1> v[3];
       v[0] = tri.vert(0).project(d);
       v[1] = tri.vert(1).project(d);
@@ -235,8 +243,9 @@ class Triangle {
   }
 
   // Calculating barycentric coordinates
-  int barycentric(const Point<T, Dim> &p, Real *co, Real tol = TOL) const {
-    if (pla == nullptr) new_pla();
+  int barycentric(const Point<T, Dim>& p, Real* co, Real tol = TOL) const {
+    if (pla == nullptr)
+      new_pla();
     Vec<T, Dim> A[3], E[3];
     A[0] = p - vertex[1], A[1] = p - vertex[2], A[2] = p - vertex[0];
     if (norm(dot(A[0], pla->normVec)) > tol) {
@@ -261,7 +270,7 @@ class Triangle {
   }
 
   // Get Point from its barycentric.
-  Point<T, Dim> barycentric(Real *co) const {
+  Point<T, Dim> barycentric(Real* co) const {
     Vec<T, Dim> A[3];
     Point<T, Dim> zero(0.0);
     A[0] = vertex[0] - zero;
@@ -272,7 +281,7 @@ class Triangle {
   }
 
   // Locating Point with Triangle.
-  Triangle<T, Dim>::locType locate(const Point<T, Dim> &p,
+  Triangle<T, Dim>::locType locate(const Point<T, Dim>& p,
                                    Real tol = TOL) const {
     Real co[3];
     if (barycentric(p, co, tol) == 0)
@@ -280,8 +289,10 @@ class Triangle {
 
     int countzero = 0;
     for (auto d = 0; d < Dim; ++d) {
-      if (co[d] < -tol) return locType::Outer;
-      if (std::abs(co[d]) < tol) ++countzero;
+      if (co[d] < -tol)
+        return locType::Outer;
+      if (std::abs(co[d]) < tol)
+        ++countzero;
     }
 
     if (countzero == 0)
@@ -297,7 +308,7 @@ class Triangle {
   }
 
   // Estimate two Triangle whether intersect.
-  Triangle<T, Dim>::intsType ifIntersect(const Triangle<T, Dim> &tri2,
+  Triangle<T, Dim>::intsType ifIntersect(const Triangle<T, Dim>& tri2,
                                          Real tol = TOL) const {
     Real min1, min2, max1, max2;
 
@@ -305,14 +316,18 @@ class Triangle {
       min1 = std::min(vertex[0][d], std::min(vertex[1][d], vertex[2][d]));
       max2 = std::max(tri2.vertex[0][d],
                       std::max(tri2.vertex[1][d], tri2.vertex[2][d]));
-      if (min1 > max2 + tol) return intsType::Never;
+      if (min1 > max2 + tol)
+        return intsType::Never;
       max1 = std::max(vertex[0][d], std::max(vertex[1][d], vertex[2][d]));
       min2 = std::min(tri2.vertex[0][d],
                       std::min(tri2.vertex[1][d], tri2.vertex[2][d]));
-      if (min2 > max1 + tol) return intsType::Never;
+      if (min2 > max1 + tol)
+        return intsType::Never;
     }
-    if (pla == nullptr) new_pla();
-    if (tri2.pla == nullptr) tri2.new_pla();
+    if (pla == nullptr)
+      new_pla();
+    if (tri2.pla == nullptr)
+      tri2.new_pla();
 
     auto v1 = pla->normVec, v2 = tri2.pla->normVec;
     Real dist = norm(cross(v1, v2)) / norm(v1);
@@ -328,9 +343,11 @@ class Triangle {
   }
 
   // Return number of intersection.
-  int intersect(Line<T, Dim> &l, std::vector<Point<T, Dim>> &result,
+  int intersect(Line<T, Dim>& l,
+                std::vector<Point<T, Dim>>& result,
                 Real tol = TOL) const {
-    if (pla == nullptr) new_pla();
+    if (pla == nullptr)
+      new_pla();
 
     auto dir = normalize(l.direction);
     Real dist = norm(dot(dir, pla->normVec));
@@ -338,14 +355,15 @@ class Triangle {
       if (norm(dot(l.fixpoint - this->vertex[0], pla->normVec)) < 2 * tol) {
         int mDim = majorDim();
         l.moveFixpoint(vertex[0][l.majorDim()], l.majorDim());
-        if (norm(dot(l.fixpoint - vertex[0], pla->normVec)) > tol) return 0;
+        if (norm(dot(l.fixpoint - vertex[0], pla->normVec)) > tol)
+          return 0;
 
         auto projL = l.project(mDim);
         auto projTri = this->project(mDim);
         std::vector<Point<Real, 2>> rs2D;
         projTri.intersect(projL, rs2D, tol);
 
-        for (auto &&ip : rs2D) {
+        for (auto&& ip : rs2D) {
           Real co[3];
           projTri.barycentric(ip, co, tol);
           result.emplace_back(this->barycentric(co));
@@ -363,11 +381,13 @@ class Triangle {
     return 0;
   }
 
-  intsType intersect(const Triangle<T, Dim> &tri2,
-                     std::vector<Segment<T, Dim>> &result,
+  intsType intersect(const Triangle<T, Dim>& tri2,
+                     std::vector<Segment<T, Dim>>& result,
                      Real tol = TOL) const {
-    if (pla == nullptr) new_pla();
-    if (tri2.pla == nullptr) tri2.new_pla();
+    if (pla == nullptr)
+      new_pla();
+    if (tri2.pla == nullptr)
+      tri2.new_pla();
 
     intsType intsT = ifIntersect(tri2, tol);
 
@@ -377,7 +397,7 @@ class Triangle {
 
       std::vector<Segment<Real, 2>> rs2D;
       projTri1.intersect(projTri2, rs2D, tol);
-      for (auto &&ip : rs2D) {
+      for (auto&& ip : rs2D) {
         Real stCo[3], fnCo[3];
         projTri1.barycentric(ip[0], stCo, tol);
         projTri1.barycentric(ip[1], fnCo, tol);
@@ -409,8 +429,9 @@ class Triangle {
       auto projTri = this->project(mDim);
       std::vector<Point<Real, 2>> rs2D;
       projTri.intersect(projL, rs2D, tol);
-      if (rs2D.size() == 0) return intsType::Never;
-      for (auto &&ip : rs2D) {
+      if (rs2D.size() == 0)
+        return intsType::Never;
+      for (auto&& ip : rs2D) {
         Real co[3];
         projTri.barycentric(ip, co, tol);
         pts.emplace_back(this->barycentric(co));
@@ -424,8 +445,9 @@ class Triangle {
       projTri = tri2.project(mDim);
       rs2D.clear();
       projTri.intersect(projL, rs2D, tol);
-      if (rs2D.size() == 0) return intsType::Never;
-      for (auto &&ip : rs2D) {
+      if (rs2D.size() == 0)
+        return intsType::Never;
+      for (auto&& ip : rs2D) {
         Real co[3];
         projTri.barycentric(ip, co, tol);
         pts.emplace_back(tri2.barycentric(co));
@@ -452,25 +474,26 @@ class Triangle {
 };
 
 template <>
-inline int Triangle<Real, 2>::intersect(Line<Real, 2> &l,
-                                        std::vector<Point<Real, 2>> &result,
+inline int Triangle<Real, 2>::intersect(Line<Real, 2>& l,
+                                        std::vector<Point<Real, 2>>& result,
                                         Real tol) const {
   for (auto i = 0; i < 3; ++i) {
     intersectSegLine(edge[i], l, result, tol);
   }
   std::set<Point<Real, 2>, PointCompare> setp;
-  for (auto &&ip : result) {
+  for (auto&& ip : result) {
     setp.insert(ip);
   }
   result.clear();
-  for (auto &&ip : setp) {
+  for (auto&& ip : setp) {
     result.push_back(ip);
   }
   return result.size();
 }
 
 template <>
-inline int Triangle<Real, 2>::barycentric(const Point<Real, 2> &p, Real *co,
+inline int Triangle<Real, 2>::barycentric(const Point<Real, 2>& p,
+                                          Real* co,
                                           Real) const {
   Vec<Real, 2> A[3], E[3];
   A[0] = p - vertex[1], A[1] = p - vertex[2], A[2] = p - vertex[0];
@@ -490,7 +513,8 @@ inline int Triangle<Real, 2>::barycentric(const Point<Real, 2> &p, Real *co,
 
 template <>
 inline Triangle<Real, 2>::intsType Triangle<Real, 2>::intersect(
-    const Triangle<Real, 2> &tri2, std::vector<Segment<Real, 2>> &result,
+    const Triangle<Real, 2>& tri2,
+    std::vector<Segment<Real, 2>>& result,
     Real tol) const {
   for (auto i = 0; i < 3; ++i) {
     Line<Real, 2> l = tri2.edge[i].getLine();
@@ -544,17 +568,17 @@ inline Triangle<Real, 2>::intsType Triangle<Real, 2>::intersect(
 }
 
 template <class T, int Dim>
-Interval<Dim> boundingBox(const Triangle<T, Dim> &c) {
+Interval<Dim> boundingBox(const Triangle<T, Dim>& c) {
   std::vector<Triangle<T, Dim>> vc{c};
   return boundingBox(vc);
 }
 
 template <class T, int Dim>
-Interval<Dim> boundingBox(const std::vector<Triangle<T, Dim>> &vc) {
+Interval<Dim> boundingBox(const std::vector<Triangle<T, Dim>>& vc) {
   Vec<Real, Dim> lower(std::numeric_limits<Real>::max());
   Vec<Real, Dim> upper = -lower;
   Point<Real, Dim> zero(0.0);
-  for (const auto &c : vc) {
+  for (const auto& c : vc) {
     for (std::size_t i = 0; i < 3; ++i) {
       lower = min(lower, c.vert(i) - zero);
       upper = max(upper, c.vert(i) - zero);

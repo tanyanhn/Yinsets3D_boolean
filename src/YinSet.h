@@ -185,7 +185,6 @@ inline void YinSet<T>::ensureFace(Real tol, int m) {
 
       if (rT.second != false) {
         auto itI = allSegI.insert({tri.ed(ie), std::set<int>()});
-        // auto rI =
         itI.first->second.insert(i);
       }
     }

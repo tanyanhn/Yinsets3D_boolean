@@ -15,20 +15,14 @@ struct itCmp : public std::less<T> {
   explicit itCmp(Real tol = TOL) : cmp(tol) {}
   bool operator()(const T it1, const T it2) const { return cmp(*it1, *it2); }
 };
-// int iterationA = 0, iterationB = 0;
 template <class T>
 struct Triangulation {
-  // std::map<int, std::vector<int>> TriangulateA, TriangulateB;
   std::vector<std::vector<int>> TriangulateA, TriangulateB;
   std::vector<Triangle<T, 3>> vecTriA, vecTriB;
 
   void operator()(
       const std::vector<Triangle<T, 3>>& inputA,
       const std::vector<Triangle<T, 3>>& inputB,
-      // std::map<int, std::pair<std::vector<Segment<T, 3>>,
-      // std::vector<std::pair<int, int>>>> &resultA, std::map<int,
-      // std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int,
-      // int>>>> &resultB,
       std::vector<std::pair<std::vector<Segment<T, 3>>,
                             std::vector<std::pair<int, int>>>>& resultA,
       std::vector<std::pair<std::vector<Segment<T, 3>>,
@@ -41,10 +35,6 @@ struct Triangulation {
   void tryEveryDiagonal(
       const std::vector<Triangle<T, 3>>& inputA,
       const std::vector<Triangle<T, 3>>& inputB,
-      // std::map<int, std::pair<std::vector<Segment<T, 3>>,
-      // std::vector<std::pair<int, int>>>> &resultA, std::map<int,
-      // std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int,
-      // int>>>> &resultB,
       std::vector<std::pair<std::vector<Segment<T, 3>>,
                             std::vector<std::pair<int, int>>>>& resultA,
       std::vector<std::pair<std::vector<Segment<T, 3>>,
@@ -72,29 +62,19 @@ struct Triangulation {
       std::set<Segment<T, 3>, SegmentCompare>& allSeg = mapallSeg[idInput];
       near.clear();
       TriangulateA.resize(itRs.first + 1);
-      // if(itRs.first == 104)
-      // {
-      //     int a = 1;
-      // }
-      this->clipSegment(
-          // itRs.second
-          resultA[i], allP, allSeg, near, pCmp, segCmp, tol);
-      this->addSegment(idInput,
-                       //  itRs.second.second
-                       resultA[i].second, allP, allSeg, near, segCmp, tol);
+
+      this->clipSegment(resultA[i], allP, allSeg, near, pCmp, segCmp, tol);
+      this->addSegment(idInput, resultA[i].second, allP, allSeg, near, segCmp,
+                       tol);
       this->generatorTriangle(inputA[itRs.first], idInput, allSeg, near,
                               normVec, vecTriA, TriangulateA, pCmp, segCmp,
                               tol);
-      this->addSegmentToOverlap(
-          // itRs.second.second
-          resultA[i].second, done, allSeg, inputA, inputB, resultA, resultB,
-          tol);
+      this->addSegmentToOverlap(resultA[i].second, done, allSeg, inputA, inputB,
+                                resultA, resultB, tol);
     }
 
-    // for (auto &&itRs : resultB)
     for (size_t i = 0; i < resultB.size(); ++i) {
       auto itRs = make_pair(i, resultB[i]);
-      // iterationB++;
       int idYinset = 2;
       auto normVec = inputB[itRs.first].normVec();
       std::pair<int, int> idInput(idYinset, itRs.first);
@@ -107,19 +87,14 @@ struct Triangulation {
       near.clear();
       TriangulateB.resize(itRs.first + 1);
 
-      this->clipSegment(
-          // itRs.second
-          resultB[i], allP, allSeg, near, pCmp, segCmp, tol);
-      this->addSegment(idInput,
-                       // itRs.second.second
-                       resultB[i].second, allP, allSeg, near, segCmp, tol);
+      this->clipSegment(resultB[i], allP, allSeg, near, pCmp, segCmp, tol);
+      this->addSegment(idInput, resultB[i].second, allP, allSeg, near, segCmp,
+                       tol);
       this->generatorTriangle(inputB[itRs.first], idInput, allSeg, near,
                               normVec, vecTriB, TriangulateB, pCmp, segCmp,
                               tol);
-      this->addSegmentToOverlap(
-          // itRs.second.second
-          resultB[i].second, done, allSeg, inputA, inputB, resultA, resultB,
-          tol);
+      this->addSegmentToOverlap(resultB[i].second, done, allSeg, inputA, inputB,
+                                resultA, resultB, tol);
     }
 
     this->updateEdgeNeighbor(tol);
@@ -194,10 +169,6 @@ struct Triangulation {
       const std::set<Segment<T, 3>, SegmentCompare>& allSeg,
       const std::vector<Triangle<T, 3>>& inputA,
       const std::vector<Triangle<T, 3>>& inputB,
-      // std::map<int, std::pair<std::vector<Segment<T, 3>>,
-      // std::vector<std::pair<int, int>>>> &resultA, std::map<int,
-      // std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int,
-      // int>>>> &resultB,
       std::vector<std::pair<std::vector<Segment<T, 3>>,
                             std::vector<std::pair<int, int>>>>& resultA,
       std::vector<std::pair<std::vector<Segment<T, 3>>,
@@ -206,12 +177,10 @@ struct Triangulation {
     for (auto&& idOverlapInput : allOverlap) {
       if (done.find(idOverlapInput) == done.end()) {
         if (idOverlapInput.first == 1) {
-          // auto it = resultA.find(idOverlapInput.second);
           auto it = resultA.begin() + idOverlapInput.second;
           assert(it != resultA.end() && "Triangulation::dealOverlap.");
           this->dealOverlap(inputA.at(idOverlapInput.second), allSeg, it, tol);
         } else if (idOverlapInput.first == 2) {
-          // auto it = resultB.find(idOverlapInput.second);
           auto it = resultB.begin() + idOverlapInput.second;
           assert(it != resultB.end() && "Triangulation::dealOverlap.");
           this->dealOverlap(inputB.at(idOverlapInput.second), allSeg, it, tol);
@@ -366,7 +335,6 @@ struct Triangulation {
                    const PointCompare& pCmp,
                    const SegmentCompare& segCmp,
                    Real tol = TOL) {
-    // std::set<Point<T, 3>, PointCompare> allP(pCmp);
     std::map<Segment<T, 3>, std::set<Point<T, 3>, PointCompare>, SegmentCompare>
         clip(segCmp);
 
@@ -469,14 +437,12 @@ struct Triangulation {
           assert(false && "Segment already exist while not in near[p0].");
 
         auto itNear = near.find(*itp0);
-        //  auto itNear = near.insert({*itp0, {itSeg.first}});
         if (itNear == near.end())
           assert(false && "new point while add segment.");
         else
           (itNear->second).insert(newSeg);
 
         itNear = near.find(*itp1);
-        //   itNear = near.insert({*itp1, {itSeg.first}});
         if (itNear == near.end())
           assert(false && "new point while add segment.");
         else

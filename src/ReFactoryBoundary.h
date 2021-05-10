@@ -35,7 +35,6 @@ struct ReFactoryBoundary {
         comb;
 
     for (auto&& itCF : ClipFaces) {
-      // All.insert(itCF.first);
       All.insert(itCF.second.begin(), itCF.second.end());
     }
 
@@ -206,7 +205,6 @@ struct ReFactoryBoundary {
           (*(vecSPar[idVecSP.first - 1]))[idVecSP.second].bound().erase(it);
       }
     }
-    // }
   }
 };
 

@@ -91,7 +91,8 @@
         "xxatomic": "cpp"
     },
     "cSpell.words": [
-        "hasse"
+        "hasse",
+        "stod"
     ],
     "cSpell.ignoreWords": [
         "gcss",

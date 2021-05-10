@@ -32,7 +32,12 @@
 *.app
 
 core
-.history/
+/.history/
 *.zip
 *.ply
 happy.obj
+*.pdf
+*.log
+*.aux
+**build/
+**debug/

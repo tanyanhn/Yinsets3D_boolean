@@ -11,16 +11,10 @@ namespace YSB {
 template <class T>
 struct RemoveOverlap {
   void operator()(
-      // std::map<int, std::vector<int>> &TriangulateA,
-      // std::map<int, std::vector<int>> &TriangulateB,
       std::vector<std::vector<int>>& TriangulateA,
       std::vector<std::vector<int>>& TriangulateB,
       std::vector<Triangle<T, 3>>& vecTriA,
       std::vector<Triangle<T, 3>>& vecTriB,
-      // std::map<int, std::pair<std::vector<Segment<T, 3>>,
-      // std::vector<std::pair<int, int>>>> &resultA, std::map<int,
-      // std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int,
-      // int>>>> &resultB,
       std::vector<std::pair<std::vector<Segment<T, 3>>,
                             std::vector<std::pair<int, int>>>>& resultA,
       std::vector<std::pair<std::vector<Segment<T, 3>>,
@@ -31,36 +25,23 @@ struct RemoveOverlap {
   }
 
   void TriangulateRemove(
-      // std::map<int, std::vector<int>> &TriangulateA,
-      // std::map<int, std::vector<int>> &TriangulateB,
       std::vector<std::vector<int>>& TriangulateA,
       std::vector<std::vector<int>>& TriangulateB,
       std::vector<Triangle<T, 3>>& vecTriA,
       std::vector<Triangle<T, 3>>& vecTriB,
-      // std::map<int, std::pair<std::vector<Segment<T, 3>>,
-      // std::vector<std::pair<int, int>>>> &resultA, std::map<int,
-      // std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int,
-      // int>>>> &resultB,
       std::vector<std::pair<std::vector<Segment<T, 3>>,
                             std::vector<std::pair<int, int>>>>& resultA,
       std::vector<std::pair<std::vector<Segment<T, 3>>,
                             std::vector<std::pair<int, int>>>>& resultB,
       Real tol);
-  // void RemoveTriangle(std::vector<Triangle<T, 3>> &vecTri, const int id);
 };
 
 template <class T>
 inline void RemoveOverlap<T>::TriangulateRemove(
-    // std::map<int, std::vector<int>> &TriangulateA,
-    // std::map<int, std::vector<int>> &TriangulateB,
     std::vector<std::vector<int>>& TriangulateA,
     std::vector<std::vector<int>>& TriangulateB,
     std::vector<Triangle<T, 3>>& vecTriA,
     std::vector<Triangle<T, 3>>& vecTriB,
-    // std::map<int, std::pair<std::vector<Segment<T, 3>>,
-    // std::vector<std::pair<int, int>>>> &resultA, std::map<int,
-    // std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>>
-    // &resultB,
     std::vector<std::pair<std::vector<Segment<T, 3>>,
                           std::vector<std::pair<int, int>>>>& resultA,
     std::vector<std::pair<std::vector<Segment<T, 3>>,

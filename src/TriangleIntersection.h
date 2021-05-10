@@ -2,9 +2,7 @@
 #define TRIANGLEINTERSECTION_H
 
 #include <omp.h>
-
 #include <map>
-
 #include "Triangle.h"
 #include "TriangleCompare.h"
 
@@ -22,7 +20,7 @@ struct TriangleIntersection {
 
   typedef typename std::vector<
       std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>>*
-      Resultp;
+      ResultPointer;
   void operator()(const std::vector<Triangle<T, 3>>& inputA,
                   const std::vector<Triangle<T, 3>>& inputB,
                   Real tol = TOL,
@@ -33,7 +31,7 @@ struct TriangleIntersection {
   void work2(const std::vector<Triangle<T, 3>>& inputA,
              const std::vector<Triangle<T, 3>>& inputB,
              Real tol = TOL);
-  void assureworksame(Resultp* backup, Resultp* result);
+  void assureworksame(ResultPointer* backup, ResultPointer* result);
 };
 
 template <class T>
@@ -61,19 +59,20 @@ inline void TriangleIntersection<T>::operator()(
 }
 
 template <class T>
-void TriangleIntersection<T>::assureworksame(Resultp* backup, Resultp* result) {
+void TriangleIntersection<T>::assureworksame(ResultPointer* backup,
+                                             ResultPointer* result) {
   SegmentCompare sCmp(TOL);
-  std::set<Segment<T, 3>, SegmentCompare> segs(sCmp), Bsegs(sCmp);
-  std::set<std::pair<int, int>> laps, Blaps;
+  std::set<Segment<T, 3>, SegmentCompare> segs(sCmp), BSegs(sCmp);
+  std::set<std::pair<int, int>> laps, BLaps;
 
   size_t num[2] = {result[0]->size(), result[1]->size()};
 
   for (int k = 0; k < 2; ++k) {
     for (auto i = 0; i < num[k]; ++i) {
       segs.clear();
-      Bsegs.clear();
+      BSegs.clear();
       laps.clear();
-      Blaps.clear();
+      BLaps.clear();
       for (auto seg : (*result[k])[i].first)
         segs.insert(seg);
       for (auto lap : (*result[k])[i].second)
@@ -82,16 +81,16 @@ void TriangleIntersection<T>::assureworksame(Resultp* backup, Resultp* result) {
       for (auto seg : (*backup[k])[i].first) {
         auto it = segs.find(seg);
         assert(it != segs.end() && "result have more seg.");
-        Bsegs.insert(seg);
+        BSegs.insert(seg);
       }
       for (auto lap : (*backup[k])[i].second) {
         auto it = laps.find(lap);
         assert(it != laps.end() && "result have more lap.");
-        Blaps.insert(lap);
+        BLaps.insert(lap);
       }
 
-      assert(Bsegs.size() == segs.size() && "result miss segs");
-      assert(Blaps.size() == laps.size() && "result miss laps");
+      assert(BSegs.size() == segs.size() && "result miss segs");
+      assert(BLaps.size() == laps.size() && "result miss laps");
     }
   }
 

@@ -6,18 +6,19 @@
 #include "SurfacePatch.h"
 
 namespace YSB {
-template <class T> struct Past {
+template <class T>
+struct Past {
   std::vector<GluingCompactSurface<T>> vecGCS;
 
-  void combine(const std::vector<SurfacePatch<T>> &vecFA,
-               const std::vector<SurfacePatch<T>> &vecFB,
-               std::vector<Triangle<T, 3>> &vecTriA,
-               std::vector<Triangle<T, 3>> &vecTriB,
-               std::vector<SurfacePatch<T>> &vecF) {
+  void combine(const std::vector<SurfacePatch<T>>& vecFA,
+               const std::vector<SurfacePatch<T>>& vecFB,
+               std::vector<Triangle<T, 3>>& vecTriA,
+               std::vector<Triangle<T, 3>>& vecTriB,
+               std::vector<SurfacePatch<T>>& vecF) {
     int size = 0;
-    for (auto &&Face : vecFA) {
+    for (auto&& Face : vecFA) {
       if (!Face.IfRemoved()) {
-        for (auto &&it : Face.tris()) {
+        for (auto&& it : Face.tris()) {
           if (it.first == 1)
             vecTriA[it.second].inF() = {1, size};
           else if (it.first == 2)
@@ -28,9 +29,9 @@ template <class T> struct Past {
       }
     }
 
-    for (auto &&Face : vecFB) {
+    for (auto&& Face : vecFB) {
       if (!Face.IfRemoved()) {
-        for (auto &&it : Face.tris()) {
+        for (auto&& it : Face.tris()) {
           if (it.first == 1)
             vecTriA[it.second].inF() = {2, size};
           else if (it.first == 2)
@@ -42,9 +43,10 @@ template <class T> struct Past {
     }
   }
 
-  void operator()(const std::vector<SurfacePatch<T>> &vecF,
-                  const std::vector<Triangle<T, 3>> &vecTriA,
-                  const std::vector<Triangle<T, 3>> &vecTriB, Real tol = TOL) {
+  void operator()(const std::vector<SurfacePatch<T>>& vecF,
+                  const std::vector<Triangle<T, 3>>& vecTriA,
+                  const std::vector<Triangle<T, 3>>& vecTriB,
+                  Real tol = TOL) {
     std::set<int> All, pastF;
     std::vector<int> connectF;
     FindNearTriangle<T> FNToperator;
@@ -62,13 +64,13 @@ template <class T> struct Past {
     All.erase(All.begin());
     pastF.insert(connectF.back());
     while (!All.empty() || !connectF.empty()) {
-      const SurfacePatch<T> &SFP = vecF[connectF.back()];
+      const SurfacePatch<T>& SFP = vecF[connectF.back()];
       markF[connectF.back()] = 0;
       connectF.pop_back();
 
-      for (auto &&it : SFP.bound()) {
-        const Segment<T, 3> &e = it.first;
-        for (auto &&iTri : it.second) {
+      for (auto&& it : SFP.bound()) {
+        const Segment<T, 3>& e = it.first;
+        for (auto&& iTri : it.second) {
           Triangle<T, 3> Tri, nearTri;
           if (iTri.first == 1)
             Tri = vecTriA[iTri.second];
@@ -104,7 +106,7 @@ template <class T> struct Past {
         // if (redund == 0)
         // {
         std::vector<std::pair<int, int>> id;
-        for (auto &&i : pastF) {
+        for (auto&& i : pastF) {
           id.insert(id.end(), vecF[i].tris().begin(), vecF[i].tris().end());
         }
         vecGCS.emplace_back(id, vecTriA, vecTriB, tol);
@@ -123,6 +125,6 @@ template <class T> struct Past {
   }
 };
 
-} // namespace YSB
+}  // namespace YSB
 
-#endif // !PAST_H
+#endif  // !PAST_H
