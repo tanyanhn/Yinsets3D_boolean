@@ -34,3 +34,5 @@
 core
 .history/
 *.zip
+*.ply
+happy.obj

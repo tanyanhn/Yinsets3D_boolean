@@ -44,7 +44,7 @@ TEST_CASE("YinSet meet 1", "[meet]")
        // .meet(y5.complement());
 
        res.objOutput("torus2hole",
-                     inpre + mid2 + "/");
+                     inpre + mid2 + "/", 5);
 
        REQUIRE(res.isBounded() == 1);
        REQUIRE(res.getBettiNumber(0) == 1);

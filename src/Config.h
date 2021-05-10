@@ -6,21 +6,26 @@
 
 #ifdef _unix
 #define _UsBoost
-#endif // _linux
+#endif  // _linux
 
-namespace YSB
-{
-    using Real = double;
-    const Real TOL = 10e-5;
-    const int spaceDim = 3;
-    const Real GreatValue = 10e10;
+#ifdef _intersectTest
+#define _bottleneck_
+#endif  // _intersectTest
+
+namespace YSB {
+using Real = double;
+#ifdef _precise10
+const Real TOL = 1e-8;
+#else
+const Real TOL = 1e-5;
+#endif  // _precise10
+
+const int spaceDim = 3;
+const Real GreatValue = 10e10;
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
-    std::random_device rd;  //Will be used to obtain a seed for the random number engine
-    std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
-    std::uniform_real_distribution<> realdistrib(0, 1);
 
-} // namespace YSB
+}  // namespace YSB
 
-#endif // CONFIG_H
+#endif  // CONFIG_H
