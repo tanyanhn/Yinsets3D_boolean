@@ -5,7 +5,6 @@
 #include <iostream>
 #include <string>
 #include <vector>
-
 #include "../src/YinSet.h"
 
 using namespace std;

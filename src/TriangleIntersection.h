@@ -2,6 +2,7 @@
 #define TRIANGLEINTERSECTION_H
 
 #include <omp.h>
+#include <cstddef>
 #include <map>
 #include "Triangle.h"
 #include "TriangleCompare.h"
@@ -68,7 +69,7 @@ void TriangleIntersection<T>::assureworksame(ResultPointer* backup,
   size_t num[2] = {result[0]->size(), result[1]->size()};
 
   for (int k = 0; k < 2; ++k) {
-    for (auto i = 0; i < num[k]; ++i) {
+    for (size_t i = 0; i < num[k]; ++i) {
       segs.clear();
       BSegs.clear();
       laps.clear();

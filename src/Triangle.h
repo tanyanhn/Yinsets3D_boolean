@@ -224,7 +224,7 @@ class Triangle {
       v[2] = tri.vert(2).project(d);
       return Triangle<T, Dim - 1>(v);
     }
-  };
+  };  // namespace YSB
 
   template <class T1>
   struct projectimpl<T1, 2> {
