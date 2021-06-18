@@ -1,7 +1,7 @@
 #ifndef INTERVAL_H
 #define INTERVAL_H
 
-#include "Vec.h"
+#include "../Vec.h"
 
 ///
 /**

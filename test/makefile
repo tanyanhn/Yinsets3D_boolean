@@ -1,8 +1,14 @@
 
 # CPPFLAGS = -g -std=c++17 -fopenmp
 # CPPFLAGS = -g -std=c++17 -lboost_timer -D_unix 
-CPPFLAGS = -g -std=c++17 -lboost_timer -D_intersectTest 
-YSCPPFLAGS = -g -std=c++17 -lboost_timer -D_intersectTest  -D_precise10
+# CPPFLAGS = -g -std=c++17 -lboost_timer -D_intersectTest 
+# YSCPPFLAGS = -g -std=c++17 -lboost_timer -D_intersectTest  -D_precise10
+CPPFLAGS = -g -std=c++17  -D_intersectTest 
+YSCPPFLAGS = -g -std=c++17  -D_intersectTest  -D_precise10
+
+
+
+
 # CPPFLAGS = -std=c++17
 
 # CPPFLAGS += -fopenmp -D_OMP_

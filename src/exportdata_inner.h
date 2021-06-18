@@ -16,7 +16,8 @@ inline void exportdata_inner(std::string s,
                              std::string folder,
                              int prec) {
   const char* path = folder.c_str();
-  int isCreate = mkdir(path, S_IRUSR | S_IWUSR | S_IXUSR | S_IRWXG | S_IRWXO);
+  //int isCreate = mkdir(path, S_IRUSR | S_IWUSR | S_IXUSR | S_IRWXG | S_IRWXO);
+  int isCreate = mkdir(path);
   if (!isCreate)
     printf("create path:%s\n", path);
   else

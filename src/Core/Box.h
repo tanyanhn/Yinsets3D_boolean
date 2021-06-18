@@ -1,7 +1,7 @@
 #ifndef BOX_H
 #define BOX_H
 
-#include "Vec.h"
+#include "../Vec.h"
 
 namespace YSB
 {
