@@ -9,6 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/test/YSmeet.exe",
+            // "program": "${workspaceRoot}/build/test/reFacBoundarytest.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/test/",
@@ -28,3 +29,36 @@
         }
     ]
 }
+// {
+//     "version": "0.2.0",
+//     "configurations": [
+//         {
+//             "name": "rr",
+//             "type": "cppdbg",
+//             "request": "launch",
+//             "program": "${workspaceRoot}/build/test/reFacBoundarytest.exe",
+//             "args": [],
+//             "miDebuggerServerAddress": "127.0.0.1:50505",
+//             "stopAtEntry": false,
+//             "cwd": "${workspaceRoot}/debug",
+//             "environment": [],
+//             "externalConsole": true,
+//             "linux": {
+//                 "MIMode": "gdb",
+//                 "setupCommands": [
+//                     {
+//                         "description": "Setup to resolve symbols",
+//                         "text": "set sysroot /",
+//                         "ignoreFailures": false
+//                     }
+//                 ]
+//             },
+//             "osx": {
+//                 "MIMode": "gdb"
+//             },
+//             "windows": {
+//                 "MIMode": "gdb"
+//             }
+//         }
+//     ]
+// }

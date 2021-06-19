@@ -11,6 +11,7 @@
         "ctime": "cpp",
         "cwchar": "cpp",
         "cwctype": "cpp",
+        "cassert": "cpp",
         "array": "cpp",
         "atomic": "cpp",
         "hash_map": "cpp",
