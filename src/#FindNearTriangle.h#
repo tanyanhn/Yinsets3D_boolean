@@ -3,7 +3,6 @@
 
 #include "Segment.h"
 #include "Triangle.h"
-#include "TriangleCompare.h"
 
 namespace YSB {
 template <class T>
@@ -18,22 +17,17 @@ struct FindNearTriangle {
                  const Segment<T, 3>& edge,
                  const std::vector<Triangle<T, 3>>& triangles,
                  Real tol = TOL) {
-    auto e = Tri.ed(Tri.edgeVec(edge));
     auto normtri = normalize(
              cross(Tri.vert(1) - Tri.vert(0), Tri.vert(2) - Tri.vert(1))),
-         edgeV = e[1] - e[0];
+         edgeV = edge[1] - edge[0];
 
     Real bestangle = 2 * M_PI;
     int nearTri = -1;
-    TriangleCompare tricmp(tol);
 
     for (size_t idNeighTri = 0; idNeighTri < triangles.size(); ++idNeighTri) {
       Triangle<T, 3> neighborTri = triangles[idNeighTri];
-      if (tricmp.compare(Tri, neighborTri) == 0)
-        continue;
-
-      Segment<T, 3> neighEdge = neighborTri.ed(neighborTri.edgeVec(e, tol)),
-                    Edge = e;
+      Segment<T, 3> neighEdge = neighborTri.ed(neighborTri.edgeVec(edge, tol)),
+                    Edge = Tri.ed(Tri.edgeVec(edge, tol));
 
       PointCompare cmp(tol);
       if (cmp.compare(Edge[0], neighEdge[1]) == 0) {
@@ -69,16 +63,14 @@ inline std::pair<int, int> FindNearTriangle<T>::operator()(
     const std::vector<Triangle<T, 3>>& triangleA,
     const std::vector<Triangle<T, 3>>& triangleB,
     Real tol) const {
-  auto e = Tri.ed(Tri.edgeVec(edge));
   auto normtri = normalize(
            cross(Tri.vert(1) - Tri.vert(0), Tri.vert(2) - Tri.vert(1))),
-       edgeV = e[1] - e[0];
+       edgeV = edge[1] - edge[0];
 
   Real bestangle = 2 * M_PI;
   std::pair<int, int> nearTri = {-1, -1};
-  TriangleCompare tricmp(tol);
 
-  auto neighbor = e.neighborhood();
+  auto neighbor = edge.neighborhood();
   for (auto&& idNeighTri : neighbor) {
     Triangle<T, 3> neighborTri;
     if (idNeighTri.first == 1) {
@@ -91,13 +83,10 @@ inline std::pair<int, int> FindNearTriangle<T>::operator()(
       neighborTri = triangleB[idNeighTri.second];
     }
 
-    if (tricmp.compare(Tri, neighborTri) == 0)
-      continue;
-
-    Segment<T, 3> neighEdge = neighborTri.ed(neighborTri.edgeVec(e, tol));
+    Segment<T, 3> neighEdge = neighborTri.ed(neighborTri.edgeVec(edge, tol));
 
     PointCompare cmp(tol);
-    if (cmp.compare(e[0], neighEdge[1]) == 0) {
+    if (cmp.compare(edge[0], neighEdge[1]) == 0) {
       auto normneightri =
           normalize(cross(neighborTri.vert(1) - neighborTri.vert(0),
                           neighborTri.vert(2) - neighborTri.vert(1)));
