@@ -35,7 +35,7 @@
             "name": "rr",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceRoot}/debug/rrtest.exe",
+            "program": "${workspaceRoot}/build/test/reFacBoundarytest.exe",
             "args": [],
             "miDebuggerServerAddress": "127.0.0.1:50505",
             "stopAtEntry": false,
