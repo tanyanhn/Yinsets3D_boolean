@@ -261,11 +261,20 @@ class Triangle {
     E[1] = vertex[0] - vertex[2];
     E[2] = vertex[1] - vertex[0];
 
-    Vec<T, Dim> area = cross(E[0], E[1]), subarea;
+    Vec<T, Dim> area, subarea[3];
+
+    // for (auto i = 0; i < 3; ++i) {
+    //   subarea = cross(E[i], A[i]);
+    //   co[i] = (subarea / area)[m];
+    // }
 
     for (auto i = 0; i < 3; ++i) {
-      subarea = cross(E[i], A[i]);
-      co[i] = (subarea / area)[m];
+      subarea[i] = cross(E[i], A[i]);
+      area = area + subarea[i];
+    }
+
+    for (auto i = 0; i < 3; ++i) {
+      co[i] = (subarea[i] / area)[m];
     }
     return 1;
   }
