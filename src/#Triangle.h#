@@ -331,7 +331,7 @@ class Triangle {
       tri2.new_pla();
 
     auto v1 = pla->normVec, v2 = tri2.pla->normVec;
-    Real dist = norm(cross(v1, v2)) / norm(v1);
+    Real dist = norm(cross(v1, v2)) / norm(v1) * 10000;
     if (dist < tol) {  // parallel
       Vec<T, Dim> v[9] = {
           vertex[0] - tri2.vertex[0], vertex[1] - tri2.vertex[0],
@@ -350,7 +350,7 @@ class Triangle {
                                   norm(dot(v[8], pla->normVec))));
       Real m = m1 > m2 ? m1 : m2;
       m = m > m3 ? m : m3;
-      m = m / norm(pla->normVec);
+      m = m / norm(pla->normVec) * 10000;
       if (m < tol) {
         return intsType::Overlap;
       } else
@@ -531,15 +531,11 @@ inline int Triangle<Real, 2>::barycentric(const Point<Real, 2>& p,
   E[1] = vertex[0] - vertex[2];
   E[2] = vertex[1] - vertex[0];
 
-  Real area = 0, subarea[3];
+  Real area = cross(E[0], E[1]), subarea;
 
   for (auto i = 0; i < 3; ++i) {
-    subarea[i] = cross(E[i], A[i]);
-    area += subarea[i];
-  }
-
-  for (auto i = 0; i < 3; ++i) {
-    co[i] = (subarea[i] / area);
+    subarea = cross(E[i], A[i]);
+    co[i] = (subarea / area);
   }
   return 1;
 }

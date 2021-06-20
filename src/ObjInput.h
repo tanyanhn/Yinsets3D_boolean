@@ -134,6 +134,8 @@ inline YinSet<Real> objInput(const std::string& s, Real tol = TOL) {
                 pCmp.compare(tp[2], tp[0]) != 0) {
               Triangle<Real, 3> tri(tp);
               vectri.push_back(tri);
+            } else {
+              assert(false && "not a triangle in tol.");
             }
           }
         }
@@ -143,8 +145,17 @@ inline YinSet<Real> objInput(const std::string& s, Real tol = TOL) {
         }
         infile.close();
         assert(!vecgcs.empty() && "input file not import rightly.");
+        if (tol <= TOL)
+          return YinSet<Real>(vecgcs, 0, tol);
+        else {
+          for (auto&& GCS : vecgcs) {
+            GCS.minimize(tol);
+          }
 
-        return YinSet<Real>(vecgcs, 0, tol);
+          tol = TOL;
+
+          return YinSet<Real>(vecgcs, 0, tol);
+        }
       }
     }
   }

@@ -82,7 +82,8 @@ inline int Locate<T>::operator()(const std::vector<Triangle<T, 3>>& yinset,
       auto tri = yinset[i];
       std::vector<Point<T, 3>> tmpres;
       if (tri.intersect(l, tmpres) == 1) {
-        if (norm(p - tmpres[0]) < tol)
+        auto m = norm(p - tmpres[0]);
+        if (m < tol)
           return 0;
 
         intsP.push_back(tmpres[0]);

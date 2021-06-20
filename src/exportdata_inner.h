@@ -17,6 +17,7 @@ inline void exportdata_inner(std::string s,
                              int prec) {
   const char* path = folder.c_str();
   int isCreate = mkdir(path, S_IRUSR | S_IWUSR | S_IXUSR | S_IRWXG | S_IRWXO);
+  // int isCreate = mkdir(path);
   if (!isCreate)
     printf("create path:%s\n", path);
   else
@@ -46,9 +47,6 @@ inline void exportdata_inner(std::string s,
       }
       for (size_t i = 0; i < vectri.size(); i++) {
         int index[3];
-        if (j == 1 && i == 1026) {
-          wa = std::next(setp.begin(), 1180);
-        }
         auto itp0 = setp.find(vectri[i].vert(0));
         assert(itp0 != setp.end() && "point find error");
         index[0] = distance(setp.begin(), itp0) + presize;

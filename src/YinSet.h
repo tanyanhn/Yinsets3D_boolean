@@ -8,6 +8,8 @@
 #include "GluingCompactSurface.h"
 #include "Locate.h"
 #include "Past.h"
+#include "Point.h"
+#include "PointCompare.h"
 #include "PrePast.h"
 #include "ReFactoryBoundary.h"
 #include "RemoveOverlap.h"
@@ -51,6 +53,12 @@ class YinSet {
   // import data from obj file.
   explicit YinSet(const std::string& s, int Clip = 0, Real tol = TOL);
 
+  // sort Triangle in GluingCompactSurfaces by TriangleCompare.
+  void sort(int i = 1, Real tol = TOL);
+
+  // minimize tol
+  void minimize(Real tol);
+
   // Boolean operator.
   // usingRFB determine whether Clip connect boundary to GluingCompactSurfaces.
   YinSet<T> complement(const int usingRFB = 1, Real tol = TOL) const;
@@ -60,10 +68,14 @@ class YinSet {
                  Real tol = TOL) const;
 
   YinSet<T> join(YinSet<T>& y2, const int usingRFB = 1, Real tol = TOL) const {
-    auto comp1 = complement(usingRFB, tol);
-    auto comp2 = y2.complement(usingRFB, tol);
-    auto comp3 = comp1.meet(comp2, usingRFB, tol);
-    return comp3.complement(usingRFB, tol);
+    Real t[2] = {tol, tol};
+    if (tol > TOL) {
+      t[0] = TOL;
+    }
+    auto comp1 = complement(usingRFB, t[0]);
+    auto comp2 = y2.complement(usingRFB, t[0]);
+    auto comp3 = comp1.meet(comp2, usingRFB, t[1]);
+    return comp3.complement(usingRFB, t[0]);
   }
 
   /// Return if the Yin set is bounded, based on the Hasse diagram.
@@ -96,7 +108,7 @@ class YinSet {
 
   void objOutput(std::string s,
                  std::string folder = "./",
-                 int prec = -std::log10(TOL)) {
+                 int prec = -std::log10(TOL) + 2) {
     exportdata_inner(s, *this, folder, prec);
   }
 
@@ -274,24 +286,26 @@ inline void YinSet<T>::ClipGCS(Real tol, const int usingRFB) {
   std::vector<Triangle<T, 3>> inputA, inputB;
 
   {
-#ifdef _UsBoost
-    boost::timer::auto_cpu_timer t;
-    std::cout << std::endl << "ClipGCS::collapse cpu time : ";
-#endif  // _UsBoost
+    // #ifdef _UsBoost
+    //     boost::timer::auto_cpu_timer t;
+    //     std::cout << std::endl << "ClipGCS::collapse cpu time : ";
+    // #endif  // _UsBoost
 
     collapse(inputA, 1, tol);
   }
 
   {
-#ifdef _UsBoost
-    boost::timer::auto_cpu_timer t;
-    std::cout << std::endl << "ClipGCS::TriangleIntersection cpu time : ";
-#endif  // _UsBoost
+    // #ifdef _UsBoost
+    //     boost::timer::auto_cpu_timer t;
+    //     std::cout << std::endl << "ClipGCS::TriangleIntersection cpu time :
+    //     ";
+    // #endif  // _UsBoost
 
-#ifdef _bottleneck_
-    boost::timer::auto_cpu_timer t;
-    std::cout << std::endl << "ClipGCS::TriangleIntersection cpu time : ";
-#endif  //  _bottleneck_
+    // #ifdef _bottleneck_
+    //     boost::timer::auto_cpu_timer t;
+    //     std::cout << std::endl << "ClipGCS::TriangleIntersection cpu time :
+    //     ";
+    // #endif  //  _bottleneck_
 
     intersectOp(inputA, inputB, tol);
   }
@@ -299,10 +313,10 @@ inline void YinSet<T>::ClipGCS(Real tol, const int usingRFB) {
   // Triangulation
   Triangulation<T> triangulateOp;
   {
-#ifdef _UsBoost
-    boost::timer::auto_cpu_timer t;
-    std::cout << std::endl << "ClipGCS::Triangulation cpu time : ";
-#endif  // _UsBoost
+    // #ifdef _UsBoost
+    //     boost::timer::auto_cpu_timer t;
+    //     std::cout << std::endl << "ClipGCS::Triangulation cpu time : ";
+    // #endif  // _UsBoost
 
     triangulateOp(inputA, inputB, intersectOp.resultA, intersectOp.resultB,
                   tol);
@@ -311,10 +325,10 @@ inline void YinSet<T>::ClipGCS(Real tol, const int usingRFB) {
   // PrePast
   PrePast<T> prePastOp;
   {
-#ifdef _UsBoost
-    boost::timer::auto_cpu_timer t;
-    std::cout << std::endl << "ClipGCS::prePast cpu time : ";
-#endif  // _UsBoost
+    // #ifdef _UsBoost
+    //     boost::timer::auto_cpu_timer t;
+    //     std::cout << std::endl << "ClipGCS::prePast cpu time : ";
+    // #endif  // _UsBoost
 
     prePastOp(triangulateOp.vecTriA, tol);
   }
@@ -322,10 +336,11 @@ inline void YinSet<T>::ClipGCS(Real tol, const int usingRFB) {
   if (usingRFB == 1) {
     ReFactoryBoundary<T> reFactoryBoundaryOp;
     {
-#ifdef _UsBoost
-      boost::timer::auto_cpu_timer t;
-      std::cout << std::endl << "ClipGCS::reFactoryBoundary cpu time : ";
-#endif  // _UsBoost
+      // #ifdef _UsBoost
+      //       boost::timer::auto_cpu_timer t;
+      //       std::cout << std::endl << "ClipGCS::reFactoryBoundary cpu time :
+      //       ";
+      // #endif  // _UsBoost
       reFactoryBoundaryOp(triangulateOp.vecTriA, triangulateOp.vecTriB,
                           prePastOp.vecSPA, prePastOp.vecSPB,
                           prePastOp.ClipFaces, tol);
@@ -338,10 +353,10 @@ inline void YinSet<T>::ClipGCS(Real tol, const int usingRFB) {
   Past<T> pastOp;
   std::vector<SurfacePatch<T>> vecF;
   {
-#ifdef _UsBoost
-    boost::timer::auto_cpu_timer t;
-    std::cout << std::endl << "ClipGCS::Past cpu time : ";
-#endif  // _UsBoost
+    // #ifdef _UsBoost
+    //     boost::timer::auto_cpu_timer t;
+    //     std::cout << std::endl << "ClipGCS::Past cpu time : ";
+    // #endif  // _UsBoost
 
     pastOp.combine(prePastOp.vecSPA, prePastOp.vecSPB, triangulateOp.vecTriA,
                    triangulateOp.vecTriB, vecF);
@@ -350,10 +365,10 @@ inline void YinSet<T>::ClipGCS(Real tol, const int usingRFB) {
 
   // Yinset Constructor
   {
-#ifdef _UsBoost
-    boost::timer::auto_cpu_timer t;
-    std::cout << std::endl << "ClipGCS::YinSet() cpu time : ";
-#endif  // _UsBoost
+    // #ifdef _UsBoost
+    //     boost::timer::auto_cpu_timer t;
+    //     std::cout << std::endl << "ClipGCS::YinSet() cpu time : ";
+    // #endif  // _UsBoost
 
     vecFace = pastOp.vecGCS;
   }
@@ -365,24 +380,26 @@ inline YinSet<T> YinSet<T>::complement(const int usingRFB, Real tol) const {
   std::vector<Triangle<T, 3>> inputA, inputB;
 
   {
-#ifdef _UsBoost
-    boost::timer::auto_cpu_timer t;
-    std::cout << std::endl << "complement::collapse cpu time : ";
-#endif  // _UsBoost
+    // #ifdef _UsBoost
+    //     boost::timer::auto_cpu_timer t;
+    //     std::cout << std::endl << "complement::collapse cpu time : ";
+    // #endif  // _UsBoost
 
     collapse(inputA, 1, tol);
   }
 
   {
-#ifdef _UsBoost
-    boost::timer::auto_cpu_timer t;
-    std::cout << std::endl << "complement::TriangleIntersection cpu time : ";
-#endif  // _UsBoost
+    // #ifdef _UsBoost
+    //     boost::timer::auto_cpu_timer t;
+    //     std::cout << std::endl << "complement::TriangleIntersection cpu time
+    //     : ";
+    // #endif  // _UsBoost
 
-#ifdef _bottleneck_
-    boost::timer::auto_cpu_timer t;
-    std::cout << std::endl << "complement::TriangleIntersection cpu time : ";
-#endif  //  _bottleneck_
+    // #ifdef _bottleneck_
+    //     boost::timer::auto_cpu_timer t;
+    //     std::cout << std::endl << "complement::TriangleIntersection cpu time
+    //     : ";
+    // #endif  //  _bottleneck_
 
     intersectOp(inputA, inputB, tol);
   }
@@ -390,10 +407,10 @@ inline YinSet<T> YinSet<T>::complement(const int usingRFB, Real tol) const {
   // Triangulation
   Triangulation<T> triangulateOp;
   {
-#ifdef _UsBoost
-    boost::timer::auto_cpu_timer t;
-    std::cout << std::endl << "complement::Triangulation cpu time : ";
-#endif  // _UsBoost
+    // #ifdef _UsBoost
+    //     boost::timer::auto_cpu_timer t;
+    //     std::cout << std::endl << "complement::Triangulation cpu time : ";
+    // #endif  // _UsBoost
 
     triangulateOp(inputA, inputB, intersectOp.resultA, intersectOp.resultB,
                   tol);
@@ -402,19 +419,19 @@ inline YinSet<T> YinSet<T>::complement(const int usingRFB, Real tol) const {
   // PrePast
   PrePast<T> prePastOp;
   {
-#ifdef _UsBoost
-    boost::timer::auto_cpu_timer t;
-    std::cout << std::endl << "complement::prePast cpu time : ";
-#endif  // _UsBoost
+    // #ifdef _UsBoost
+    //     boost::timer::auto_cpu_timer t;
+    //     std::cout << std::endl << "complement::prePast cpu time : ";
+    // #endif  // _UsBoost
 
     prePastOp(triangulateOp.vecTriA, tol);
   }
 
   {
-#ifdef _UsBoost
-    boost::timer::auto_cpu_timer t;
-    std::cout << std::endl << "complement::reverse cpu time : ";
-#endif  // _UsBoost
+    // #ifdef _UsBoost
+    //     boost::timer::auto_cpu_timer t;
+    //     std::cout << std::endl << "complement::reverse cpu time : ";
+    // #endif  // _UsBoost
 
     for (auto&& tri : triangulateOp.vecTriA) {
       tri.reverse();
@@ -424,10 +441,11 @@ inline YinSet<T> YinSet<T>::complement(const int usingRFB, Real tol) const {
   if (usingRFB == 1) {
     ReFactoryBoundary<T> reFactoryBoundaryOp;
     {
-#ifdef _UsBoost
-      boost::timer::auto_cpu_timer t;
-      std::cout << std::endl << "complement::reFactoryBoundary cpu time : ";
-#endif  // _UsBoost
+      // #ifdef _UsBoost
+      //       boost::timer::auto_cpu_timer t;
+      //       std::cout << std::endl << "complement::reFactoryBoundary cpu time
+      //       : ";
+      // #endif  // _UsBoost
       reFactoryBoundaryOp(triangulateOp.vecTriA, triangulateOp.vecTriB,
                           prePastOp.vecSPA, prePastOp.vecSPB,
                           prePastOp.ClipFaces, tol);
@@ -440,10 +458,10 @@ inline YinSet<T> YinSet<T>::complement(const int usingRFB, Real tol) const {
   Past<T> pastOp;
   std::vector<SurfacePatch<T>> vecF;
   {
-#ifdef _UsBoost
-    boost::timer::auto_cpu_timer t;
-    std::cout << std::endl << "complement::Past cpu time : ";
-#endif  // _UsBoost
+    // #ifdef _UsBoost
+    //     boost::timer::auto_cpu_timer t;
+    //     std::cout << std::endl << "complement::Past cpu time : ";
+    // #endif  // _UsBoost
 
     pastOp.combine(prePastOp.vecSPA, prePastOp.vecSPB, triangulateOp.vecTriA,
                    triangulateOp.vecTriB, vecF);
@@ -452,10 +470,10 @@ inline YinSet<T> YinSet<T>::complement(const int usingRFB, Real tol) const {
 
   // Yinset Constructor
   {
-#ifdef _UsBoost
-    boost::timer::auto_cpu_timer t;
-    std::cout << std::endl << "complement::YinSet() cpu time : ";
-#endif  // _UsBoost
+    // #ifdef _UsBoost
+    //     boost::timer::auto_cpu_timer t;
+    //     std::cout << std::endl << "complement::YinSet() cpu time : ";
+    // #endif  // _UsBoost
 
     return YinSet<T>(pastOp.vecGCS, 1, tol);
   }
@@ -469,25 +487,37 @@ inline YinSet<T> YinSet<T>::meet(const YinSet<T>& y2,
   TriangleIntersection<T> intersectOp;
   std::vector<Triangle<T, 3>> inputA, inputB;
   {
-#ifdef _UsBoost
-    boost::timer::auto_cpu_timer t;
-    std::cout << std::endl << "meet::collapse cpu time : ";
-#endif  // _UsBoost
+    // #ifdef _UsBoost
+    //     boost::timer::auto_cpu_timer t;
+    //     std::cout << std::endl << "meet::collapse cpu time : ";
+    // #endif  // _UsBoost
 
     collapse(inputA, 1, tol);
     y2.collapse(inputB, 2, tol);
+
+    if (tol > TOL) {
+      auto tris = inputA;
+      int s = inputA.size();
+      tris.insert(tris.end(), inputB.begin(), inputB.end());
+      combine(tris, tol);
+      inputA.clear();
+      inputB.clear();
+      inputA.insert(inputA.end(), tris.begin(), tris.begin() + s);
+      inputB.insert(inputB.end(), tris.begin() + s, tris.end());
+      tol = TOL;
+    }
   }
 
   {
-#ifdef _UsBoost
-    boost::timer::auto_cpu_timer t;
-    std::cout << std::endl << "meet::intersect cpu time : ";
-#endif  // _UsBoost
+    // #ifdef _UsBoost
+    //     boost::timer::auto_cpu_timer t;
+    //     std::cout << std::endl << "meet::intersect cpu time : ";
+    // #endif  // _UsBoost
 
-#ifdef _bottleneck_
-    boost::timer::auto_cpu_timer t;
-    std::cout << std::endl << "meet::TriangleIntersection cpu time : ";
-#endif  //  _bottleneck_
+    // #ifdef _bottleneck_
+    //     boost::timer::auto_cpu_timer t;
+    //     std::cout << std::endl << "meet::TriangleIntersection cpu time : ";
+    // #endif  //  _bottleneck_
 
     intersectOp(inputA, inputB, tol);
   }
@@ -495,10 +525,10 @@ inline YinSet<T> YinSet<T>::meet(const YinSet<T>& y2,
   // Triangulation
   Triangulation<T> triangulateOp;
   {
-#ifdef _UsBoost
-    boost::timer::auto_cpu_timer t;
-    std::cout << std::endl << "meet::triangulate cpu time : ";
-#endif  // _UsBoost
+    // #ifdef _UsBoost
+    //     boost::timer::auto_cpu_timer t;
+    //     std::cout << std::endl << "meet::triangulate cpu time : ";
+    // #endif  // _UsBoost
 
     triangulateOp(inputA, inputB, intersectOp.resultA, intersectOp.resultB,
                   tol);
@@ -507,10 +537,10 @@ inline YinSet<T> YinSet<T>::meet(const YinSet<T>& y2,
   // RemoveOverlap
   RemoveOverlap<T> removeOverlapOp;
   {
-#ifdef _UsBoost
-    boost::timer::auto_cpu_timer t;
-    std::cout << std::endl << "meet::removeOverlap cpu time : ";
-#endif  // _UsBoost
+    // #ifdef _UsBoost
+    //     boost::timer::auto_cpu_timer t;
+    //     std::cout << std::endl << "meet::removeOverlap cpu time : ";
+    // #endif  // _UsBoost
 
     removeOverlapOp(triangulateOp.TriangulateA, triangulateOp.TriangulateB,
                     triangulateOp.vecTriA, triangulateOp.vecTriB,
@@ -520,10 +550,10 @@ inline YinSet<T> YinSet<T>::meet(const YinSet<T>& y2,
   // PrePast
   PrePast<T> prePastOp;
   {
-#ifdef _UsBoost
-    boost::timer::auto_cpu_timer t;
-    std::cout << std::endl << "meet::prePast cpu time : ";
-#endif  // _UsBoost
+    // #ifdef _UsBoost
+    //     boost::timer::auto_cpu_timer t;
+    //     std::cout << std::endl << "meet::prePast cpu time : ";
+    // #endif  // _UsBoost
 
     prePastOp(triangulateOp.vecTriA, triangulateOp.vecTriB, tol);
   }
@@ -531,10 +561,10 @@ inline YinSet<T> YinSet<T>::meet(const YinSet<T>& y2,
   if (usingRFB == 1) {
     ReFactoryBoundary<T> reFactoryBoundaryOp;
     {
-#ifdef _UsBoost
-      boost::timer::auto_cpu_timer t;
-      std::cout << std::endl << "meet::reFactoryBoundary cpu time : ";
-#endif  // _UsBoost
+      // #ifdef _UsBoost
+      //       boost::timer::auto_cpu_timer t;
+      //       std::cout << std::endl << "meet::reFactoryBoundary cpu time : ";
+      // #endif  // _UsBoost
       reFactoryBoundaryOp(triangulateOp.vecTriA, triangulateOp.vecTriB,
                           prePastOp.vecSPA, prePastOp.vecSPB,
                           prePastOp.ClipFaces, tol);
@@ -544,10 +574,10 @@ inline YinSet<T> YinSet<T>::meet(const YinSet<T>& y2,
   // Locate SurfacePatch.
   Locate<T> locateOp;
   {
-#ifdef _UsBoost
-    boost::timer::auto_cpu_timer t;
-    std::cout << std::endl << "meet::locate cpu time : ";
-#endif  // _UsBoost
+    // #ifdef _UsBoost
+    //     boost::timer::auto_cpu_timer t;
+    //     std::cout << std::endl << "meet::locate cpu time : ";
+    // #endif  // _UsBoost
 
     locateOp(inputA, inputB, isBounded(), y2.isBounded(), triangulateOp.vecTriA,
              triangulateOp.vecTriB, prePastOp.vecSPA, prePastOp.vecSPB, tol);
@@ -557,10 +587,10 @@ inline YinSet<T> YinSet<T>::meet(const YinSet<T>& y2,
   Past<T> pastOp;
   std::vector<SurfacePatch<T>> vecF;
   {
-#ifdef _UsBoost
-    boost::timer::auto_cpu_timer t;
-    std::cout << std::endl << "meet::Past cpu time : ";
-#endif  // _UsBoost
+    // #ifdef _UsBoost
+    //     boost::timer::auto_cpu_timer t;
+    //     std::cout << std::endl << "meet::Past cpu time : ";
+    // #endif  // _UsBoost
 
     pastOp.combine(prePastOp.vecSPA, prePastOp.vecSPB, triangulateOp.vecTriA,
                    triangulateOp.vecTriB, vecF);
@@ -569,10 +599,10 @@ inline YinSet<T> YinSet<T>::meet(const YinSet<T>& y2,
 
   // Yinset Constructor
   {
-#ifdef _UsBoost
-    boost::timer::auto_cpu_timer t;
-    std::cout << std::endl << "meet::YinSet() cpu time : ";
-#endif  // _UsBoost
+    // #ifdef _UsBoost
+    //     boost::timer::auto_cpu_timer t;
+    //     std::cout << std::endl << "meet::YinSet() cpu time : ";
+    // #endif  // _UsBoost
 
     return YinSet<T>(pastOp.vecGCS, 1, tol);
   }
@@ -662,6 +692,23 @@ inline void YinSet<T>::buildHasse(Real tol) {
     // this Yin set is unbounded.
     bettiNumbers[0] = numPositive + 1;
     bettiNumbers[1] = numFaces - numPositive;
+  }
+}
+
+template <class T>
+void YinSet<T>::sort(int i, Real tol) {
+  for (auto&& GCS : vecFace) {
+    GCS.sort(i, tol);
+  }
+}
+
+template <class T>
+void YinSet<T>::minimize(Real tol) {
+  if (tol <= TOL)
+    return;
+
+  for (auto&& GCS : vecFace) {
+    GCS.minimize(tol);
   }
 }
 

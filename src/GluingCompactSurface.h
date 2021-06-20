@@ -2,10 +2,12 @@
 #define GLUINGCOMPACTSURFACE_H
 
 #include <map>
+#include <vector>
 
 #include "Config.h"
 #include "SegmentCompare.h"
 #include "Triangle.h"
+#include "TriangleCompare.h"
 
 namespace YSB {
 enum FacType {
@@ -146,6 +148,51 @@ class GluingCompactSurface {
   FacType& Type() { return type; }
 
   const FacType& Type() const { return type; }
+
+  void sort(int i = 1, Real tol = TOL) {
+    TriangleCompare TriCmp(tol);
+    std::set<Triangle<T, 3>, TriangleCompare> all(TriCmp);
+    for (auto&& Tri : vecTriangle) {
+      all.insert(Tri);
+    }
+
+    std::vector<Triangle<T, 3>> newvecTriangle;
+    auto it = newvecTriangle.end();
+
+    if (i > 0)
+      newvecTriangle.insert(it, all.begin(), all.end());
+    else
+      newvecTriangle.insert(it, all.rbegin(), all.rend());
+
+    vecTriangle.swap(newvecTriangle);
+  }
+
+  void minimize(Real tol) {
+    if (tol <= TOL)
+      return;
+
+    PointCompare PCmp(tol);
+    std::vector<Point<T, 3>> all;
+    for (auto&& Tri : tris()) {
+      for (int i = 0; i < 3; ++i) {
+        int exist = 0;
+        for (auto&& P : all) {
+          if (PCmp.compare(P, Tri.vert(i)) == 0) {
+            Tri.vert(i) = P;
+            Tri.ed(i)[0] = P;
+            int j = i - 1;
+            if (j == -1)
+              j = 2;
+            Tri.ed(j)[1] = P;
+            exist = 1;
+          }
+        }
+        if (exist == 0) {
+          all.push_back(Tri.vert(i));
+        }
+      }
+    }
+  }
 };
 
 }  // namespace YSB
