@@ -161,10 +161,9 @@ inline void Locate<T>::operator()(const std::vector<Triangle<T, 3>>& inputA,
         for (auto&& it : iSP.tris()) {
           RemoveTriangle(vecTriA, vecTriB, vecTriA, it.second, TOL);
         }
-      } else if (k == 1)
-        ;
-      else if (k == 0)
-        ;
+      } else if (k == 1) {
+      } else if (k == 0) {
+      }
       // assert(false && "Locate SurfacePatch have wrong.")
     }
   }

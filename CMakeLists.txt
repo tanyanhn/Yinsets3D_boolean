@@ -5,6 +5,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
 # set(CMAKE_BUILD_TYPE "Debug")
 set(CMAKE_BUILD_TYPE "Release")
+
 set(CMAKE_CXX_COMPILER "/usr/local/bin/clang++")
 # set(CMAKE_CXX_COMPILER "/usr/bin/g++")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas")
