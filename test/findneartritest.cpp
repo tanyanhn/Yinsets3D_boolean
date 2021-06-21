@@ -25,7 +25,10 @@ TEST_CASE("Fine near triangle", "[fnt1]") {
   edge.addneighbor(make_pair(1, 2));
   edge.addneighbor(make_pair(1, 3));
   edge.addneighbor(make_pair(1, 4));
-  auto res = fnt(tri1, edge, triA, triB);
+  for (int i = 0; i < 5; ++i) {
+    triA[i].ed(triA[i].edgeVec(edge)).neighborhood() = edge.neighborhood();
+  }
+  auto res = fnt(triA[0], edge, triA, triB);
   REQUIRE(tri4.equal(triA[res.second]));
 }
 
@@ -49,6 +52,9 @@ TEST_CASE("Fine near triangle in triangle array", "[fnt2]") {
   edge.addneighbor(make_pair(1, 2));
   edge.addneighbor(make_pair(1, 3));
   edge.addneighbor(make_pair(1, 4));
-  auto res = fnt(tri1, edge, triA);
+  for (int i = 0; i < 5; ++i) {
+    triA[i].ed(triA[i].edgeVec(edge)).neighborhood() = edge.neighborhood();
+  }
+  auto res = fnt(triA[0], edge, triA);
   REQUIRE(tri4.equal(triA[res]));
 }

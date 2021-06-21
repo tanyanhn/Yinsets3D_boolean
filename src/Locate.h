@@ -164,7 +164,8 @@ inline void Locate<T>::operator()(const std::vector<Triangle<T, 3>>& inputA,
       } else if (k == 1)
         ;
       else if (k == 0)
-        assert(false && "Locate SurfacePatch have wrong.");
+        ;
+      // assert(false && "Locate SurfacePatch have wrong.")
     }
   }
 
