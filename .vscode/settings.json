@@ -89,7 +89,9 @@
         "xtr1common": "cpp",
         "xtree": "cpp",
         "xutility": "cpp",
-        "xxatomic": "cpp"
+        "xxatomic": "cpp",
+        "*.ipp": "cpp",
+        "bit": "cpp"
     },
     "cSpell.words": [
         "hasse",

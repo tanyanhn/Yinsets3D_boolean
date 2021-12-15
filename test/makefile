@@ -70,6 +70,12 @@ test1.exe : catchmain.o test1.cpp
 SplitGCS.exe : catchmain.o reFacBoundarytest.cpp
 	g++ -o $@ catchmain.o reFacBoundarytest.cpp $(CPPFLAGS)
 
+rectangle.exe : catchmain.o rectangletest.cpp	
+	g++ -o $@ catchmain.o rectangletest.cpp $(CPPFLAGS)
+
+cuboid.exe : catchmain.o cuboidtest.cpp	
+	g++ -o $@ catchmain.o cuboidtest.cpp $(CPPFLAGS)
+
 catchmain.o : catchmain.cpp
 
 YSjoin : YSjoin.exe
@@ -113,6 +119,13 @@ Yinset : Yinsettest.exe
 	
 locate : locatetest.exe 
 	./locatetest.exe 
+
+
+rectangle : rectangle.exe
+	./rectangle.exe
+
+cuboid : cuboid.exe	
+	./cuboid.exe
 
 test : test.cpp
 	g++ -o test.exe test.cpp && ./test.exe
