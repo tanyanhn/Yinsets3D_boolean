@@ -1,4 +1,4 @@
-#include <boost/timer/timer.hpp>
+//#include <boost/timer/timer.hpp>
 
 #include "../catch.hpp"
 #include "../src/Totalheader.h"
@@ -6,111 +6,111 @@
 using namespace YSB;
 using namespace std;
 
-TEST_CASE("rabbit meet join 1", "[join]") {
-  // string
-  // s1("D://github//Yinsets3D_boolean//dataset//icosphere//icosphere1.obj"),
-  //        s2("D://github//Yinsets3D_boolean//dataset//icosphere//icosphere2.obj");
-  // string
-  // smonkey1("D://github//Yinsets3D_boolean//dataset//teddy&monkey//monkey1.obj"),
-  //        smonkey2("D://github//Yinsets3D_boolean//dataset//teddy&monkey//monkey2.obj");
-  // string s1("D://github//Yinsets3D_boolean//dataset//teddy&cow//teddy.obj"),
-  //     s2("D://github//Yinsets3D_boolean//dataset//teddy&cow//cow.obj");
-  string name1 = "Rabbit_Lowpoly_1", name2 = "Rabbit_Lowpoly_4",
-         name3 = "ballabehind", name4 = "innerball", name5 = "innertorus",
-         inpre = "../dataset/", oupre = "../res/",
-         //     inpre = "dataset/",
-      // oupre = "res/",
-      post = ".obj", mid = "ballconnecttorus_torusbig_meet", mid2 = "complex",
-         mid3 = "rabbit", mid4 = "heart", mid5 = "bust", mid6 = "ball",
-         mid7 = "torus", m = "meet/", j = "join/", c = "complement/";
-  string s1 = inpre + mid3 + "/" + name1 + post,
-         s2 = inpre + mid3 + "/" + name2 + post,
-         s3 = inpre + mid2 + "/" + name3 + post,
-         s4 = inpre + mid2 + "/" + name4 + post,
-         s5 = inpre + mid2 + "/" + name5 + post;
-  YinSet<Real> y1(s1, 1), y2(s2, 1);
+// TEST_CASE("rabbit meet join 1", "[join]") {
+//   // string
+//   // s1("D://github//Yinsets3D_boolean//dataset//icosphere//icosphere1.obj"),
+//   //        s2("D://github//Yinsets3D_boolean//dataset//icosphere//icosphere2.obj");
+//   // string
+//   // smonkey1("D://github//Yinsets3D_boolean//dataset//teddy&monkey//monkey1.obj"),
+//   //        smonkey2("D://github//Yinsets3D_boolean//dataset//teddy&monkey//monkey2.obj");
+//   // string s1("D://github//Yinsets3D_boolean//dataset//teddy&cow//teddy.obj"),
+//   //     s2("D://github//Yinsets3D_boolean//dataset//teddy&cow//cow.obj");
+//   string name1 = "Rabbit_Lowpoly_1", name2 = "Rabbit_Lowpoly_4",
+//          name3 = "ballabehind", name4 = "innerball", name5 = "innertorus",
+//          inpre = "../dataset/", oupre = "../res/",
+//          //     inpre = "dataset/",
+//       // oupre = "res/",
+//       post = ".obj", mid = "ballconnecttorus_torusbig_meet", mid2 = "complex",
+//          mid3 = "rabbit", mid4 = "heart", mid5 = "bust", mid6 = "ball",
+//          mid7 = "torus", m = "meet/", j = "join/", c = "complement/";
+//   string s1 = inpre + mid3 + "/" + name1 + post,
+//          s2 = inpre + mid3 + "/" + name2 + post,
+//          s3 = inpre + mid2 + "/" + name3 + post,
+//          s4 = inpre + mid2 + "/" + name4 + post,
+//          s5 = inpre + mid2 + "/" + name5 + post;
+//   YinSet<Real> y1(s1, 1), y2(s2, 1);
 
-  auto res1 = y1.join(y2), res2 = y1.meet(y2), res3 = y1.complement();
+//   auto res1 = y1.join(y2), res2 = y1.meet(y2), res3 = y1.complement();
 
-  res1.objOutput(name1 + "_" + name2, oupre + name1 + "_" + name2 + "_" + j);
+//   res1.objOutput(name1 + "_" + name2, oupre + name1 + "_" + name2 + "_" + j);
 
-  REQUIRE(res1.isBounded() == 1);
-  REQUIRE(res1.getBettiNumber(0) == 1);
-  REQUIRE(res1.getBettiNumber(1) == 0);
-  // cout << res1.getHasseString() << "\n";
+//   REQUIRE(res1.isBounded() == 1);
+//   REQUIRE(res1.getBettiNumber(0) == 1);
+//   REQUIRE(res1.getBettiNumber(1) == 0);
+//   // cout << res1.getHasseString() << "\n";
 
-  res2.objOutput(name1 + "_" + name2, oupre + name1 + "_" + name2 + "_" + m);
+//   res2.objOutput(name1 + "_" + name2, oupre + name1 + "_" + name2 + "_" + m);
 
-  REQUIRE(res2.isBounded() == 1);
-  REQUIRE(res2.getBettiNumber(0) == 1);
-  REQUIRE(res2.getBettiNumber(1) == 2);
+//   REQUIRE(res2.isBounded() == 1);
+//   REQUIRE(res2.getBettiNumber(0) == 1);
+//   REQUIRE(res2.getBettiNumber(1) == 2);
 
-  // cout << y1.getHasseString() << "\n";
-  // cout << y2.getHasseString() << "\n";
-  res3.objOutput(name1, oupre + name1 + "_" + c);
+//   // cout << y1.getHasseString() << "\n";
+//   // cout << y2.getHasseString() << "\n";
+//   res3.objOutput(name1, oupre + name1 + "_" + c);
 
-  REQUIRE(res3.isBounded() == 0);
-  REQUIRE(res3.getBettiNumber(0) == 3);
-  REQUIRE(res3.getBettiNumber(1) == 1);
+//   REQUIRE(res3.isBounded() == 0);
+//   REQUIRE(res3.getBettiNumber(0) == 3);
+//   REQUIRE(res3.getBettiNumber(1) == 1);
 
-  // cout << res3.getHasseString() << "/n";
-}
+//   // cout << res3.getHasseString() << "/n";
+// }
 
-TEST_CASE("tedday cow meet join", "[join]") {
-  // string
-  // s1("D://github//Yinsets3D_boolean//dataset//icosphere//icosphere1.obj"),
-  //        s2("D://github//Yinsets3D_boolean//dataset//icosphere//icosphere2.obj");
-  // string
-  // smonkey1("D://github//Yinsets3D_boolean//dataset//teddy&monkey//monkey1.obj"),
-  //        smonkey2("D://github//Yinsets3D_boolean//dataset//teddy&monkey//monkey2.obj");
-  // string s1("D://github//Yinsets3D_boolean//dataset//teddy&cow//teddy.obj"),
-  //     s2("D://github//Yinsets3D_boolean//dataset//teddy&cow//cow.obj");
-  string name1 = "teddy", name2 = "cow", name3 = "Rabbit_Lowpoly_4",
-         name4 = "innerball", name5 = "innertorus", inpre = "../dataset/",
-         oupre = "../res/",
+// TEST_CASE("tedday cow meet join", "[join]") {
+//   // string
+//   // s1("D://github//Yinsets3D_boolean//dataset//icosphere//icosphere1.obj"),
+//   //        s2("D://github//Yinsets3D_boolean//dataset//icosphere//icosphere2.obj");
+//   // string
+//   // smonkey1("D://github//Yinsets3D_boolean//dataset//teddy&monkey//monkey1.obj"),
+//   //        smonkey2("D://github//Yinsets3D_boolean//dataset//teddy&monkey//monkey2.obj");
+//   // string s1("D://github//Yinsets3D_boolean//dataset//teddy&cow//teddy.obj"),
+//   //     s2("D://github//Yinsets3D_boolean//dataset//teddy&cow//cow.obj");
+//   string name1 = "teddy", name2 = "cow", name3 = "Rabbit_Lowpoly_4",
+//          name4 = "innerball", name5 = "innertorus", inpre = "../dataset/",
+//          oupre = "../res/",
 
-         //     inpre = "dataset/",
-      // oupre = "res/",
-      post = ".obj", mid = "ballconnecttorus_torusbig_meet", mid2 = "complex",
-         mid3 = "rabbit", mid4 = "teddy&cow", mid5 = "bust", mid6 = "ball",
-         mid7 = "torus", m = "meet/", j = "join/", c = "complement/";
+//          //     inpre = "dataset/",
+//       // oupre = "res/",
+//       post = ".obj", mid = "ballconnecttorus_torusbig_meet", mid2 = "complex",
+//          mid3 = "rabbit", mid4 = "teddy&cow", mid5 = "bust", mid6 = "ball",
+//          mid7 = "torus", m = "meet/", j = "join/", c = "complement/";
 
-  string s1 = inpre + mid4 + "/" + name1 + post,
-         s2 = inpre + mid4 + "/" + name2 + post,
-         s3 = inpre + mid3 + "/" + name3 + post,
-         s4 = inpre + mid2 + "/" + name4 + post,
-         s5 = inpre + mid2 + "/" + name5 + post;
-  YinSet<Real> y1(s1, 2), y2(s3, 2);
+//   string s1 = inpre + mid4 + "/" + name1 + post,
+//          s2 = inpre + mid4 + "/" + name2 + post,
+//          s3 = inpre + mid3 + "/" + name3 + post,
+//          s4 = inpre + mid2 + "/" + name4 + post,
+//          s5 = inpre + mid2 + "/" + name5 + post;
+//   YinSet<Real> y1(s1, 2), y2(s3, 2);
 
-  cout << y1.getHasseString() << "\n";
-  cout << y2.getHasseString() << "\n";
+//   cout << y1.getHasseString() << "\n";
+//   cout << y2.getHasseString() << "\n";
 
-  auto res1 = y1.join(y2), res2 = y1.meet(y2), res3 = y1.complement();
+//   auto res1 = y1.join(y2), res2 = y1.meet(y2), res3 = y1.complement();
 
-  cout << res1.getHasseString() << "\n";
-  cout << res2.getHasseString() << "\n";
-  cout << res3.getHasseString() << "\n";
+//   cout << res1.getHasseString() << "\n";
+//   cout << res2.getHasseString() << "\n";
+//   cout << res3.getHasseString() << "\n";
 
-  res1.objOutput(name1 + "_" + name3, oupre + name1 + "_" + name3 + "_" + j);
+//   res1.objOutput(name1 + "_" + name3, oupre + name1 + "_" + name3 + "_" + j);
 
-  REQUIRE(res1.isBounded() == 1);
-  REQUIRE(res1.getBettiNumber(0) == 1);
-  REQUIRE(res1.getBettiNumber(1) == 1);
+//   REQUIRE(res1.isBounded() == 1);
+//   REQUIRE(res1.getBettiNumber(0) == 1);
+//   REQUIRE(res1.getBettiNumber(1) == 1);
 
-  res2.objOutput(name1 + "_" + name3, oupre + name1 + "_" + name3 + "_" + m);
+//   res2.objOutput(name1 + "_" + name3, oupre + name1 + "_" + name3 + "_" + m);
 
-  REQUIRE(res2.isBounded() == 1);
-  REQUIRE(res2.getBettiNumber(0) == 1);
-  REQUIRE(res2.getBettiNumber(1) == 0);
+//   REQUIRE(res2.isBounded() == 1);
+//   REQUIRE(res2.getBettiNumber(0) == 1);
+//   REQUIRE(res2.getBettiNumber(1) == 0);
 
-  res3.objOutput(name1, oupre + name1 + "_" + c);
+//   res3.objOutput(name1, oupre + name1 + "_" + c);
 
-  REQUIRE(res3.isBounded() == 0);
-  REQUIRE(res3.getBettiNumber(0) == 2);
-  REQUIRE(res3.getBettiNumber(1) == 1);
+//   REQUIRE(res3.isBounded() == 0);
+//   REQUIRE(res3.getBettiNumber(0) == 2);
+//   REQUIRE(res3.getBettiNumber(1) == 1);
 
-  // cout << res3.getHasseString() << "/n";
-}
+//   // cout << res3.getHasseString() << "/n";
+// }
 
 // TEST_CASE("rabbit meet happy", "[join]")
 // {
@@ -193,3 +193,233 @@ TEST_CASE("tedday cow meet join", "[join]") {
 //               << "happy rabbit total time : ";
 //     totaltime.~auto_cpu_timer();
 // }
+
+
+
+// TEST_CASE("YinSet join 5", "[join]") {
+//   // string
+//   // s1("D://github//Yinsets3D_boolean//dataset//icosphere//icosphere1.obj"),
+//   //        s2("D://github//Yinsets3D_boolean//dataset//icosphere//icosphere2.obj");
+//   // string
+//   // smonkey1("D://github//Yinsets3D_boolean//dataset//teddy&monkey//monkey1.obj"),
+//   //        smonkey2("D://github//Yinsets3D_boolean//dataset//teddy&monkey//monkey2.obj");
+//   // string s1("D://github//Yinsets3D_boolean//dataset//teddy&cow//teddy.obj"),
+//   //     s2("D://github//Yinsets3D_boolean//dataset//teddy&cow//cow.obj");
+//   string name1 = "centerball", name2 = "rabbit2", name3 = "ballahead",
+//          name4 = "innerball", name5 = "innertorus", name6 = "innertorusball", 
+//          name7 = "torus",inpre = "../dataset/", oupre = "../res/",
+//          //     inpre = "dataset/",
+//       // oupre = "res/",
+//       post = ".obj", mid = "ballconnecttorus_torusbig_meet", mid2 = "complex",
+//          mid3 = "rabbit1", mid4 = "heart", mid5 = "bust", mid6 = "ball",
+//          mid7 = "torus", mid8 = "complex1", m = "meet/", j = "join/", c = "complement/";
+//   string s1 = inpre + mid3 + "/" + name2 + post,
+//          s2 = inpre + mid8 + "/" + name1 + post;
+//   YinSet<Real> y1(s1), y2(s2);
+
+//   auto res1 = y2.join(y1);
+
+//   res1.objOutput(name2 + "_" + name1, oupre + name2 + "_" + name1 + "_" + j);
+
+//   REQUIRE(res1.isBounded() == 1);
+//   REQUIRE(res1.getBettiNumber(0) == 1);
+//   REQUIRE(res1.getBettiNumber(1) == 0);
+// }
+
+
+
+// TEST_CASE("YinSet join 6", "[join]") {
+//   // string
+//   // s1("D://github//Yinsets3D_boolean//dataset//icosphere//icosphere1.obj"),
+//   //        s2("D://github//Yinsets3D_boolean//dataset//icosphere//icosphere2.obj");
+//   // string
+//   // smonkey1("D://github//Yinsets3D_boolean//dataset//teddy&monkey//monkey1.obj"),
+//   //        smonkey2("D://github//Yinsets3D_boolean//dataset//teddy&monkey//monkey2.obj");
+//   // string s1("D://github//Yinsets3D_boolean//dataset//teddy&cow//teddy.obj"),
+//   //     s2("D://github//Yinsets3D_boolean//dataset//teddy&cow//cow.obj");
+//   string name1 = "rabbit1", name2 = "rabbit2", name3 = "ballahead",
+//          name4 = "innerball", name5 = "innertorus", name6 = "innertorusball", 
+//          name7 = "torus",inpre = "../dataset/", oupre = "../res/",
+//          //     inpre = "dataset/",
+//       // oupre = "res/",
+//       post = ".obj", mid = "ballconnecttorus_torusbig_meet", mid2 = "complex",
+//          mid3 = "rabbit1", mid4 = "heart", mid5 = "bust", mid6 = "ball",
+//          mid7 = "torus", mid8 = "complex1", m = "meet/", j = "join/", c = "complement/";
+//   string s1 = inpre + mid3 + "/" + name2 + post,
+//          s2 = inpre + mid3 + "/" + name1 + post;
+//   YinSet<Real> y1(s1), y2(s2);
+
+//   auto res1 = y2.join(y1);
+
+//   res1.objOutput(name1 + "_" + name2, oupre + name1 + "_" + name2 + "_" + j);
+
+//   REQUIRE(res1.isBounded() == 1);
+//   REQUIRE(res1.getBettiNumber(0) == 1);
+//   REQUIRE(res1.getBettiNumber(1) == 0);
+// }
+
+
+// TEST_CASE("YinSet join 7", "[join]") {
+//   // string
+//   // s1("D://github//Yinsets3D_boolean//dataset//icosphere//icosphere1.obj"),
+//   //        s2("D://github//Yinsets3D_boolean//dataset//icosphere//icosphere2.obj");
+//   // string
+//   // smonkey1("D://github//Yinsets3D_boolean//dataset//teddy&monkey//monkey1.obj"),
+//   //        smonkey2("D://github//Yinsets3D_boolean//dataset//teddy&monkey//monkey2.obj");
+//   // string s1("D://github//Yinsets3D_boolean//dataset//teddy&cow//teddy.obj"),
+//   //     s2("D://github//Yinsets3D_boolean//dataset//teddy&cow//cow.obj");
+//   string name1 = "torus2hole", name2 = "underball", name3 = "overball",
+//          name4 = "innerball", name5 = "innertorus", name6 = "twoballs", 
+//          name7 = "torus1",inpre = "../dataset/", oupre = "../res/",
+//          //     inpre = "dataset/",
+//       // oupre = "res/",
+//       post = ".obj", mid = "ballconnecttorus_torusbig_meet", mid2 = "complex",
+//          mid3 = "rabbit", mid4 = "heart", mid5 = "bust", mid6 = "ball",
+//          mid7 = "complex", mid8 = "complex1", m = "meet/", j = "join/", c = "complement/";
+//   string s1 = inpre + mid7 + "/" + name1 + post,
+//          s2 = inpre + mid8 + "/" + name2 + post;
+//   YinSet<Real> y1(s1), y2(s2);
+// cout<<y1.gcss().size()<<endl<<y2.gcss().size()<<endl;
+//   auto res1 = y2.join(y1);
+
+//   res1.objOutput(name2 + "_" + name1, oupre + name2 + "_" + name1 + "_" + j);
+
+//   REQUIRE(res1.isBounded() == 1);
+//   REQUIRE(res1.getBettiNumber(0) == 1);
+//   REQUIRE(res1.getBettiNumber(1) == 1);
+// }
+
+
+// TEST_CASE("YinSet join 8", "[join]") {
+//   // string
+//   // s1("D://github//Yinsets3D_boolean//dataset//icosphere//icosphere1.obj"),
+//   //        s2("D://github//Yinsets3D_boolean//dataset//icosphere//icosphere2.obj");
+//   // string
+//   // smonkey1("D://github//Yinsets3D_boolean//dataset//teddy&monkey//monkey1.obj"),
+//   //        smonkey2("D://github//Yinsets3D_boolean//dataset//teddy&monkey//monkey2.obj");
+//   // string s1("D://github//Yinsets3D_boolean//dataset//teddy&cow//teddy.obj"),
+//   //     s2("D://github//Yinsets3D_boolean//dataset//teddy&cow//cow.obj");
+//   string name1 = "torus2hole", name2 = "underball", name3 = "overball",
+//          name4 = "innerball", name5 = "innertorus", name6 = "twoballs", 
+//          name7 = "torus1",inpre = "../dataset/", oupre = "../res/",
+//          //     inpre = "dataset/",
+//       // oupre = "res/",
+//       post = ".obj", mid = "ballconnecttorus_torusbig_meet", mid2 = "complex",
+//          mid3 = "rabbit", mid4 = "heart", mid5 = "bust", mid6 = "ball",
+//          mid7 = "complex", mid8 = "complex1", m = "meet/", j = "join/", c = "complement/";
+//   string s1 = inpre + mid7 + "/" + name1 + post,
+//          s2 = inpre + mid8 + "/" + name3 + post;
+//   YinSet<Real> y1(s1), y2(s2);
+// cout<<y1.gcss().size()<<endl<<y2.gcss().size()<<endl;
+//   auto res1 = y2.join(y1);
+
+//   res1.objOutput(name3 + "_" + name1, oupre + name3 + "_" + name1 + "_" + j);
+
+//   REQUIRE(res1.isBounded() == 1);
+//   REQUIRE(res1.getBettiNumber(0) == 1);
+//   REQUIRE(res1.getBettiNumber(1) == 1);
+// }
+
+
+
+// TEST_CASE("tedday cow meet join", "[join]") {
+//   // string
+//   // s1("D://github//Yinsets3D_boolean//dataset//icosphere//icosphere1.obj"),
+//   //        s2("D://github//Yinsets3D_boolean//dataset//icosphere//icosphere2.obj");
+//   // string
+//   // smonkey1("D://github//Yinsets3D_boolean//dataset//teddy&monkey//monkey1.obj"),
+//   //        smonkey2("D://github//Yinsets3D_boolean//dataset//teddy&monkey//monkey2.obj");
+//   // string s1("D://github//Yinsets3D_boolean//dataset//teddy&cow//teddy.obj"),
+//   //     s2("D://github//Yinsets3D_boolean//dataset//teddy&cow//cow.obj");
+//   string name1 = "teddy1", name2 = "cow1", name3 = "Rabbit_Lowpoly_4",
+//          name4 = "innerball", name5 = "innertorus", inpre = "../dataset/",
+//          oupre = "../res/",
+
+//          //     inpre = "dataset/",
+//       // oupre = "res/",
+//       post = ".obj", mid = "ballconnecttorus_torusbig_meet", mid2 = "complex",
+//          mid3 = "rabbit", mid4 = "teddy&cow", mid5 = "bust", mid6 = "ball",
+//          mid7 = "torus", m = "meet/", j = "join/", c = "complement/";
+
+//   string s1 = inpre + mid4 + "/" + name1 + post,
+//          s2 = inpre + mid4 + "/" + name2 + post,
+//          s3 = inpre + mid3 + "/" + name3 + post,
+//          s4 = inpre + mid2 + "/" + name4 + post,
+//          s5 = inpre + mid2 + "/" + name5 + post;
+//   YinSet<Real> y1(s1, 2), y2(s2, 2);
+
+//   cout << y1.getHasseString() << "\n";
+//   cout << y2.getHasseString() << "\n";
+
+//   auto res1 = y1.join(y2), res2 = y1.meet(y2);
+
+//   cout << res1.getHasseString() << "\n";
+//   cout << res2.getHasseString() << "\n";
+
+//   res1.objOutput(name1 + "_" + name2, oupre + name1 + "_" + name2 + "_" + j);
+
+// //   REQUIRE(res1.isBounded() == 1);
+// //   REQUIRE(res1.getBettiNumber(0) == 1);
+// //   REQUIRE(res1.getBettiNumber(1) == 1);
+
+//   res2.objOutput(name1 + "_" + name2, oupre + name1 + "_" + name2 + "_" + m);
+
+//   REQUIRE(res2.isBounded() == 1);
+//   REQUIRE(res2.getBettiNumber(0) == 1);
+//   REQUIRE(res2.getBettiNumber(1) == 0);
+ 
+ 
+// }
+
+
+
+
+// TEST_CASE("tedday cow meet join", "[join]") {
+//   // string
+//   // s1("D://github//Yinsets3D_boolean//dataset//icosphere//icosphere1.obj"),
+//   //        s2("D://github//Yinsets3D_boolean//dataset//icosphere//icosphere2.obj");
+//   // string
+//   // smonkey1("D://github//Yinsets3D_boolean//dataset//teddy&monkey//monkey1.obj"),
+//   //        smonkey2("D://github//Yinsets3D_boolean//dataset//teddy&monkey//monkey2.obj");
+//   // string s1("D://github//Yinsets3D_boolean//dataset//teddy&cow//teddy.obj"),
+//   //     s2("D://github//Yinsets3D_boolean//dataset//teddy&cow//cow.obj");
+//   string name1 = "teddy1", name2 = "cow1", name3 = "rabbit1",
+//          name4 = "innerball", name5 = "innertorus", inpre = "../dataset/",
+//          oupre = "../res/",
+
+//          //     inpre = "dataset/",
+//       // oupre = "res/",
+//       post = ".obj", mid = "ballconnecttorus_torusbig_meet", mid2 = "complex",
+//          mid3 = "rabbit1", mid4 = "teddy&cow", mid5 = "bust", mid6 = "ball",
+//          mid7 = "torus", m = "meet/", j = "join/", c = "complement/";
+
+//   string s1 = inpre + mid4 + "/" + name1 + post,
+//          s2 = inpre + mid4 + "/" + name2 + post,
+//          s3 = inpre + mid3 + "/" + name3 + post,
+//          s4 = inpre + mid2 + "/" + name4 + post,
+//          s5 = inpre + mid2 + "/" + name5 + post;
+//   YinSet<Real> y1(s1, 2), y2(s3);
+
+//   cout << y1.getHasseString() << "\n";
+//   cout << y2.getHasseString() << "\n";
+
+//   auto res1 = y1.join(y2), res2 = y1.meet(y2);
+
+//   cout << res1.getHasseString() << "\n";
+//   cout << res2.getHasseString() << "\n";
+
+//   res1.objOutput(name1 + "_" + name3, oupre + name1 + "_" + name3 + "_" + j);
+
+// //   REQUIRE(res1.isBounded() == 1);
+// //   REQUIRE(res1.getBettiNumber(0) == 1);
+// //   REQUIRE(res1.getBettiNumber(1) == 1);
+
+//   res2.objOutput(name1 + "_" + name3, oupre + name1 + "_" + name3 + "_" + m);
+
+//   REQUIRE(res2.isBounded() == 1);
+//   REQUIRE(res2.getBettiNumber(0) == 1);
+//   REQUIRE(res2.getBettiNumber(1) == 0);
+ 
+ 
+// }
+

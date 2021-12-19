@@ -16,12 +16,12 @@
 #include "SegmentCompare.h"
 #include "TriangleIntersection.h"
 #include "Triangulation.h"
-#ifdef _UsBoost
-#include <boost/timer/timer.hpp>
-#endif  // _UsBoost
-#ifdef _bottleneck_
-#include <boost/timer/timer.hpp>
-#endif  // _bottleneck_
+// #ifdef _UsBoost
+// #include <boost/timer.hpp>
+// #endif  // _UsBoost
+// #ifdef _bottleneck_
+// #include <boost/timer.hpp>
+// #endif  // _bottleneck_
 
 namespace YSB {
 /// A node in the Hasse diagram.

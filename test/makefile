@@ -1,8 +1,14 @@
 
 # CPPFLAGS = -g -std=c++17 -fopenmp
 # CPPFLAGS = -g -std=c++17 -lboost_timer -D_unix 
-CPPFLAGS = -g -std=c++17 -lboost_timer -D_intersectTest 
-YSCPPFLAGS = -g -std=c++17 -lboost_timer -D_intersectTest  -D_precise10
+# CPPFLAGS = -g -std=c++17 -lboost_timer -D_intersectTest 
+# YSCPPFLAGS = -g -std=c++17 -lboost_timer -D_intersectTest  -D_precise10
+CPPFLAGS = -g -std=c++17  -D_intersectTest 
+YSCPPFLAGS = -g -std=c++17  -D_intersectTest  -D_precise10
+
+
+
+
 # CPPFLAGS = -std=c++17
 
 # CPPFLAGS += -fopenmp -D_OMP_
@@ -64,6 +70,12 @@ test1.exe : catchmain.o test1.cpp
 SplitGCS.exe : catchmain.o reFacBoundarytest.cpp
 	g++ -o $@ catchmain.o reFacBoundarytest.cpp $(CPPFLAGS)
 
+rectangle.exe : catchmain.o rectangletest.cpp	
+	g++ -o $@ catchmain.o rectangletest.cpp $(CPPFLAGS)
+
+cuboid.exe : catchmain.o cuboidtest.cpp	
+	g++ -o $@ catchmain.o cuboidtest.cpp $(CPPFLAGS)
+
 catchmain.o : catchmain.cpp
 
 YSjoin : YSjoin.exe
@@ -107,6 +119,13 @@ Yinset : Yinsettest.exe
 	
 locate : locatetest.exe 
 	./locatetest.exe 
+
+
+rectangle : rectangle.exe
+	./rectangle.exe
+
+cuboid : cuboid.exe	
+	./cuboid.exe
 
 test : test.cpp
 	g++ -o test.exe test.cpp && ./test.exe
