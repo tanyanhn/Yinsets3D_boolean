@@ -22,10 +22,10 @@ struct TriangleIntersection {
   typedef typename std::vector<
       std::pair<std::vector<Segment<T, 3>>, std::vector<std::pair<int, int>>>>*
       ResultPointer;
-  void operator()(const std::vector<Triangle<T, 3>>& inputA,
-                  const std::vector<Triangle<T, 3>>& inputB,
-                  Real tol = TOL,
-                  int w = 1);
+  virtual void operator()(const std::vector<Triangle<T, 3>>& inputA,
+                          const std::vector<Triangle<T, 3>>& inputB,
+                          Real tol = TOL,
+                          int w = 1);
   void work1(const std::vector<Triangle<T, 3>>& inputA,
              const std::vector<Triangle<T, 3>>& inputB,
              Real tol = TOL);

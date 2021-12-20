@@ -6,9 +6,9 @@
     "configurations": [
         {
             "name": "(gdb) 启动",
-            "type": "cppdbg",
+            "type": "lldb",
             "request": "launch",
-            "program": "${workspaceFolder}/test/YSmeet.exe",
+            "program": "${workspaceFolder}/test/OctreeTest.exe",
             // "program": "${workspaceRoot}/build/test/reFacBoundarytest.exe",
             "args": [],
             "stopAtEntry": false,
@@ -25,10 +25,41 @@
                     "text": "-enable-pretty-printing",
                     "ignoreFailures": true
                 }
-            ]
+            ],
+            "sourceFileMap": {
+                "/build/glibc-eX1tMB": "/usr/src/glibc"
+            }
         }
     ]
 }
+// {
+// Use IntelliSense to learn about possible attributes.
+// Hover to view descriptions of existing attributes.
+// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+// "version": "0.2.0",
+// "configurations": [
+//     {
+//         "name": "(gdb) Launch",
+//         "type": "lldb",
+//         "request": "launch",
+//         "program": "${workspaceFolder}/test/OctreeTest.exe",
+//         "args": [],
+//         "stopAtEntry": false,
+//         "cwd": "${fileDirname}",
+//         "environment": [],
+//         "externalConsole": false,
+//         "MIMode": "gdb",
+//         "console": "integratedTerminal",
+//         "setupCommands": [
+//             {
+//                 "description": "Enable pretty-printing for gdb",
+//                 "text": "-enable-pretty-printing",
+//                 "ignoreFailures": true
+//             }
+//         ]
+//     }
+// ]
+// }
 // {
 //     "version": "0.2.0",
 //     "configurations": [

@@ -1,7 +1,9 @@
 #ifndef TRIANGLE_H
 #define TRIANGLE_H
 
+#include <initializer_list>
 #include <set>
+#include <vector>
 
 #include "Config.h"
 #include "Core/Interval.h"
@@ -67,6 +69,15 @@ class Triangle {
  public:
   // Constructor
   Triangle() : pla(nullptr) {}
+  Triangle(std::initializer_list<Point<T, Dim>> iniP) : pla(nullptr) {
+    std::vector<Point<T, Dim>> vecP(iniP);
+    vertex[0] = vecP[0];
+    vertex[1] = vecP[1];
+    vertex[2] = vecP[2];
+    edge[0] = Segment<T, Dim>(vertex[0], vertex[1]);
+    edge[1] = Segment<T, Dim>(vertex[1], vertex[2]);
+    edge[2] = Segment<T, Dim>(vertex[2], vertex[0]);
+  }
   explicit Triangle(const Point<T, Dim>* vecP) : pla(nullptr) {
     vertex[0] = vecP[0];
     vertex[1] = vecP[1];

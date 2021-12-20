@@ -1,9 +1,9 @@
 
 # CPPFLAGS = -g -std=c++17 -fopenmp
-# CPPFLAGS = -g -std=c++17 -lboost_timer -D_unix 
+CPPFLAGS = -g -std=c++17 -lboost_timer -D_unix 
 # CPPFLAGS = -g -std=c++17 -lboost_timer -D_intersectTest 
 # YSCPPFLAGS = -g -std=c++17 -lboost_timer -D_intersectTest  -D_precise10
-CPPFLAGS = -g -std=c++17  -D_intersectTest 
+# CPPFLAGS = -g -std=c++17  -D_intersectTest 
 YSCPPFLAGS = -g -std=c++17  -D_intersectTest  -D_precise10
 
 
@@ -76,6 +76,9 @@ rectangle.exe : catchmain.o rectangletest.cpp
 cuboid.exe : catchmain.o cuboidtest.cpp	
 	g++ -o $@ catchmain.o cuboidtest.cpp $(CPPFLAGS)
 
+OctreeTest.exe : catchmain.o OctreeTest.cpp	
+	g++ -o $@ catchmain.o OctreeTest.cpp $(CPPFLAGS)
+
 catchmain.o : catchmain.cpp
 
 YSjoin : YSjoin.exe
@@ -126,6 +129,9 @@ rectangle : rectangle.exe
 
 cuboid : cuboid.exe	
 	./cuboid.exe
+
+Octree : OctreeTest.exe	
+	./OctreeTest.exe
 
 test : test.cpp
 	g++ -o test.exe test.cpp && ./test.exe
