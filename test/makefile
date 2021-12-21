@@ -1,6 +1,6 @@
 
 # CPPFLAGS = -g -std=c++17 -fopenmp
-CPPFLAGS = -g -std=c++17 -lboost_timer -D_unix 
+CPPFLAGS = -g -std=c++17 -lboost_timer -D_unix
 # CPPFLAGS = -g -std=c++17 -lboost_timer -D_intersectTest 
 # YSCPPFLAGS = -g -std=c++17 -lboost_timer -D_intersectTest  -D_precise10
 # CPPFLAGS = -g -std=c++17  -D_intersectTest 
@@ -29,7 +29,7 @@ YSjoin.exe : catchmain.o YSjoin.cpp
 	g++ -o $@ catchmain.o YSjoin.cpp $(YSCPPFLAGS)
 	 
 YSmeet.exe : catchmain.o YSmeet.cpp 
-	g++ -o $@ catchmain.o YSmeet.cpp $(YSCPPFLAGS) 
+	g++ -o $@ catchmain.o YSmeet.cpp $(YSCPPFLAGS) $(CPPFLAGS)
 
 locatetest.exe : catchmain.o locatetest.cpp 
 	g++ -o $@ catchmain.o locatetest.cpp $(CPPFLAGS)

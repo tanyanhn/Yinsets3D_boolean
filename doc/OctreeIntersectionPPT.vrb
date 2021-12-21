@@ -1,0 +1,18 @@
+\frametitle{时间复杂度分析}
+  \begin{enumerate}
+    \item 设两个殷集边界分别约有$N$个三角形.
+    \item 令八叉树深度为 $log_8N$, 可理解为八叉树将计算空间$N$等分.
+    \item 不妨设殷集的三角形不会过大,即覆盖的长方体数量为常数.
+    \item initOctree() 的时间复杂度为$O(NlogN)$.
+    \item pruneTree() 的时间复杂度为$O(N)$.
+    \item calTest() 最坏情况时间复杂度为$O(N^2)$,但在普遍情况是$O(N)$.
+    \item 综上,该算法时间复杂度为$O(NlogN)$.
+  \end{enumerate}
+  \begin{figure}[htb]
+    \centering
+    \setcounter{subfigure}{0}
+    \subfigure[(960, 1152)]{\includegraphics[width=0.3\textwidth]{fig/Oc_s2p5.png}}
+    \subfigure[(16128, 18432)]{\includegraphics[width=0.3\textwidth]{fig/Oc_s2p6.png}}
+    \subfigure[(261120, 98304)]{\includegraphics[width=0.3\textwidth]{fig/Oc_s2p7.png}}
+    \caption{边界上(x1, x2)个三角形的殷集求交}
+  \end{figure}

@@ -51,6 +51,8 @@ using namespace std;
 // }
 
 void dfs(OctreeNode<Cuboid<Real>>* r, YinSet<Real>& y) {
+  if (r->tris[0].size() * r->tris[1].size() == 0)
+    return;
   if (!r->child.empty()) {
     for (auto subr : r->child) {
       dfs(subr, y);
@@ -61,7 +63,7 @@ void dfs(OctreeNode<Cuboid<Real>>* r, YinSet<Real>& y) {
 }
 
 // TEST_CASE("Octree Construct", "[intersect]") {
-//   string name1 = "b3", name2 = "t3", name3 = "tb3", name4 = "innerball",
+//   string name1 = "b3", name2 = "t3", name3 = "adapt1", name4 = "innerball",
 //          name5 = "innertorus", name6 = "box", name7 = "t",
 //          inpre = "../dataset/", oupre = "../res/", post = ".obj",
 //          mid = "tbs_t_meet", mid2 = "complex", mid3 = "rabbit", mid4 =
@@ -91,7 +93,7 @@ TEST_CASE("Octree Intersection") {
          mid = "tbs_t_meet", mid2 = "complex", mid3 = "rabbit", mid4 = "heart",
          mid5 = "bust", mid6 = "ball", mid7 = "tbs_t_meet", mid8 = "Octree",
          m = "meet/", j = "join/", c = "complement/";
-  for (int i = 1; i < 5; ++i) {
+  for (int i = 5; i < 6; ++i) {
     string s1 = oupre + mid8 + "/b" + to_string(i) + post,
            s2 = oupre + mid8 + "/t" + to_string(i) + post,
            s3 = oupre + mid8 + "/tb" + to_string(i) + post;
@@ -112,8 +114,8 @@ TEST_CASE("Octree Intersection") {
       std::cout << "OctreeIntersect cpu time : ";
 
       // #endif  // _UsBoost
-
-      long num = inputA.size() + inputB.size(), deep = std::log2(num) / 3;
+      // intersectOp.resultA.resize(nA);
+      // intersectOp.resultB.resize(nB);
       intersectOp(inputA, inputB, tol);
     }
     TriangleIntersection<Real> intersectOp2;
@@ -131,11 +133,10 @@ TEST_CASE("Octree Intersection") {
     //     segs1.insert(seg);
     //   for (auto seg : intersectOp2.resultA[i].first)
     //     segs2.insert(seg);
-    //   vector<Segment<Real, 3>> se1(segs1.begin(), segs1.end()),
-    //       se2(segs2.begin(), segs2.end());
+    //   std::cout << segs1.size() << ", " << segs2.size() << endl;
     //   REQUIRE(
     //       (segs1.size() >= segs2.size() &&
-    //        intersectOp.TriangleIntersection<Real>::resultA[i].second.size()
+    // intersectOp.TriangleIntersection<Real>::resultA[i].second.size()
     //        ==
     //            intersectOp2.resultA[i].second.size()));
     // }
@@ -147,9 +148,69 @@ TEST_CASE("Octree Intersection") {
     //     segs2.insert(seg);
     //   REQUIRE(
     //       (segs1.size() >= segs2.size() &&
-    //        intersectOp.TriangleIntersection<Real>::resultB[i].second.size()
+    // intersectOp.TriangleIntersection<Real>::resultB[i].second.size()
     //        ==
     //            intersectOp2.resultB[i].second.size()));
     // }
   }
 }
+
+// TEST_CASE("Octree Intersection") {
+//   string name1 = "b3", name2 = "t3", name3 = "tb3", name4 = "innerball",
+//          name5 = "innertorus", name6 = "box", name7 = "t",
+//          inpre = "../dataset/", oupre = "../res/", post = ".obj",
+//          mid = "tbs_t_meet", mid2 = "complex", mid3 = "rabbit", mid4 =
+//          "heart", mid5 = "bust", mid6 = "ball", mid7 = "tbs_t_meet", mid8 =
+//          "Octree", m = "meet/", j = "join/", c = "complement/";
+//   for (int i = 1; i < 6; ++i) {
+//     string s1 = oupre + mid8 + "/b" + to_string(i) + post,
+//            s2 = oupre + mid8 + "/t" + to_string(i) + post,
+//            s3 = oupre + mid8 + "/tb" + to_string(i) + post;
+//     Real tol = 2e-5;
+//     YinSet<Real> y1(s1, 0, tol), y2(s2, 0, tol), y3;
+
+//     std::vector<Triangle<Real, 3>> inputA, inputB;
+//     y1.collapse(inputA, 1, tol);
+//     y2.collapse(inputB, 2, tol);
+//     long nA = inputA.size(), nB = inputB.size(), pA = -1, pB = -1;
+//     long num = inputA.size() + inputB.size(), deep = std::log2(num) / 3;
+//     std::cout << "\n num of tris:(" << inputA.size() << ", " << inputB.size()
+//               << "), " << num << ", Octree deep:" << deep << endl;
+//     OctreeTriangleIntersection<Real> intersectOp;
+//     boost::timer::auto_cpu_timer total;
+//     {
+//       // #ifdef _UsBoost
+//       boost::timer::auto_cpu_timer t;
+//       std::cout << "edgeCal cpu time : ";
+
+//       // #endif  // _UsBoost
+//       intersectOp.edgeCal(inputA, tol, 1);
+//       intersectOp.edgeCal(inputB, tol, 2);
+//     }
+//     {
+//       // #ifdef _UsBoost
+//       boost::timer::auto_cpu_timer t;
+//       std::cout << "initOctree cpu time : ";
+
+//       // #endif  // _UsBoost
+//       intersectOp.initOctree(inputA, inputB, deep, tol);
+//     }
+//     {
+//       // #ifdef _UsBoost
+//       boost::timer::auto_cpu_timer t;
+//       std::cout << "pruneTree cpu time : ";
+
+//       // #endif  // _UsBoost
+//       intersectOp.pruneTree(intersectOp.root);
+//     }
+//     {
+//       // #ifdef _UsBoost
+//       boost::timer::auto_cpu_timer t;
+//       std::cout << "calTest cpu time : ";
+
+//       // #endif  // _UsBoost
+//       intersectOp.calTest(intersectOp.root, inputA, inputB, tol);
+//     }
+//     std::cout << "total cpu time : ";
+//   }
+// }

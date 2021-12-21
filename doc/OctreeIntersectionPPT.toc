@@ -1,0 +1,5 @@
+\babel@toc {english}{}
+\beamer@sectionintoc {1}{解决的问题}{3}{0}{1}
+\beamer@sectionintoc {2}{采用的方法}{4}{0}{2}
+\beamer@sectionintoc {3}{编程实现}{6}{0}{3}
+\beamer@sectionintoc {4}{测试与问题}{8}{0}{4}

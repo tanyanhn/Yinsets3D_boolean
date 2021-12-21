@@ -154,49 +154,52 @@ using namespace std;
 //   REQUIRE(res1.getBettiNumber(1) == 2);
 // }
 
-TEST_CASE("YinSet meet 5", "[meet]") {
-  // string
-  // s1("D://github//Yinsets3D_boolean//dataset//icosphere//icosphere1.obj"),
-  // s2("D://github//Yinsets3D_boolean//dataset//icosphere//icosphere2.obj");
-  // string
-  //
-  //   smonkey1("D://github//Yinsets3D_boolean//dataset//teddy&monkey//monkey1.obj"),
-  //   //
-  //   smonkey2("D://github//Yinsets3D_boolean//dataset//teddy&monkey//monkey2.obj");
-  //   // string
-  //   s1("D://github//Yinsets3D_boolean//dataset//teddy&cow//teddy.obj"),
-  //   //     s2("D://github//Yinsets3D_boolean//dataset//teddy&cow//cow.obj");
-  string name1 = "torus2hole", name2 = "ballabehind", name3 = "ballahead",
-         name4 = "innerball", name5 = "innertorus", name6 = "tbs", name7 = "t",
-         inpre = "../dataset/", oupre = "../res/",
-         //     inpre = "dataset/",
-      // oupre = "res/",
-      post = ".obj", mid = "ballconnecttorus_torusbig_meet", mid2 = "complex",
-         mid3 = "rabbit", mid4 = "heart", mid5 = "bust", mid6 = "ball",
-         mid7 = "torus", mid8 = "torus", m = "meet/", j = "join/",
-         c = "complement/";
-  string s1 = inpre + mid8 + "/" + name6 + post,
-         s2 = inpre + mid8 + "/" + name7 + post;
-  Real tol = 2e-5;
-  YinSet<Real> y1(s1, 0, tol), y2(s2, 0, tol);
-  cout << y1.gcss().size() << endl << y2.gcss().size() << endl;
-  auto res1 = y2.meet(y1.complement(), 1, tol);
-  cout << res1.getHasseString() << "\n";
+// TEST_CASE("YinSet meet 5", "[meet]") {
+//   // string
+//   // s1("D://github//Yinsets3D_boolean//dataset//icosphere//icosphere1.obj"),
+//   // s2("D://github//Yinsets3D_boolean//dataset//icosphere//icosphere2.obj");
+//   // string
+//   //
+//   //
+//   smonkey1("D://github//Yinsets3D_boolean//dataset//teddy&monkey//monkey1.obj"),
+//   //   //
+//   //
+//   smonkey2("D://github//Yinsets3D_boolean//dataset//teddy&monkey//monkey2.obj");
+//   //   // string
+//   //   s1("D://github//Yinsets3D_boolean//dataset//teddy&cow//teddy.obj"),
+//   //   // s2("D://github//Yinsets3D_boolean//dataset//teddy&cow//cow.obj");
+//   string name1 = "torus2hole", name2 = "ballabehind", name3 = "ballahead",
+//          name4 = "innerball", name5 = "innertorus", name6 = "tbs", name7 =
+//          "t", inpre = "../dataset/", oupre = "../res/",
+//          //     inpre = "dataset/",
+//       // oupre = "res/",
+//       post = ".obj", mid = "ballconnecttorus_torusbig_meet", mid2 =
+//       "complex",
+//          mid3 = "rabbit", mid4 = "heart", mid5 = "bust", mid6 = "ball",
+//          mid7 = "torus", mid8 = "torus", m = "meet/", j = "join/",
+//          c = "complement/";
+//   string s1 = inpre + mid8 + "/" + name6 + post,
+//          s2 = inpre + mid8 + "/" + name7 + post;
+//   Real tol = 2e-5;
+//   YinSet<Real> y1(s1, 0, tol), y2(s2, 0, tol);
+//   cout << y1.gcss().size() << endl << y2.gcss().size() << endl;
+//   auto res1 = y2.meet(y1.complement(), 1, tol);
+//   cout << res1.getHasseString() << "\n";
 
-  res1.objOutput(name6 + "_" + name7, oupre + name6 + "_" + name7 + "_" + m);
+//   res1.objOutput(name6 + "_" + name7, oupre + name6 + "_" + name7 + "_" + m);
 
-  REQUIRE(res1.isBounded() == 1);
-  REQUIRE(res1.getBettiNumber(0) == 2);
-  REQUIRE(res1.getBettiNumber(1) == 0);
+//   REQUIRE(res1.isBounded() == 1);
+//   REQUIRE(res1.getBettiNumber(0) == 2);
+//   REQUIRE(res1.getBettiNumber(1) == 0);
 
-  res1.sort();
+//   res1.sort();
 
-  auto res2 = res1.complement();
+//   auto res2 = res1.complement();
 
-  cout << res2.getHasseString() << "\n";
-  res2.objOutput(name6 + "_" + name7,
-                 oupre + name6 + "_" + name7 + "_" + m + c);
-}
+//   cout << res2.getHasseString() << "\n";
+//   res2.objOutput(name6 + "_" + name7,
+//                  oupre + name6 + "_" + name7 + "_" + m + c);
+// }
 
 // //
 
@@ -343,64 +346,66 @@ TEST_CASE("YinSet meet 5", "[meet]") {
 //   REQUIRE(res1.getBettiNumber(1) == 2);
 // }
 
-TEST_CASE("YinSet meet 3", "[meet]") {
-  // string
-  // s1("D://github//Yinsets3D_boolean//dataset//icosphere//icosphere1.obj"),
-  // s2("D://github//Yinsets3D_boolean//dataset//icosphere//icosphere2.obj");
-  //   // string
-  //   //
-  //
-  //   smonkey1("D://github//Yinsets3D_boolean//dataset//teddy&monkey//monkey1.obj"),
-  //       //
-  //       smonkey2(
-  // "D://github//Yinsets3D_boolean//dataset//teddy&monkey//monkey2.obj");
-  //   // string
-  //   s1("D://github//Yinsets3D_boolean//dataset//teddy&cow//teddy.obj"),
-  //       //
-  //   s2("D://github//Yinsets3D_boolean//dataset//teddy&cow//cow.obj");
-  string name1 = "tbs_t", name2 = "cball", name3 = "overball",
-         name4 = "innerball", name5 = "innertorus", name6 = "twoballs2",
-         name7 = "torus2", inpre = "../dataset/", oupre = "../res/",
-         //     inpre = "dataset/",
-      // oupre = "res/",
-      post = ".obj", mid = "ballconnecttorus_torusbig_meet", mid2 = "complex",
-         mid3 = "rabbit", mid4 = "heart", mid5 = "bust", mid6 = "ball",
-         mid7 = "complex", mid8 = "tbs_t_meet", m = "meet/", j = "join/",
-         c = "complement/";
-  string s1 = oupre + mid8 + "/" + name1 + post,
-         s2 = oupre + mid8 + "/" + name2 + post;
-  Real tol = 2e-5;
-  YinSet<Real> y1(s1, 0, tol), y2(s2, 0, tol);
+// TEST_CASE("YinSet meet 3", "[meet]") {
+//   // string
+//   // s1("D://github//Yinsets3D_boolean//dataset//icosphere//icosphere1.obj"),
+//   // s2("D://github//Yinsets3D_boolean//dataset//icosphere//icosphere2.obj");
+//   //   // string
+//   //   //
+//   //
+//   //
+//   smonkey1("D://github//Yinsets3D_boolean//dataset//teddy&monkey//monkey1.obj"),
+//   //       //
+//   //       smonkey2(
+//   // "D://github//Yinsets3D_boolean//dataset//teddy&monkey//monkey2.obj");
+//   //   // string
+//   //   s1("D://github//Yinsets3D_boolean//dataset//teddy&cow//teddy.obj"),
+//   //       //
+//   //   s2("D://github//Yinsets3D_boolean//dataset//teddy&cow//cow.obj");
+//   string name1 = "tbs_t", name2 = "cball", name3 = "overball",
+//          name4 = "innerball", name5 = "innertorus", name6 = "twoballs2",
+//          name7 = "torus2", inpre = "../dataset/", oupre = "../res/",
+//          //     inpre = "dataset/",
+//       // oupre = "res/",
+//       post = ".obj", mid = "ballconnecttorus_torusbig_meet", mid2 =
+//       "complex",
+//          mid3 = "rabbit", mid4 = "heart", mid5 = "bust", mid6 = "ball",
+//          mid7 = "complex", mid8 = "tbs_t_meet", m = "meet/", j = "join/",
+//          c = "complement/";
+//   string s1 = oupre + mid8 + "/" + name1 + post,
+//          s2 = oupre + mid8 + "/" + name2 + post;
+//   Real tol = 2e-5;
+//   YinSet<Real> y1(s1, 0, tol), y2(s2, 0, tol);
 
-  cout << y1.getHasseString() << "\n";
-  cout << y2.getHasseString() << "\n";
+//   cout << y1.getHasseString() << "\n";
+//   cout << y2.getHasseString() << "\n";
 
-  auto res1 = y2.meet(y1, 1, tol);
-  cout << res1.getHasseString() << "\n";
-  res1.objOutput(name1 + "_" + name2, oupre + name1 + "_" + name2 + "_" + m);
+//   auto res1 = y2.meet(y1, 1, tol);
+//   cout << res1.getHasseString() << "\n";
+//   res1.objOutput(name1 + "_" + name2, oupre + name1 + "_" + name2 + "_" + m);
 
-  REQUIRE(res1.isBounded() == 1);
-  REQUIRE(res1.getBettiNumber(0) == 2);
-  REQUIRE(res1.getBettiNumber(1) == 0);
+//   REQUIRE(res1.isBounded() == 1);
+//   REQUIRE(res1.getBettiNumber(0) == 2);
+//   REQUIRE(res1.getBettiNumber(1) == 0);
 
-  auto ry1 = y1.complement(), ry2 = y2.complement();
-  cout << ry1.getHasseString() << "\n";
-  cout << ry2.getHasseString() << "\n";
+//   auto ry1 = y1.complement(), ry2 = y2.complement();
+//   cout << ry1.getHasseString() << "\n";
+//   cout << ry2.getHasseString() << "\n";
 
-  auto rres2 = ry1.meet(ry2, 1, tol);
-  cout << rres2.getHasseString() << "\n";
-  rres2.objOutput(name1 + "_" + name2,
-                  oupre + name1 + "_" + name2 + "_reverse");
+//   auto rres2 = ry1.meet(ry2, 1, tol);
+//   cout << rres2.getHasseString() << "\n";
+//   rres2.objOutput(name1 + "_" + name2,
+//                   oupre + name1 + "_" + name2 + "_reverse");
 
-  auto res2 = rres2.complement();
-  //   auto res2 = y2.join(y1, 1, tol);
-  cout << res2.getHasseString() << "\n";
-  res2.objOutput(name1 + "_" + name2, oupre + name1 + "_" + name2 + "_" + j);
+//   auto res2 = rres2.complement();
+//   //   auto res2 = y2.join(y1, 1, tol);
+//   cout << res2.getHasseString() << "\n";
+//   res2.objOutput(name1 + "_" + name2, oupre + name1 + "_" + name2 + "_" + j);
 
-  REQUIRE(res2.isBounded() == 1);
-  REQUIRE(res2.getBettiNumber(0) == 1);
-  REQUIRE(res2.getBettiNumber(1) == 1);
-}
+//   REQUIRE(res2.isBounded() == 1);
+//   REQUIRE(res2.getBettiNumber(0) == 1);
+//   REQUIRE(res2.getBettiNumber(1) == 1);
+// }
 
 // TEST_CASE("YinSet meet 11", "[meet]") {
 //   // string
@@ -440,4 +445,35 @@ TEST_CASE("YinSet meet 3", "[meet]") {
 //   res.objOutput(name1 + "_" + name2, oupre + name1 + "_" + name2 + "_" + j);
 // }
 
-// //
+TEST_CASE("YinSet meet 12", "[meet]") {
+  // string
+  // s1("D://github//Yinsets3D_boolean//dataset//icosphere//icosphere1.obj"),
+  // s2("D://github//Yinsets3D_boolean//dataset//icosphere//icosphere2.obj");
+  //   // string
+  //   //
+  //
+  //   smonkey1("D://github//Yinsets3D_boolean//dataset//teddy&monkey//monkey1.obj"),
+  //       //
+  //       smonkey2(
+  // "D://github//Yinsets3D_boolean//dataset//teddy&monkey//monkey2.obj");
+  //   // string
+  //   s1("D://github//Yinsets3D_boolean//dataset//teddy&cow//teddy.obj"),
+  //       //
+  //   s2("D://github//Yinsets3D_boolean//dataset//teddy&cow//cow.obj");
+
+  string name1 = "b3", name2 = "t3", name3 = "tb3", name4 = "innerball",
+         name5 = "innertorus", name6 = "box", name7 = "t",
+         inpre = "../dataset/", oupre = "../res/", post = ".obj",
+         mid = "tbs_t_meet", mid2 = "complex", mid3 = "rabbit", mid4 = "heart",
+         mid5 = "bust", mid6 = "ball", mid7 = "tbs_t_meet", mid8 = "Octree",
+         m = "meet/", j = "join/", c = "complement/";
+  for (int i = 1; i < 6; ++i) {
+    string s1 = oupre + mid8 + "/b" + to_string(i) + post,
+           s2 = oupre + mid8 + "/t" + to_string(i) + post,
+           s3 = oupre + mid8 + "/tb" + to_string(i) + post;
+    Real tol = TOL;
+    YinSet<Real> y1(s1, 0, tol), y2(s2, 0, tol);
+    cout << endl << i << endl;
+    auto res1 = y2.meet(y1, 1, tol);
+  }
+}

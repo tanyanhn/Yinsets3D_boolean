@@ -17,7 +17,7 @@
 #include "TriangleIntersection.h"
 #include "Triangulation.h"
 // #ifdef _UsBoost
-// #include <boost/timer.hpp>
+#include <boost/timer/timer.hpp>
 // #endif  // _UsBoost
 // #ifdef _bottleneck_
 // #include <boost/timer.hpp>
@@ -484,6 +484,7 @@ inline YinSet<T> YinSet<T>::meet(const YinSet<T>& y2,
                                  const int usingRFB,
                                  Real tol) const {
   // Intersection Triangle.
+  boost::timer::auto_cpu_timer total;
   TriangleIntersection<T> intersectOp;
   std::vector<Triangle<T, 3>> inputA, inputB;
   {
@@ -510,8 +511,8 @@ inline YinSet<T> YinSet<T>::meet(const YinSet<T>& y2,
 
   {
     // #ifdef _UsBoost
-    //     boost::timer::auto_cpu_timer t;
-    //     std::cout << std::endl << "meet::intersect cpu time : ";
+    boost::timer::auto_cpu_timer t;
+    std::cout << std::endl << "meet::intersect cpu time : ";
     // #endif  // _UsBoost
 
     // #ifdef _bottleneck_
@@ -526,8 +527,8 @@ inline YinSet<T> YinSet<T>::meet(const YinSet<T>& y2,
   Triangulation<T> triangulateOp;
   {
     // #ifdef _UsBoost
-    //     boost::timer::auto_cpu_timer t;
-    //     std::cout << std::endl << "meet::triangulate cpu time : ";
+    boost::timer::auto_cpu_timer t;
+    std::cout << std::endl << "meet::triangulate cpu time : ";
     // #endif  // _UsBoost
 
     triangulateOp(inputA, inputB, intersectOp.resultA, intersectOp.resultB,
@@ -596,6 +597,8 @@ inline YinSet<T> YinSet<T>::meet(const YinSet<T>& y2,
                    triangulateOp.vecTriB, vecF);
     pastOp(vecF, triangulateOp.vecTriA, triangulateOp.vecTriB, tol);
   }
+
+  std::cout << std::endl << "meet cpu time : ";
 
   // Yinset Constructor
   {

@@ -1,0 +1,568 @@
+\documentclass[UTF8]{ctexbeamer}	% Compile at least twice!
+%\setbeamertemplate{navigation symbols}{}
+\usetheme{Madrid}
+% \setbeamertemplate{navigation symbols}{}
+% \useinnertheme{rectangles}
+% \useoutertheme{infolines}
+% \useoutertheme[title,section,subsection=true]{smoothbars}
+\useoutertheme{split}
+\useinnertheme{rounded}
+\setbeamertemplate{headline}{}
+\usecolortheme{beaver}
+
+
+% \usecolortheme{default}
+% \usecolortheme{whale}
+ 
+% -------------------
+% Packages
+% -------------------
+\usepackage{
+    amsmath,			% Math Environments
+    amssymb,			% Extended Symbols
+    enumerate,		    % Enumerate Environments
+    graphicx,			% Include Images
+    lastpage,			% Reference Lastpage
+    multicol,			% Use Multi-columns
+    multirow,			% Use Multi-rows
+    pifont,			    % For Checkmarks
+    stmaryrd,            % For brackets
+    listings,
+    subfigure,
+}
+\usepackage[english]{babel}
+\usepackage{graphicx}
+\usepackage{animate}
+\usepackage{xeCJK}
+\usepackage{fontspec} 
+% \setsansfont{Times New Roman}
+% \setmonofont{Times New Roman}
+\setmainfont{Times New Roman Cyr}
+\setCJKmainfont{方正新楷体简体}
+
+\newfontfamily\os{Open Sans}
+\newfontfamily\oscl{Open Sans Condensed}
+\newfontfamily\tnr{Times New Roman}
+\newfontfamily\tnrc{Times New Roman Cyr}
+\newfontfamily\tim{Times}
+\newfontfamily\roc{Rockwell}
+% \usepackage{CJK}
+% \lstset{language=C++}
+% \lstset{extendedchars=false}
+% \lstset{breaklines}
+
+
+% -------------------
+% Colors
+% -------------------
+% \definecolor{UniOrange}{RGB}{212,69,0}
+% \definecolor{UniGray}{RGB}{62,61,60}
+% \definecolor{UniRed}{HTML}{B31B1B}
+% \definecolor{UniGray}{HTML}{222222}
+% \setbeamercolor{title}{fg=UniGray}
+% \setbeamercolor{frametitle}{fg=UniOrange}
+% \setbeamercolor{structure}{fg=UniOrange}
+% \setbeamercolor{section in head/foot}{bg=UniGray}
+% \setbeamercolor{author in head/foot}{bg=UniGray}
+% \setbeamercolor{date in head/foot}{fg=UniGray}
+% \setbeamercolor{structure}{fg=UniOrange}
+% \setbeamercolor{local structure}{fg=black}
+% \beamersetuncovermixins{\opaqueness<1>{0}}{\opaqueness<2->{15}}
+
+
+% -------------------
+% Fonts & Layout
+% -------------------
+% \usepackage{palatino}
+\usefonttheme{serif}
+% \setbeamerfont{title like}{shape=\scshape}
+% \setbeamerfont{frametitle}{shape=\scshape}
+% \setbeamertemplate{itemize items}[circle]
+% \setbeamertemplate{enumerate items}[default]
+
+
+% -------------------
+% Commands
+% -------------------
+
+% Special Characters
+% \newcommand{\N}{\mathbb{N}}
+% \newcommand{\Z}{\mathbb{Z}}
+% \newcommand{\Q}{\mathbb{Q}}
+% \newcommand{\R}{\mathbb{R}}
+%\newcommand{\C}{\mathbb{C}}
+
+% Math Operators
+% \DeclareMathOperator{\im}{im}
+% \DeclareMathOperator{\Span}{span}
+
+% Special Commands
+% \newcommand{\pf}{\noindent\emph{Proof. }}
+% \newcommand{\ds}{\displaystyle}
+% \newcommand{\defeq}{\stackrel{\text{def}}{=}}
+% \newcommand{\ov}[1]{\overline{#1}}
+% \newcommand{\ma}[1]{\stackrel{#1}{\longrightarrow}}
+% \newcommand{\twomatrix}[4]{\begin{pmatrix} #1 & #2 \ #3 & #4 \end{pmatrix}}
+
+
+% -------------------
+% Tikz & PGF
+% -------------------
+\usepackage{tikz}
+\usepackage{tikz-cd}
+\usetikzlibrary{
+    calc,
+    decorations.pathmorphing,
+    matrix,arrows,
+    positioning,
+    shapes.geometric
+}
+\usepackage{pgfplots}
+\pgfplotsset{compat=newest}
+\usepackage{wrapfig}
+\usepackage{cite}
+
+
+% -------------------
+% Theorem Environments
+% -------------------
+\usepackage{amsthm}
+\theoremstyle{plain}
+\newtheorem{sit}{Situation}[section]
+\newtheorem{prop}{Proposition}[section]
+\newtheorem{rtm}{Theorem}[section]
+\newtheorem{cor}{Corollary}[section]
+\theoremstyle{definition}
+\newtheorem{das}{Data structure}[section]
+\newtheorem{nex}{Non-Example}[section]
+\newtheorem{cla}{class}[section]
+\newtheorem{emt}{}[section]
+\newtheorem{defn}{Definition}[section]
+\theoremstyle{remark}
+\newtheorem{rem}{Remark}[section] 
+\numberwithin{equation}{section}
+
+\newcommand\caesura{$\mkern -8.5mu\raise -.2ex\hbox{\rotatebox[]{180}{\`}}\ $}
+\setbeamertemplate{caption}[numbered]
+% -------------------
+% Title Page
+% -------------------
+\title{\textcolor{red}{自适应的空间划分法加速三角形求交}}
+%\subtitle{\textcolor{white}{Mathematics Conference for the Mysterious and dMagical}}  
+\author{报告人: 谭焱 
+% \newline \newline
+%  \small{硕士导师： 王何宇\, \
+%  申请博士导师： 张庆海}
+ }
+
+\institute{\small{小组成员: 邱云昊，谭焱}}
+\date{\today} 
+
+
+% -------------------
+% Content
+% -------------------
+\begin{document}
+
+% Title Page
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{提纲}
+  \tableofcontents
+\end{frame}
+
+\section{解决的问题}
+
+\begin{frame}[fragile]
+  \frametitle{研究背景}
+  \begin{enumerate}
+    \item 使用殷集对三维空间中有物理意义的区域建模.
+    \item 为殷集实现布尔代数,提供研究流相拓扑变化的工具.
+    \item 实现布尔运算时需要计算空间三角形的交线.
+    \item 已有求交算法将所有三角形两两求交,
+          \begin{itemize}
+            \item 时间复杂度是$O(N^2)$.
+            \item 是当前布尔运算的时间瓶颈(2112个三角形时占总时长
+                  0.20 / 0.52, 359424个三角形时为115.39 / 140.36).
+            \item 次要时间瓶颈是三角剖分(分别占用时间0.26 / 0.52, 19.65 / 140.36).
+          \end{itemize}
+    \item 需要高效的大量空间三角形求交方法,有效的提高布尔运算速度.
+  \end{enumerate}
+  \begin{figure}[htb]
+    \centering
+    \subfigure{\includegraphics[width=0.4\textwidth]{fig/Octree_s1p1.png}} \qquad
+    \subfigure{\includegraphics[width=0.4\textwidth]{fig/Octree_s1p2.png}}
+  \end{figure}
+\end{frame}
+
+\section{采用的方法}
+
+\begin{frame}[fragile]
+  \frametitle{空间划分}
+  \begin{enumerate}
+    \item 三角形相交是局部的,考虑局部区域中的三角形两两求交.如图所示
+          \begin{figure}[htb]
+            \centering
+            \subfigure{\includegraphics[width=0.4\textwidth]{fig/Octree_s2p1.png}}
+          \end{figure}
+    \item 不考虑一个殷集边界上的三角形相交时,大部分区域可以忽略.
+          \begin{figure}[htb]
+            \centering
+            \subfigure{\includegraphics[width=0.4\textwidth]{fig/Oc_s2p2.png}}
+          \end{figure}
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{自适应的空间划分}
+  \begin{enumerate}
+    \item 在三角形密集的局部进行更细致的划分,结合之前说的剪枝算法.
+          \begin{figure}[htb]
+            \centering
+            \subfigure{\includegraphics[width=0.4\textwidth]{fig/Oc_s2p3.png}}
+          \end{figure}
+    \item 得到的自适应空间划分如下
+          \begin{figure}[htb]
+            \centering
+            \subfigure{\includegraphics[width=0.4\textwidth]{fig/Oc_s2p4.png}}
+          \end{figure}
+  \end{enumerate}
+\end{frame}
+
+
+\section{编程实现}
+
+\begin{frame}[fragile]
+  \frametitle{代码结构}
+  \begin{enumerate}
+    \item 类接口
+          \begin{itemize}
+            \item 输入: 两组空间三角形, 空间划分树的最大深度.
+            \item 输出: 每个三角形上的所有交线段.
+          \end{itemize}
+    \item 建立空间划分树的节点
+          \begin{lstlisting}[language={[ANSI]C},numbers=left,
+      numberstyle=\tiny,keywordstyle=\color{blue!70},commentstyle=\color{red!50!green!50!blue!50},frame=shadowbox,
+      rulesepcolor=\color{red!20!green!20!blue!20}]
+      template <class T>
+      struct OctreeNode {
+        T val;
+        std::vector<int> tris[2];
+        std::vector<OctreeNode<T>*> child;
+      };
+      
+    \end{lstlisting}
+    \item initOctree() 生成八叉树,每个节点的子节点是长方体的8等分之一.
+    \item pruneTree() 对树进行剪枝,最小化三角形求交计算的次数.
+    \item calTest() 遍历八叉树,计算所有叶节点长方体中的三角形求交.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{时间复杂度分析}
+  \begin{enumerate}
+    \item 设两个殷集边界分别约有$N$个三角形.
+    \item 令八叉树深度为 $log_8N$, 可理解为八叉树将计算空间$N$等分.
+    \item 不妨设殷集的三角形不会过大,即覆盖的长方体数量为常数.
+    \item initOctree() 的时间复杂度为$O(NlogN)$.
+    \item pruneTree() 的时间复杂度为$O(N)$.
+    \item calTest() 最坏情况时间复杂度为$O(N^2)$,但在普遍情况是$O(N)$.
+    \item 综上,该算法时间复杂度为$O(NlogN)$.
+  \end{enumerate}
+  \begin{figure}[htb]
+    \centering
+    \setcounter{subfigure}{0}
+    \subfigure[(960, 1152)]{\includegraphics[width=0.3\textwidth]{fig/Oc_s2p5.png}}
+    \subfigure[(16128, 18432)]{\includegraphics[width=0.3\textwidth]{fig/Oc_s2p6.png}}
+    \subfigure[(261120, 98304)]{\includegraphics[width=0.3\textwidth]{fig/Oc_s2p7.png}}
+    \caption{边界上(x1, x2)个三角形的殷集求交}
+  \end{figure}
+\end{frame}
+
+\section{测试与问题}
+
+\begin{frame}
+  \frametitle{计算时间测试}
+  \begin{enumerate}
+    \item 自适应的空间划分法和已有方法计算时间比较如下
+          \begin{figure}[htb]
+            \centering
+            \subfigure{\includegraphics[width=0.4\textwidth]{fig/Oc_s3p1.png}}
+          \end{figure}
+          \begin{table}[]
+            \resizebox{.8\textwidth}{!}{%
+              \begin{tabular}{|c|c|c|c|c|c|c|}
+                \hline
+                三角形个数/个 & 2112     & 10880    & 34560    & 114176    & 359424     & 539392     \\ \hline
+                空间划分法/s  & 0.302020 & 1.549209 & 3.878483 & 9.649845  & 25.118267  & 35.477708  \\ \hline
+                两两求交法/s  & 0.175366 & 1.140628 & 4.671456 & 22.934571 & 129.951804 & 306.352480 \\ \hline
+              \end{tabular}%
+            }
+            \caption{新老方法计算时间对比}
+            \label{tab:my-table}
+          \end{table}
+    \item 在当前测试图形中三角剖分消耗时间略小于空间划分法求交.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  \frametitle{待解决的问题}
+  \begin{enumerate}
+    \item 程序没有通过所有测试.
+    \item 判断长方体包含三角形的程序实现低效.
+    \item 测试样例简单单一.
+    \item 时间复杂度分析不严谨.
+    \item 是否要在殷集内部添加可以表示三角形相邻关系的数据结构?
+    \item 是否要继续优化?
+
+  \end{enumerate}
+\end{frame}
+
+
+% % Motivation
+% \section{个人基本情况介绍}
+
+% % Definitions & Examples
+% \begin{frame}[fragile]
+%     \frametitle{学习情况}
+%     \begin{enumerate}
+%         \item 研究生课程
+%               \begin{itemize}
+%                   \item 科研相关课程获得良好成绩
+%                         \begin{itemize}
+%                             \item 非线性问题的数学方法(92), 图形学的新进展(90) 等.
+%                         \end{itemize}
+%                   \item 英语阅读及写作方面
+%                         \begin{itemize}
+%                             \item 六级489分(阅读205)可以流畅阅读英文文献.
+%                             \item 通过研究生论文写作指导(92)打下坚实写作基础.
+%                         \end{itemize}
+%               \end{itemize}
+%         \item 科研训练
+%               \begin{itemize}
+%                   \item 系统地学习了代数拓扑和微分方程数值解的相关理论.
+%                   \item 锻炼了算法设计和编程实现能力.
+%                   \item 培养了将代数拓扑和微分方程数值解结合进行科学研究的思维方式.
+%               \end{itemize}
+%     \end{enumerate}
+% \end{frame}
+
+% \section{硕士阶段的科研工作}
+% \subsection{涉密的军工项目}
+% \begin{frame}
+%     \frametitle{涉密军工项目}
+%     \begin{itemize}
+%         \item 潜艇湍流尾迹的海洋表面特征等内波现象的研究, 用于潜艇追踪和隐身
+%               (\textcolor{red}{军科委基础加强重点项目}).
+%               \begin{figure}
+%                   \includegraphics[width = 0.7\textwidth]{fig/s12.png}
+%                   \caption{水下潜艇产生的各种尾迹示意图, 包括开尔文尾迹, 内波, 湍流尾迹, 涡尾迹, 煎
+%                       饼旋涡.}
+%               \end{figure}
+%     \end{itemize}
+% \end{frame}
+
+% \subsection{\textcolor{red}{非涉密的三维殷集和布尔代数}}
+% \begin{frame}
+%     \frametitle{殷集的研究背景}
+%     \begin{itemize}
+%         \item 含有动边界的不可压流体在军工领域是非常重要的研究课题.
+%         \item 现有方法是对界面的几何和拓扑问题进行回避,导致了:
+%               \begin{enumerate}
+%                   \item 对等距变换的流场不能保证几何性质.
+%                   \item 对同胚映射的流场不能保证拓扑性质.
+%                   \item 精度最高为二阶精度.
+%                   \item 很难对拓扑变化进行严格的处理.
+%               \end{enumerate}
+%         \item 我们的核心思想是用\textcolor{red}{几何和拓扑的手段
+%                   研究几何和拓扑的问题},其中首要工作在于对流相建模
+%               (Zhang and Li, \tnr{ Math. Comput.}\tnrc{, \ 2020).}
+
+%               %   \os (Zhang and Li 2020 Math. Comput.).
+
+%               %   \oscl (Zhang and Li 2020 Math. Comput.).
+
+%               %   \tnr (Zhang and Li 2020 Math. Comput.).
+
+%               %   \tim (Zhang and Li 2020 Math. Comput.).
+
+%               %   \roc (Zhang and Li 2020 Math. Comput.).
+%     \end{itemize}
+%     \begin{center}
+%         \includegraphics[width = 0.9\textwidth]{fig/s14.png}
+%     \end{center}
+% \end{frame}
+
+
+% \begin{frame}
+%     \frametitle{殷集和布尔代数的重要性}
+%     \begin{itemize}
+%         \item 几何和拓扑的手段集中体现在殷空间和布尔代数.
+%         \item 为连续介质提供了简单高效的表示(以O(1)时间得到欧拉示性数).
+%         \item 给动边界的界面追踪的高保真算法提供理论支撑.
+%         \item 给多相流的流相拓扑变化刻画和高阶算法设计提供理论支撑.
+%         \item 是许多重大科学问题(军工项目)的核心难点.
+%     \end{itemize}
+
+%     \begin{columns}
+%         \column{0.5\linewidth}<1->
+%         \centering
+%         \includegraphics[width = .6\textwidth]{fig/s18.png}
+%         \column{0.5\linewidth}<1->
+%         \centering
+%         \includegraphics[width = .8\textwidth]{fig/s19.png}
+%     \end{columns}
+% \end{frame}
+
+
+% \begin{frame}
+%     \frametitle{二维殷集}
+%     \begin{itemize}
+%         \item 二维空间中,任一个殷集可以唯一表示为
+%               \[\mathcal{Y} = \cup_j^{\bot \bot}\cap_i \text{int}(\gamma_{j, i} ),\]
+%               约当曲线 $\gamma_{j, i}$是$\mathcal{Y}$内第j$个连通分量
+%               的第i$条边界.
+%         \item 高效实现了殷集上的布尔代数.
+%     \end{itemize}
+%     \begin{figure}[htb]
+%         \centering
+%         \subfigure{\includegraphics[width=0.3\textwidth]{fig/p.png}}
+%         \subfigure{\includegraphics[width=0.3\textwidth]{fig/m.png}}
+%         \subfigure{\includegraphics[width=0.3\textwidth]{fig/pm.png}}
+%     \end{figure}
+% \end{frame}
+
+% \begin{frame}
+%     \frametitle{科研成果---三维殷集的数学模型及布尔代数}
+%     \begin{itemize}
+%         \item
+%               \textcolor{red}{二流形的分类定理} \newline
+%               有向的紧二流形是同胚于球或者圆环或它们的有限个连通和.
+%               \begin{center}
+%                   \includegraphics[width = .9\textwidth]{fig/s15.png}
+%               \end{center}
+
+
+%         \item 黏合紧曲面是一个二维连通紧流形或这种流形的商空间, 其商映射
+%               将多个与一维 CW 复形同胚的子集粘在一起; 将这个一维子集删除后
+%               该黏合紧曲面仍然是连通的.
+%     \end{itemize}
+% \end{frame}
+
+% \begin{frame}
+%     \frametitle{三维殷集的唯一表示}
+%     \begin{itemize}
+%         \item \textcolor{red}{三维殷集}:三维空间中边界有界的正则半解析开集.所有三维殷集构
+%               成的集合被称为殷空间,记为 $\mathbb{Y}$.
+%         \item 任一个殷集$\mathcal{Y} \in \mathbb{Y}$可以唯一表示为
+%               \[\mathcal{Y} = \cup_j^{\bot \bot} \cap_i \text{int}(\Gamma_{j, i}),\]
+%               黏合紧曲面$\Gamma_{j, i}$是$\mathcal{Y}$的第j$个连通分量的第i$个边界.
+%     \end{itemize}
+%     \begin{figure}[htbp]
+%         \centering
+%         \subfigure[殷集$\mathcal{Y}$]{\includegraphics[width=0.4\textwidth]{fig/s1.png}} \qquad
+%         \subfigure[表示$\mathcal{Y}$的两个黏合紧曲面]{\includegraphics[width=0.4\textwidth]{fig/s2.png}}
+%         \caption{殷集和表示殷集的黏合紧曲面}
+%         \vspace{0.2in}
+%     \end{figure}
+% \end{frame}
+
+% \begin{frame}
+%     \frametitle{布尔代数的实现方式}
+%     \begin{enumerate}
+%         \item 计算殷集边界上的所有非流形点.
+%         \item 沿非流形点剪开黏合紧曲面得到若干曲面片.
+%         \item 根据交并补的需要删除曲面片或改变曲面片方向.
+%         \item 将曲面片重新黏合成黏合紧曲面集合.
+%         \item 黏合紧曲面集合唯一表示一个三维殷集作为布尔运算结果.
+%     \end{enumerate}
+%     \begin{figure}[!htb]
+%         \centering
+%         \subfigure[殷集$\mathcal{Y}_1$]{\includegraphics[width=0.365\textwidth]{fig/s3.png}} \qquad
+%         \subfigure[殷集$\mathcal{Y}_2$]{\includegraphics[width=0.4\textwidth]{fig/s4.png}}
+%         \caption{将要进行布尔运算的殷集$\mathcal{Y}_1$和$\mathcal{Y}_2$}
+%         \vspace{0.2in}
+%     \end{figure}
+% \end{frame}
+
+% \begin{frame}
+%     \frametitle{布尔运算结果图}
+%     \begin{figure}[!htb]
+%         \centering
+%         \subfigure[$\partial\mathcal{Y}_1$剪开得到的部分曲面片]
+%         {\includegraphics[width=0.36\textwidth]{fig/s16.png}} \qquad
+%         \subfigure[$\partial\mathcal{Y}_2$剪开得到的曲面片]
+%         {\includegraphics[width=0.375\textwidth]{fig/s17.png}}
+%         %   \caption{sfd}
+%         \vspace{-0.2in}
+%     \end{figure}
+%     \begin{figure}[!htb]
+%         \centering
+%         \subfigure[求交得到的殷集$\mathcal{Y}_3$]
+%         {\includegraphics[width=0.35\textwidth]{fig/s5.png}} \qquad
+%         \subfigure[构成$\partial\mathcal{Y}_3$的两个黏合紧曲面]
+%         {\includegraphics[width=0.365\textwidth]{fig/s6.png}}
+%         %   \caption{sfd}
+%         %   \vspace{0.2in}
+%     \end{figure}
+% \end{frame}
+
+% \begin{frame}
+%     \begin{figure}[!htb]
+%         \centering
+%         \subfigure[求并得到的殷集$\mathcal{Y}_4$]
+%         {\includegraphics[width=0.35\textwidth]{fig/s7.png}} \qquad
+%         \subfigure[构成$\partial\mathcal{Y}_4$的两个黏合紧曲面]
+%         {\includegraphics[width=0.365\textwidth]{fig/s8.png}}
+%         \vspace{-0.05in}
+%         \caption{拓扑结构复杂的殷集交并}
+%         \vspace{-0.1in}
+%     \end{figure}
+%     \begin{figure}[!htb]
+%         \centering
+%         \subfigure
+%         {\includegraphics[width=0.27\textwidth]{fig/s10.png}} \quad
+%         \subfigure
+%         {\includegraphics[width=0.3\textwidth]{fig/s9.png}} \quad
+%         \subfigure
+%         {\includegraphics[width=0.27\textwidth]{fig/s11.png}}
+%         \vspace{-0.05in}
+%         \caption{几何特征复杂的殷集求交}
+%         %   \vspace{0.2in}
+%     \end{figure}
+% \end{frame}
+
+% \begin{frame}
+%     \frametitle{论文在投}
+%     \centering
+%     \includegraphics[height = \textheight]{fig/SIAM_Review.png}
+% \end{frame}
+
+% \section{博士阶段的研究计划}
+% \subsection{流相的拓扑变化}
+% \begin{frame}
+%     \frametitle{博士研究计划}
+%     \begin{center}
+%         % \includegraphics[width = 0.7\textwidth]{fig/fig/Mars.gif};
+%         \animategraphics[autoplay,
+%             loop,
+%             width=.5\textwidth]{5}{fig/gif/1/vortex80N64step00}{0}{62}
+%     \end{center}
+%     \begin{itemize}
+%         \item 现有方法不能精确捕捉和刻画拓扑变化.
+%         \item 结合殷集对流体建模,在MARS方法(Zhang, \tnr{ SISC}\tnrc{, \ 2018)}上
+%               新增对拓扑变化的处理,并且高精度捕捉拓扑变化的时间点和位置.
+%         \item 这个研究是三维殷集在军工项目中的重要应用,是项目的核心部分.
+%     \end{itemize}
+% \end{frame}
+
+% \section*{}
+% \begin{frame}
+%     \centering\huge
+%     \textcolor{red}{请各位老师批评指正！}
+% \end{frame}
+\end{document}

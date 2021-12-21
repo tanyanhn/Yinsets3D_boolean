@@ -8,7 +8,7 @@
             "name": "(gdb) 启动",
             "type": "lldb",
             "request": "launch",
-            "program": "${workspaceFolder}/test/OctreeTest.exe",
+            "program": "${workspaceFolder}/test/YSmeet.exe",
             // "program": "${workspaceRoot}/build/test/reFacBoundarytest.exe",
             "args": [],
             "stopAtEntry": false,
