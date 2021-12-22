@@ -32,8 +32,11 @@ struct Node {
   std::vector<int> children;
 };
 
+template <class T, int Order = 2>
+class YinSet {};
+
 template <class T>
-class YinSet {
+class YinSet<T, 2> {
  private:
   std::vector<GluingCompactSurface<T>> vecFace;
   std::vector<Node> diagram;
