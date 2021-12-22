@@ -10,7 +10,7 @@
 #include "YinSet.h"
 
 namespace YSB {
-template <class T>
+template <class T, int Order>
 class YinSet;
 
 inline YinSet<Real> objInput(const std::string& s, Real tol = TOL) {
