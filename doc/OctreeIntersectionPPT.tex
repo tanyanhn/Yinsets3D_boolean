@@ -209,7 +209,7 @@
             \centering
             \subfigure{\includegraphics[width=0.4\textwidth]{fig/Octree_s2p1.png}}
           \end{figure}
-    \item 不考虑一个殷集边界上的三角形相交时,大部分区域可以忽略.
+    \item 不考虑一个殷集边界上的三角形相交,大部分区域可以忽略.
           \begin{figure}[htb]
             \centering
             \subfigure{\includegraphics[width=0.4\textwidth]{fig/Oc_s2p2.png}}
@@ -220,7 +220,7 @@
 \begin{frame}[fragile]
   \frametitle{自适应的空间划分}
   \begin{enumerate}
-    \item 在三角形密集的局部进行更细致的划分,结合之前说的剪枝算法.
+    \item 在三角形密集的局部进行更细致的划分,结合剪枝算法.
           \begin{figure}[htb]
             \centering
             \subfigure{\includegraphics[width=0.4\textwidth]{fig/Oc_s2p3.png}}
@@ -270,7 +270,7 @@
     \item 不妨设殷集的三角形不会过大,即覆盖的长方体数量为常数.
     \item initOctree() 的时间复杂度为$O(NlogN)$.
     \item pruneTree() 的时间复杂度为$O(N)$.
-    \item calTest() 最坏情况时间复杂度为$O(N^2)$,但在普遍情况是$O(N)$.
+    \item calTest() 最坏情况时间复杂度为$O(N^2)$,但在普遍情况是$O(N^{\frac{1}{2}})$.
     \item 综上,该算法时间复杂度为$O(NlogN)$.
   \end{enumerate}
   \begin{figure}[htb]
@@ -297,7 +297,7 @@
             \resizebox{.8\textwidth}{!}{%
               \begin{tabular}{|c|c|c|c|c|c|c|}
                 \hline
-                三角形个数/个 & 2112     & 10880    & 34560    & 114176    & 359424     & 539392     \\ \hline
+                三角形数量/个 & 2112     & 10880    & 34560    & 114176    & 359424     & 539392     \\ \hline
                 空间划分法/s  & 0.302020 & 1.549209 & 3.878483 & 9.649845  & 25.118267  & 35.477708  \\ \hline
                 两两求交法/s  & 0.175366 & 1.140628 & 4.671456 & 22.934571 & 129.951804 & 306.352480 \\ \hline
               \end{tabular}%

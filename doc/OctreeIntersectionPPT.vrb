@@ -5,7 +5,7 @@
     \item 不妨设殷集的三角形不会过大,即覆盖的长方体数量为常数.
     \item initOctree() 的时间复杂度为$O(NlogN)$.
     \item pruneTree() 的时间复杂度为$O(N)$.
-    \item calTest() 最坏情况时间复杂度为$O(N^2)$,但在普遍情况是$O(N)$.
+    \item calTest() 最坏情况时间复杂度为$O(N^2)$,但在普遍情况是$O(N^{\frac{1}{2}})$.
     \item 综上,该算法时间复杂度为$O(NlogN)$.
   \end{enumerate}
   \begin{figure}[htb]
