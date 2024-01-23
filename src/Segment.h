@@ -276,19 +276,22 @@ inline typename Segment<T, 2>::intsType intersectSegSeg(
   x[0] = cross(b, A[1]) / det;
   x[1] = cross(A[0], b) / det;
 
-  if (std::abs(x[0]) <= tol / sc[0])
-    result.emplace_back(p1);
-  else if (std::abs(x[0] - 1) <= tol / sc[0])
-    result.emplace_back(p2);
-  else if (std::abs(x[1]) <= tol / sc[1])
-    result.emplace_back(p3);
-  else if (std::abs(x[1] - 1) <= tol / sc[1])
-    result.emplace_back(p4);
-  else if (x[0] > tol / sc[0] && x[0] < 1 - tol / sc[0] && x[1] > tol / sc[1] &&
-           x[1] < 1 - tol / sc[1]) {
-    result.emplace_back(p1 + (p2 - p1) * x[0]);
+  if (-tol / sc[0] < x[0] && x[0] < 1 + tol / sc[0] && -tol / sc[1] < x[1] &&
+      x[1] < 1 + tol / sc[1]) {
+    if (std::abs(x[0]) <= tol / sc[0])
+      result.emplace_back(p1);
+    else if (std::abs(x[0] - 1) <= tol / sc[0])
+      result.emplace_back(p2);
+    else if (std::abs(x[1]) <= tol / sc[1])
+      result.emplace_back(p3);
+    else if (std::abs(x[1] - 1) <= tol / sc[1])
+      result.emplace_back(p4);
+    else if (x[0] > tol / sc[0] && x[0] < 1 - tol / sc[0] &&
+             x[1] > tol / sc[1] && x[1] < 1 - tol / sc[1]) {
+      result.emplace_back(p1 + (p2 - p1) * x[0]);
 
-    return Segment<T, 2>::intsType::One;
+      return Segment<T, 2>::intsType::One;
+    }
   } else
     return Segment<T, 2>::intsType::None;
 
